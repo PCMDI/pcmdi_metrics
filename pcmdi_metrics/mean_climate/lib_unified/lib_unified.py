@@ -217,20 +217,26 @@ def process_dataset(
         model, run = data_name
         models_dict = data_dict
         print(f"Processing data for: {model}, {run}")
+        print("!!!! debugging point !!!!")
+        if var not in models_dict[model][run]:
+            models_dict[model][run][var] = {}
         # Construct paths
-        data_path = get_model_run_data_path(data_dict, var, model, run)
+        data_path = get_model_run_data_path(models_dict, var, model, run)
+        print("!!!! data_path:", data_path)
         out_path = get_interim_out_path(
             interim_output_path_dict_data, "path_ac_interp", var
         )
+        print("!!!! out_path:", out_path)
         out_path_interp = get_interim_out_path(
             interim_output_path_dict_data, "path_ac", var
         )
+        print("!!!! out_path_interp:", out_path_interp)
         models_dict[model][run][var]["path_ac"] = out_path
         if "varname" in models_dict[model][run][var]:
             varname = models_dict[model][run][var]["varname"]
         else:
             varname = var
-
+        print("!!!! varname:", varname)
         variables_in_dict = set()
         for model_tmp, runs in models_dict.items():
             for run, vars_dict in runs.items():
@@ -248,7 +254,20 @@ def process_dataset(
         print("ver:", version)
 
     # Calculate the annual cycle and save annual cycle
-    if var in variables_in_dict:
+    if var in rad_diagnostic_variables:
+        print(f"{var} is a radiation diagnostic variable")
+        ds_ac = derive_rad_var(
+            varname,
+            encountered_variables,
+            data_name,
+            ac_dict,
+            data_dict,
+            os.path.join(out_path, version),
+            data_type=data_type,
+            save_ac_netcdf=save_ac_netcdf,
+        )
+    elif var in variables_in_dict:
+        print("get_annual_cycle starts")
         ds_ac = get_annual_cycle(
             varname,
             data_path,
@@ -261,20 +280,6 @@ def process_dataset(
             save_ac_netcdf=save_ac_netcdf,
             ver=version,
             plot=plot_gn,
-        )
-    elif var in rad_diagnostic_variables:
-        print(
-            f"Note: {var} has to be derived from other variables -- calling 'derive_rad_var'"
-        )
-        ds_ac = derive_rad_var(
-            varname,
-            encountered_variables,
-            data_name,
-            ac_dict,
-            data_dict,
-            os.path.join(out_path, version),
-            data_type=data_type,
-            save_ac_netcdf=save_ac_netcdf,
         )
     else:
         raise ValueError(f"Cannot find {var} in data collection.")
@@ -544,22 +549,35 @@ def get_interim_out_path(interim_output_path_dict_data, path_key, var) -> str:
     return path
 
 
-def get_model_run_data_path(models_dict, var, model, run) -> str:
-    if (
-        "path" in models_dict[model][run][var]
-        and "filename" in models_dict[model][run][var]
-    ):
-        model_data_path = os.path.join(
-            models_dict[model][run][var]["path"],
-            models_dict[model][run][var]["filename"],
-        )
-    elif "path" in models_dict[model][run][var]:
-        model_data_path = models_dict[model][run][var]["path"]
-    elif "template" in models_dict[model][run][var]:
-        model_data_path = models_dict[model][run][var]["template"]
+def get_model_run_data_path(models_dict, var, model, run, debug=False) -> str:
+    if debug:
+        print("get_model_run_data_path, model, run, var:", model, run, var)
+        print("models_dict keys:", models_dict.keys())
+        print("models_dict[model] keys:", models_dict[model].keys())
+        print("models_dict[model][run] keys:", models_dict[model][run].keys())
+    
+    data_path = ""
+    if var in models_dict[model][run]:
+        if debug:
+            print("models_dict[model][run][var]:", models_dict[model][run][var])
+        
+        if (
+            "path" in models_dict[model][run][var]
+            and "filename" in models_dict[model][run][var]
+        ):
+            data_path = os.path.join(
+                models_dict[model][run][var]["path"],
+                models_dict[model][run][var]["filename"],
+            )
+        elif "path" in models_dict[model][run][var]:
+            data_path = models_dict[model][run][var]["path"]
+        elif "template" in models_dict[model][run][var]:
+            data_path = models_dict[model][run][var]["template"]
+        else:
+            print(f"No path, filename, or template found for model: {model}")
     else:
-        raise ValueError(f"No path, filename, or template found for model: {model}")
-    return model_data_path
+        print(f"Variable {var} not found for model {model}, run {run}")
+    return data_path
 
 
 def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None) -> dict:
@@ -592,14 +610,14 @@ def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None) -> dict:
 
 def get_ref_data_path(refs_dict, var, ref):
     if "path" in refs_dict[var][ref] and "filename" in refs_dict[var][ref]:
-        ref_data_path = os.path.join(
+        return os.path.join(
             refs_dict[var][ref]["path"], refs_dict[var][ref]["filename"]
         )
     elif "template" in refs_dict[var][ref]:
-        ref_data_path = refs_dict[var][ref]["template"]
+        return refs_dict[var][ref]["template"]
     else:
-        raise ValueError(f"No path, filename, or template found for ref: {ref}")
-    return ref_data_path
+        print(f"No path, filename, or template found for ref: {ref}")
+        return None
 
 
 def get_unique_bases(variables):

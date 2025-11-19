@@ -45,22 +45,28 @@ variables = [
 ]
 
 variables = [
+    # ---- for basic radiation variables ----
     "rlds",
     "rldscs",
-    "rltcre",
     "rlus",
     "rlut",
     "rlutcs",
     "rsds",
     "rsdscs",
     "rsdt",
-    "rstcre",
     "rsus",
     "rsuscs",
     "rsut",
     "rsutcs",
-    "rt",
+    # ---- for radiation diagnostics ----
+    "rltcre",  # longwave cloud radiative effect
+    "rst",  # net shortwave radiation at top of atmosphere
+    "rstcre",  # shortwave cloud radiative effect
+    "rt",  # net radiation at top of atmosphere
 ]
+
+#rad_diagnostic_variables = ["rt", "rst", "rstcre", "rltcre"]
+
 
 # variables = ["pr"]
 

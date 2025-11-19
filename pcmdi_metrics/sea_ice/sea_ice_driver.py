@@ -95,24 +95,24 @@ if __name__ == "__main__":
     # --------------------------
     # This section is hard-coded to work with the
     # OSI-SAF data in obs4mips.
+
+    # ~~~~~~
+    # Arctic
+    # ~~~~~~    
+    print("OBS: Arctic")
+
     arctic_clims = {}
     arctic_means = {}
 
-    print("OBS: Arctic")
     nh_files = glob.glob(reference_data_path_nh)
-    obs = lib.load_dataset(nh_files)
+    obs = xcdat_open(nh_files, chunks=None)  # obs is an xarray dataset
     xvar = lib.find_lon(obs)
     yvar = lib.find_lat(obs)
     coord_i, coord_j = lib.get_xy_coords(obs, xvar)
     if osyear is not None:
         obs = obs.sel(
-            {
-                "time": slice(
-                    "{0}-01-01".format(osyear),
-                    "{0}-12-31".format(oeyear),
-                )
-            }
-        ).compute()  # TODO: won't always need to compute
+            time=slice(f"{osyear}-01-01", f"{oeyear}-12-31")
+        )  # .compute() is not always needed; remove for lazy evaluation
     obs[obs_var] = lib.adjust_units(obs[obs_var], ObsUnitsAdjust)
     if obs_area_var is not None:
         obs[obs_area_var] = lib.adjust_units(obs[obs_area_var], ObsAreaUnitsAdjust)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     # Get regions
     clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
     nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
-    print(nh_obs_area)
+    print("nh_obs_area:", nh_obs_area)
     arctic_clims = {
         "arctic": clims["arctic"],
         "ca": clims["ca"],
@@ -140,39 +140,36 @@ if __name__ == "__main__":
         "na": means["na"],
     }
 
+    # Get climatology
+    print("Start get clim")
+    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+    print("End get clim")
+    
     # Generate netcdf files of climatologies
     nc_dir = os.path.join(metrics_output_path, "netcdf")
-    if not os.path.exists(nc_dir):
-        os.mkdir(nc_dir)
-    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+    os.makedirs(nc_dir, exist_ok=True)
     print("Writing climatology netcdf")
-    fname_nh = (
-        "sic_clim_"
-        + "_".join([reference_data_set, "nh", str(osyear), str(oeyear)])
-        + ".nc"
-    )
+    fname_nh = f"sic_clim_{reference_data_set}_nh_{osyear}_{oeyear}.nc"
     fname_nh = os.path.join(nc_dir, fname_nh)
     nc_climo.to_netcdf(fname_nh, "w")
     del nc_climo
     obs.close()
 
+    # ~~~~~~~~~
+    # Antarctic
+    # ~~~~~~~~~
+    print("OBS: Antarctic")
     antarctic_clims = {}
     antarctic_means = {}
-    print("OBS: Antarctic")
     sh_files = glob.glob(reference_data_path_sh)
-    obs = lib.load_dataset(sh_files)
+    obs = xcdat_open(sh_files)
     xvar = lib.find_lon(obs)
     yvar = lib.find_lat(obs)
     coord_i, coord_j = lib.get_xy_coords(obs, xvar)
     if osyear is not None:
         obs = obs.sel(
-            {
-                "time": slice(
-                    "{0}-01-01".format(osyear),
-                    "{0}-12-31".format(oeyear),
-                )
-            }
-        ).compute()
+            time=slice(f"{osyear}-01-01", f"{oeyear}-12-31")
+        )  # .compute() is not always needed; remove for lazy evaluation
     obs[obs_var] = lib.adjust_units(obs[obs_var], ObsUnitsAdjust)
     if obs_area_var is not None:
         obs[obs_area_var] = lib.adjust_units(obs[obs_area_var], ObsAreaUnitsAdjust)
@@ -199,17 +196,14 @@ if __name__ == "__main__":
         "sa": means["sa"],
     }
 
+    # Get climatology
+    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+
     # Generate netcdf files of climatologies
     nc_dir = os.path.join(metrics_output_path, "netcdf")
-    if not os.path.exists(nc_dir):
-        os.mkdir(nc_dir)
-    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+    os.makedirs(nc_dir, exist_ok=True)
     print("Writing climatology netcdf")
-    fname_sh = (
-        "sic_clim_"
-        + "_".join([reference_data_set, "sh", str(osyear), str(oeyear)])
-        + ".nc"
-    )
+    fname_sh = f"sic_clim_{reference_data_set}_sh_{osyear}_{oeyear}.nc"
     fname_sh = os.path.join(nc_dir, fname_sh)
     nc_climo.to_netcdf(fname_sh, "w")
     del nc_climo
@@ -350,7 +344,6 @@ if __name__ == "__main__":
 
         # Model grid area
         print(lib.replace_multi(area_template, tags))
-        # area = xc.open_dataset(glob.glob(lib.replace_multi(area_template, tags))[0])
         area = xcdat_open(glob.glob(lib.replace_multi(area_template, tags))[0])
         area[area_var] = lib.adjust_units(area[area_var], AreaUnitsAdjust)
 
@@ -390,7 +383,7 @@ if __name__ == "__main__":
                         print("  ", t)
 
                 # Load and prep data
-                ds = lib.load_dataset(test_data_full_path)
+                ds = xcdat_open(test_data_full_path)
                 ds[var] = lib.adjust_units(ds[var], ModUnitsAdjust)
                 xvar = lib.find_lon(ds)
                 yvar = lib.find_lat(ds)
@@ -412,12 +405,10 @@ if __name__ == "__main__":
                     else:
                         final_day = 31
                     ds = ds.sel(
-                        {
-                            "time": slice(
-                                "{0}-01-01".format(start_year),
-                                "{0}-12-{1}".format(end_year, final_day),
-                            )
-                        }
+                        time=slice(
+                            f"{start_year}-01-01",
+                            f"{end_year}-12-{final_day}",
+                        )
                     )
                     yr_range = [str(start_year), str(end_year)]
                 else:
@@ -444,12 +435,13 @@ if __name__ == "__main__":
                     print("No land/sea mask file found for", model, run)
                     # Set flag to generate sftlf after loading data
                     sft_exists = False
+                    
                 if ~sft_exists and no_mask:
                     # Make mask with all zeros, effectively no masking.
                     print("--no_mask is True. No land/sea mask applied.")
                     mask = xarray.zeros_like(ds[var].isel({"time": 0}))
                 elif sft_exists:
-                    sft = lib.load_dataset(sft_filename)
+                    sft = xcdat_open(sft_filename)
                     # SFTOF and siconc don't always have same coordinate
                     # names in CMIP data
                     ds_lat = get_latitude_key(ds)
@@ -483,11 +475,7 @@ if __name__ == "__main__":
                 if not os.path.exists(nc_dir):
                     os.mkdir(nc_dir)
                 nc_climo = lib.get_clim(ds, var, ds=None)
-                fname = (
-                    "sic_clim_"
-                    + "_".join([model, run, yr_range[0], yr_range[1]])
-                    + ".nc"
-                )
+                fname = f"sic_clim_{model}_{run}_{yr_range[0]}_{yr_range[1]}.nc"
                 fname = os.path.join(nc_dir, fname)
                 print("Writing climatology netcdf", fname)
                 nc_climo.to_netcdf(fname, "w")
@@ -761,7 +749,7 @@ if __name__ == "__main__":
                 continue
             try:
                 tmp_model = "_".join([model, run])
-                tmp_title = "{0}-{1} Arctic sea ice".format(yr_range[0], yr_range[1])
+                tmp_title = f"{yr_range[0]}-{yr_range[1]} Arctic sea ice"
                 meta = fig.create_arctic_map(
                     nc_climo,
                     obs_nh,
@@ -778,7 +766,7 @@ if __name__ == "__main__":
                 meta = fig.create_annual_mean_map_arctic(
                     nc_climo, var, fig_dir, meta, tmp_model
                 )
-                tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
+                tmp_title = f"{yr_range[0]}-{yr_range[1]} Antarctic sea ice"
                 meta = fig.create_antarctic_map(
                     nc_climo,
                     obs_sh,
@@ -811,11 +799,11 @@ if __name__ == "__main__":
                     nc_climo_mean[var] = nc_climo_mean[var] + nc_climo[var]
             nc_climo_mean[var] = nc_climo_mean[var] / (count + 1)
             tmp_model = "_".join([model, "model_mean"])
-            tmp_title = "{0}-{1} Arctic sea ice".format(yr_range[0], yr_range[1])
+            tmp_title = f"{yr_range[0]}-{yr_range[1]} Arctic sea ice"
             meta = fig.create_arctic_map(
                 nc_climo_mean, obs_nh, var, obs_var, fig_dir, meta, tmp_model, tmp_title
             )
-            tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
+            tmp_title = f"{yr_range[0]}-{yr_range[1]} Antarctic sea ice"
             meta = fig.create_antarctic_map(
                 nc_climo_mean, obs_sh, var, obs_var, fig_dir, meta, tmp_model, tmp_title
             )

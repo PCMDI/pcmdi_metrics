@@ -63,8 +63,16 @@ def xcdat_open(
             ds = open_func(infile, data_var=data_var, decode_times=False, chunks=chunks)
             ds = fix_noncompliant_attr(ds)
         return ds
+    
+    if isinstance(infile, list):
+        if len(infile) == 0:
+            raise ValueError("Input file list is empty")
+        elif len(infile) == 1:
+            infile = infile[0]
+        else:
+            pass
 
-    if isinstance(infile, list) or "*" in infile:
+    if isinstance(infile, list):
         ds = _open_with_fallback(
             xc.open_mfdataset, infile, data_var, decode_times, chunks
         )
@@ -76,6 +84,10 @@ def xcdat_open(
         elif infile.endswith(".yml") or infile.endswith(".yaml"):
             ds = _open_with_fallback(
                 _xcdat_openyml, infile, data_var, decode_times, chunks
+            )
+        elif "*" in infile:
+            ds = _open_with_fallback(
+                xc.open_mfdataset, infile, data_var, decode_times, chunks
             )
         else:
             ds = _open_with_fallback(

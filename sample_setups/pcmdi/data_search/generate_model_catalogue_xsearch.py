@@ -34,22 +34,28 @@ Installation
 
 def main():
     # User options ------------------------------------------------------------------
-    mip_eras = ["CMIP6", "CMIP5"]
-    # mip_eras = ["CMIP6"]
+    # mip_eras = ["CMIP6", "CMIP5"]
+    mip_eras = ["CMIP6"]
     # mip_eras = ["CMIP5"]
-    exps = ["historical", "amip"]
+    # exps = ["historical", "amip"]
+    exps = ["historical"]
     # exps = ["amip"]
     # variables = ["psl", "ts"]
     # variables = ["pr"]
+    # variables = ["sic"]  # for CMIP5
+    variables = ["siconc"]  # for CMIP6
     freq = "mon"
-    cmipTable = "Amon"
+    #cmipTable = "Amon"
+    cmipTable = "SImon"  # for siconc variable in CMIP6
+    #cmipTable = "OImon"  # for sic variable in CMIP5
     # freq = "day"
     # cmipTable = "day"
+    grid = "gn"
 
-    all_ref_variables = True  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
+    all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
     first_member_only = False
-    include_lf = True  # include land fraction variable 'sftlf'
+    include_lf = True  # include land fraction variable 'sftlf', 'areacella', and 'areacello'
 
     ref_catalogue = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_catalogue_byVar_v20250709.json"
 
@@ -84,6 +90,7 @@ def main():
                 variables=variables,
                 freq=freq,
                 cmipTable=cmipTable,
+                grid=grid,
                 first_member_only=first_member_only,
                 include_lf=include_lf,
                 generate_xmls=generate_xmls,
@@ -100,6 +107,7 @@ def generate_model_catalogue_xsearch(
     variables: list[str],
     freq: str,
     cmipTable: str = None,
+    grid: str = None,
     first_member_only: bool = False,
     include_lf: bool = True,
     generate_xmls: bool = False,
@@ -118,6 +126,7 @@ def generate_model_catalogue_xsearch(
         variables=variables,
         freq=freq,
         cmipTable=cmipTable,
+        grid=grid,
         mip_era=mip_era,
         first_member_only=first_member_only,
         generate_xmls=generate_xmls,
@@ -129,11 +138,12 @@ def generate_model_catalogue_xsearch(
     models_dict_combined = models_dict
 
     if include_lf:
-        models_lf_dict = generate_model_path_dict(
+        models_lf_dict_a = generate_model_path_dict(
             exp=exp,
-            variables=["sftlf"],
+            variables=["sftlf", "areacella"],
             freq="fx",
             cmipTable="fx",
+            grid=grid,
             mip_era=mip_era,
             first_member_only=first_member_only,
             generate_xmls=generate_xmls,
@@ -142,6 +152,27 @@ def generate_model_catalogue_xsearch(
             generate_ymls=generate_ymls,
             ymls_dir=ymls_dir,
         )
+
+        if mip_era == "CMIP5":
+            cmipTable_o = "fx"
+        elif mip_era == "CMIP6":
+            cmipTable_o = "Ofx"
+
+        models_lf_dict_o = generate_model_path_dict(
+            exp=exp,    
+            variables=["areacello"],
+            freq="fx",      
+            cmipTable=cmipTable_o,
+            mip_era=mip_era,
+            grid="gn",
+            first_member_only=first_member_only,
+            generate_xmls=generate_xmls,
+            xmls_dir=xmls_dir,
+            xml_cmds_sh=xml_cmds_sh,
+            generate_ymls=generate_ymls,
+            ymls_dir=ymls_dir,
+        )  
+        models_lf_dict = deep_merge_dicts(models_lf_dict_a, models_lf_dict_o)
         models_dict_combined = deep_merge_dicts(models_dict, models_lf_dict)
 
     # Save the models_dict to a json file
@@ -157,6 +188,7 @@ def generate_model_path_dict(
     freq,
     cmipTable=None,
     mip_era=None,
+    grid=None,
     first_member_only=False,
     generate_xmls=False,
     xmls_dir=None,
@@ -175,9 +207,14 @@ def generate_model_path_dict(
     for variable in variables:
 
         # Search all available models
-        dpaths = xs.findPaths(
-            exp, variable, freq, cmipTable=cmipTable, mip_era=mip_era, activity="CMIP"
-        )
+        if grid is None:
+            dpaths = xs.findPaths(
+                exp, variable, freq, cmipTable=cmipTable, mip_era=mip_era, activity="CMIP"
+            )
+        else:
+            dpaths = xs.findPaths(
+                exp, variable, freq, cmipTable=cmipTable, mip_era=mip_era, grid=grid, activity="CMIP"
+            )
         models = xs.natural_sort(xs.getGroupValues(dpaths, "model"))
 
         print("\nSearching for data with xsearch...")

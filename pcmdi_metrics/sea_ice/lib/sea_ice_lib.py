@@ -7,9 +7,10 @@ import sys
 import dask
 import numpy as np
 import xarray as xr
-import xcdat as xc
+#import xcdat as xc
 
-from pcmdi_metrics.io import xcdat_dataset_io, xcdat_open
+from pcmdi_metrics.io import xcdat_dataset_io
+#from pcmdi_metrics.io import xcdat_dataset_io, xcdat_open
 
 
 class MetadataFile:
@@ -227,8 +228,10 @@ def get_clim(total_extent, ds_var, ds=None):
     # needed to turn total_extent into a dataset
     if ds is None:
         ds_new = total_extent
+        ds_new = ds_new.unify_chunks()
     else:
         ds_new = to_ice_con_ds(total_extent, ds, ds_var)
+        
     try:
         clim = ds_new.temporal.climatology(ds_var, freq="month")
     except IndexError:  # Issue with time bounds
@@ -400,6 +403,7 @@ def set_up_realizations(realization):
     return find_all_realizations, realizations
 
 
+"""
 def load_dataset(filepath):
     # Load an xarray dataset from the given filepath.
     # If list of netcdf files, opens mfdataset.
@@ -416,7 +420,7 @@ def load_dataset(filepath):
         else:
             ds = xc.open_dataset(filepath)
     return ds
-
+"""
 
 def replace_multi(string, rdict):
     # Replace multiple keyworks in a string template

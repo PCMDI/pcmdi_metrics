@@ -70,7 +70,7 @@ def derive_rad_var(
     ac_dict,
     data_dict,
     out_path,
-    in_progress=True,
+    #in_progress=True,
     data_type="ref",
     save_ac_netcdf=True,
 ):
@@ -112,6 +112,7 @@ def derive_rad_var(
     KeyError
         If the specified `var` is not recognized.
     """
+    print(f"Deriving radiation variable: {var}")
 
     # Sanity checks
     if data_type not in ["ref", "model"]:
@@ -126,8 +127,8 @@ def derive_rad_var(
         raise TypeError("Invalid data_name for the specified data_type.")
 
     # Early return if the process is marked as in-progress
-    if in_progress:
-        return None
+    #if in_progress:
+    #    return None
 
     ref, model, run = None, None, None
     if data_type == "ref":
@@ -162,10 +163,14 @@ def derive_rad_var(
         return ac_dict[var_name][model][run][data_dict[var_name][model][run]["varname"]]
 
     # Extract the necessary variables
+    print("Extracting data for variables:", required_vars)
     data = [extract_data(var_name) for var_name in required_vars]
+    print("Data extraction complete. data:", data)
 
     # Calculate the result using the appropriate function
+    print("Computing the derived variable...")
     result = compute_function(*data)
+    print("Computation complete. result:", result)
 
     # Create a new dataset to store the result, preserving coordinates
     ds = xr.Dataset({var: result})
