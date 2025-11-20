@@ -500,13 +500,22 @@ if __name__ == "__main__":
 
             for rgn in real_clim:
                 print(rgn)
-                # Get model mean
+                # Get model mean for real_clim
                 datalist = [real_clim[rgn][r][var].data for r in list_of_runs]
                 real_clim[rgn]["model_mean"][var] = np.nanmean(
                     np.array(datalist), axis=0
                 )
+                print("datalist clims:", datalist)
+                print(
+                    "real_clim[rgn]['model_mean'][var]:",
+                    real_clim[rgn]["model_mean"][var],
+                )
+
+                # Get model mean for real_mean
                 datalist = [real_mean[rgn][r] for r in list_of_runs]
                 real_mean[rgn]["model_mean"] = np.nanmean(np.array(datalist))
+                print("datalist means:", datalist)
+                print("real_mean[rgn]['model_mean']:", real_mean[rgn]["model_mean"])
 
                 for run in real_clim[rgn]:
                     # Set up metrics dictionary
@@ -564,12 +573,16 @@ if __name__ == "__main__":
             # Get sector weighted metric
             # --------------------------
             run_list = [x for x in real_clim["arctic"]]
+            if "model_mean" in run_list:
+                run_list.remove("model_mean")
             wgted_nh_te = 0
             wgted_nh_clim = 0
             wgted_sh_te = 0
             wgted_sh_clim = 0
             n_nh = len(run_list)
             n_sh = len(run_list)
+            print("run_list:", run_list)
+            print("before loop: n_nh:", n_nh, "n_sh:", n_sh)
             for r in run_list:
                 # Skip run if regions are missing
                 if ~np.isnan(
@@ -593,6 +606,7 @@ if __name__ == "__main__":
                         )
                 else:
                     n_nh -= 1
+
                 if ~np.isnan(
                     mse[model]["antarctic"][r][reference_data_set]["total_extent"][
                         "mse"
@@ -615,6 +629,7 @@ if __name__ == "__main__":
                         )
                 else:
                     n_sh -= 1
+
                 # Error values for single realization
                 mse[model]["arctic"][r][reference_data_set]["total_extent"][
                     "sector_mse"
@@ -628,6 +643,9 @@ if __name__ == "__main__":
                 mse[model]["antarctic"][r][reference_data_set]["monthly_clim"][
                     "sector_mse"
                 ] = wgted_sh_clim
+
+            print("after loop: n_nh:", n_nh, "n_sh:", n_sh)
+
             # Error values averaged over all realizations
             mse[model]["arctic"]["model_mean"][reference_data_set]["total_extent"][
                 "sector_mse"
@@ -718,8 +736,7 @@ if __name__ == "__main__":
     # ------------
     if plot:
         fig_dir = os.path.join(metrics_output_path, "plot")
-        if not os.path.exists(fig_dir):
-            os.mkdir(fig_dir)
+        os.makedirs(fig_dir, exist_ok=True)
 
         # Make metrics bar chart for all models
         print("Creating metrics bar chart.")
