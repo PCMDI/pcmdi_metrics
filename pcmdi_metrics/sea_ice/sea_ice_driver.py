@@ -505,17 +505,10 @@ if __name__ == "__main__":
                 real_clim[rgn]["model_mean"][var] = np.nanmean(
                     np.array(datalist), axis=0
                 )
-                print("datalist clims:", datalist)
-                print(
-                    "real_clim[rgn]['model_mean'][var]:",
-                    real_clim[rgn]["model_mean"][var],
-                )
 
                 # Get model mean for real_mean
                 datalist = [real_mean[rgn][r] for r in list_of_runs]
                 real_mean[rgn]["model_mean"] = np.nanmean(np.array(datalist))
-                print("datalist means:", datalist)
-                print("real_mean[rgn]['model_mean']:", real_mean[rgn]["model_mean"])
 
                 for run in real_clim[rgn]:
                     # Set up metrics dictionary
@@ -582,7 +575,7 @@ if __name__ == "__main__":
             n_nh = len(run_list)
             n_sh = len(run_list)
             print("run_list:", run_list)
-            print("before loop: n_nh:", n_nh, "n_sh:", n_sh)
+            print("before run_list loop: n_nh:", n_nh, "n_sh:", n_sh)
             for r in run_list:
                 # Skip run if regions are missing
                 if ~np.isnan(
@@ -644,7 +637,7 @@ if __name__ == "__main__":
                     "sector_mse"
                 ] = wgted_sh_clim
 
-            print("after loop: n_nh:", n_nh, "n_sh:", n_sh)
+            print("after run_listloop: n_nh:", n_nh, "n_sh:", n_sh)
 
             # Error values averaged over all realizations
             mse[model]["arctic"]["model_mean"][reference_data_set]["total_extent"][
