@@ -7,10 +7,13 @@ import sys
 import dask
 import numpy as np
 import xarray as xr
-#import xcdat as xc
 
 from pcmdi_metrics.io import xcdat_dataset_io
-#from pcmdi_metrics.io import xcdat_dataset_io, xcdat_open
+
+# import xcdat as xc
+
+
+# from pcmdi_metrics.io import xcdat_dataset_io, xcdat_open
 
 
 class MetadataFile:
@@ -231,7 +234,7 @@ def get_clim(total_extent, ds_var, ds=None):
         ds_new = ds_new.unify_chunks()
     else:
         ds_new = to_ice_con_ds(total_extent, ds, ds_var)
-        
+
     try:
         clim = ds_new.temporal.climatology(ds_var, freq="month")
     except IndexError:  # Issue with time bounds
@@ -421,6 +424,7 @@ def load_dataset(filepath):
             ds = xc.open_dataset(filepath)
     return ds
 """
+
 
 def replace_multi(string, rdict):
     # Replace multiple keyworks in a string template

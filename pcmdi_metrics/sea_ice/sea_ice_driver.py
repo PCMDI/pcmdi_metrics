@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
     # ~~~~~~
     # Arctic
-    # ~~~~~~    
+    # ~~~~~~
     print("OBS: Arctic")
 
     arctic_clims = {}
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     print("Start get clim")
     nc_climo = lib.get_clim(obs, obs_var, ds=None)
     print("End get clim")
-    
+
     # Generate netcdf files of climatologies
     nc_dir = os.path.join(metrics_output_path, "netcdf")
     os.makedirs(nc_dir, exist_ok=True)
@@ -435,7 +435,7 @@ if __name__ == "__main__":
                     print("No land/sea mask file found for", model, run)
                     # Set flag to generate sftlf after loading data
                     sft_exists = False
-                    
+
                 if ~sft_exists and no_mask:
                     # Make mask with all zeros, effectively no masking.
                     print("--no_mask is True. No land/sea mask applied.")
