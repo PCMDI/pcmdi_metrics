@@ -8,9 +8,8 @@ import numpy as np
 import xarray
 import xcdat as xc
 
-from pcmdi_metrics.io import xcdat_open
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key, xcdat_open
 from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.sea_ice.lib import sea_ice_figures as fig
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
@@ -95,6 +94,7 @@ if __name__ == "__main__":
     # --------------------------
     # This section is hard-coded to work with the
     # OSI-SAF data in obs4mips.
+    # TODO: generalize this to work with other obs datasets.
 
     # ~~~~~~
     # Arctic
@@ -106,9 +106,17 @@ if __name__ == "__main__":
 
     nh_files = glob.glob(reference_data_path_nh)
     obs = xcdat_open(nh_files, chunks=None)  # obs is an xarray dataset
-    xvar = lib.find_lon(obs)
-    yvar = lib.find_lat(obs)
+    xvar = get_longitude_key(obs)
+    yvar = get_latitude_key(obs)
     coord_i, coord_j = lib.get_xy_coords(obs, xvar)
+
+    print("nh_files:", nh_files)
+    print("obs_var:", obs_var)
+    print("xvar: ", xvar, " yvar: ", yvar)
+    print("coord_i:", coord_i, " coord_j:", coord_j)
+    print("pole:", pole)
+    print("osyear:", osyear, " oeyear:", oeyear)
+
     if osyear is not None:
         obs = obs.sel(
             time=slice(f"{osyear}-01-01", f"{oeyear}-12-31")
@@ -159,13 +167,18 @@ if __name__ == "__main__":
     # Antarctic
     # ~~~~~~~~~
     print("OBS: Antarctic")
+
     antarctic_clims = {}
     antarctic_means = {}
+
     sh_files = glob.glob(reference_data_path_sh)
     obs = xcdat_open(sh_files)
-    xvar = lib.find_lon(obs)
-    yvar = lib.find_lat(obs)
+    xvar = get_longitude_key(obs)
+    yvar = get_latitude_key(obs)
     coord_i, coord_j = lib.get_xy_coords(obs, xvar)
+
+    print("sh_files:", sh_files)
+
     if osyear is not None:
         obs = obs.sel(
             time=slice(f"{osyear}-01-01", f"{oeyear}-12-31")
@@ -181,7 +194,7 @@ if __name__ == "__main__":
     obs[obs_var] = obs[obs_var].where(mask < 1)
     clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
     sh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
-    print(sh_obs_area)
+    print("sh_obs_area:", sh_obs_area)
     antarctic_clims = {
         "antarctic": clims["antarctic"],
         "io": clims["io"],
@@ -385,8 +398,8 @@ if __name__ == "__main__":
                 # Load and prep data
                 ds = xcdat_open(test_data_full_path)
                 ds[var] = lib.adjust_units(ds[var], ModUnitsAdjust)
-                xvar = lib.find_lon(ds)
-                yvar = lib.find_lat(ds)
+                xvar = get_longitude_key(ds)
+                yvar = get_latitude_key(ds)
                 if xvar is None or yvar is None:
                     print("Could not get latitude or longitude variables")
                     break
@@ -752,6 +765,7 @@ if __name__ == "__main__":
         nc_dir = os.path.join(metrics_output_path, "netcdf/*")
         count = 0
         for file in glob.glob(nc_dir):
+            print("Processing file for maps:", file)
             model = os.path.basename(file).split("_")[2]
             run = os.path.basename(file).split("_")[3]
             nc_climo = xc.open_dataset(file)

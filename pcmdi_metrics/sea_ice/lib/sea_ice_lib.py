@@ -8,12 +8,7 @@ import dask
 import numpy as np
 import xarray as xr
 
-from pcmdi_metrics.io import xcdat_dataset_io
-
-# import xcdat as xc
-
-
-# from pcmdi_metrics.io import xcdat_dataset_io, xcdat_open
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key, get_time_bounds_key
 
 
 class MetadataFile:
@@ -214,7 +209,7 @@ def choose_region(region, ds, ds_var, xvar, yvar, pole):
 
 
 def get_total_extent(data, ds_area):
-    xvar = find_lon(data)
+    xvar = get_longitude_key(data)
     coord_i, coord_j = get_xy_coords(data, xvar)
     total_extent = (data.where(data > 0.15) * ds_area).sum(
         (coord_i, coord_j), skipna=True
@@ -238,7 +233,7 @@ def get_clim(total_extent, ds_var, ds=None):
     try:
         clim = ds_new.temporal.climatology(ds_var, freq="month")
     except IndexError:  # Issue with time bounds
-        tbkey = xcdat_dataset_io.get_time_bounds_key(ds_new)
+        tbkey = get_time_bounds_key(ds_new)
         ds_new = ds_new.drop_vars(tbkey)
         ds_new = ds_new.bounds.add_missing_bounds()
         clim = ds_new.temporal.climatology(ds_var, freq="month")
@@ -250,8 +245,8 @@ def process_by_region(ds, ds_var, ds_area, pole):
     clims = {}
     means = {}
     for region in regions_list:
-        xvar = find_lon(ds)
-        yvar = find_lat(ds)
+        xvar = get_longitude_key(ds)
+        yvar = get_latitude_key(ds)
         data = choose_region(region, ds, ds_var, xvar, yvar, pole)
         total_extent, te_mean = get_total_extent(data, ds_area)
         clim = get_clim(total_extent, ds_var, ds)
@@ -262,7 +257,7 @@ def process_by_region(ds, ds_var, ds_area, pole):
 
 
 def get_area(data, ds_area):
-    xvar = find_lon(data)
+    xvar = get_longitude_key(data)
     coord_i, coord_j = get_xy_coords(data, xvar)
     total_area = (data * ds_area).sum((coord_i, coord_j), skipna=True)
     if isinstance(total_area.data, dask.array.core.Array):
@@ -279,35 +274,16 @@ def get_ocean_area_for_regions(ds, ds_var, area_val, pole):
     # Only want spatial slice
     if "time" in ds:
         ds = ds.isel({"time": 0})
-    xvar = find_lon(ds)
-    yvar = find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
     for region in regions_list:
+        print(f"Calculating area for region: {region}")
         data = choose_region(region, ds, ds_var, xvar, yvar, pole)
         tmp = get_area(data, area_val)
         areas[region] = tmp
-        print(tmp)
+        print(f"Area of {region}: {tmp} (area_val: {area_val})")
         del data
     return areas
-
-
-def find_lon(ds):
-    for key in ds.coords:
-        if key in ["lon", "longitude"]:
-            return key
-    for key in ds.keys():
-        if key in ["lon", "longitude"]:
-            return key
-    return None
-
-
-def find_lat(ds):
-    for key in ds.coords:
-        if key in ["lat", "latitude"]:
-            return key
-    for key in ds.keys():
-        if key in ["lat", "latitude"]:
-            return key
-    return None
 
 
 def mse_t(dm, do, weights=None):
@@ -347,7 +323,7 @@ def mse_model(dm, do, var=None):
 def to_ice_con_ds(da, ds, obs_var):
     # Convert sea ice data array to dataset using
     # coordinates from another dataset
-    tbkey = xcdat_dataset_io.get_time_bounds_key(ds)
+    tbkey = get_time_bounds_key(ds)
     ds = xr.Dataset(data_vars={obs_var: da, tbkey: ds[tbkey]}, coords={"time": ds.time})
     return ds
 
@@ -406,26 +382,6 @@ def set_up_realizations(realization):
     return find_all_realizations, realizations
 
 
-"""
-def load_dataset(filepath):
-    # Load an xarray dataset from the given filepath.
-    # If list of netcdf files, opens mfdataset.
-    # If list of xmls, open last file in list.
-    if isinstance(filepath, list):
-        if filepath[-1].endswith(".xml") or filepath[-1].endswith(".yml"):
-            # Final item of sorted list would have most recent version date
-            ds = xcdat_open(filepath[-1])
-        else:
-            ds = xc.open_mfdataset(filepath, chunks=None)
-    else:
-        if filepath.endswith(".xml") or filepath.endswith(".yml"):
-            ds = xcdat_open(filepath)
-        else:
-            ds = xc.open_dataset(filepath)
-    return ds
-"""
-
-
 def replace_multi(string, rdict):
     # Replace multiple keyworks in a string template
     # based on key-value pairs in 'rdict'.
@@ -438,6 +394,6 @@ def get_xy_coords(ds, xvar):
     if len(ds[xvar].dims) == 2:
         lon_j, lon_i = ds[xvar].dims
     elif len(ds[xvar].dims) == 1:
-        lon_j = find_lon(ds)
-        lon_i = find_lat(ds)
+        lon_j = get_longitude_key(ds)
+        lon_i = get_latitude_key(ds)
     return lon_i, lon_j

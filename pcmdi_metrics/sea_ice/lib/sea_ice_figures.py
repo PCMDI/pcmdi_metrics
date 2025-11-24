@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import regionmask
 
-from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key
 
 
 def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -167,8 +167,8 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
 
 
 def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
@@ -331,8 +331,8 @@ def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model)
 
 
 def create_annual_mean_map_arctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -433,8 +433,8 @@ def create_annual_mean_map_arctic(ds, var_ice, metrics_output_path, meta, model)
 
 
 def create_annual_mean_map_antarctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
@@ -546,8 +546,8 @@ def create_arctic_map(
     ds, obs, var_ice, var_obs, metrics_output_path, meta, model, title
 ):
     # Load and process data
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -625,8 +625,8 @@ def create_arctic_map(
             ax.set_title("")
         pos1 = [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2]  # row
         pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
-        xvar = lib.find_lon(obs)
-        yvar = lib.find_lat(obs)
+        xvar = get_longitude_key(obs)
+        yvar = get_latitude_key(obs)
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
             obs[var_obs].isel({"time": mo}).plot(
@@ -703,8 +703,8 @@ def create_antarctic_map(
     ds, obs, var_ice, var_obs, metrics_output_path, meta, model, title
 ):
     # Load and process data
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
@@ -787,8 +787,8 @@ def create_antarctic_map(
             ax.set_title("")
         pos1 = [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2]  # row
         pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
-        xvar = lib.find_lon(obs)
-        yvar = lib.find_lat(obs)
+        xvar = get_longitude_key(obs)
+        yvar = get_latitude_key(obs)
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
             obs[var_obs].isel({"time": mo}).plot(

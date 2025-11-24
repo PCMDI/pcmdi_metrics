@@ -19,7 +19,7 @@ def _find_key(
     axis : str
         The axis to find the key for ('T', 'X', or 'Y').
     potential_names : list
-        List of potential names for the axis.
+        List of potential names for the axis (in order of priority).
 
     Returns
     -------
@@ -32,24 +32,25 @@ def _find_key(
         If no appropriate key can be found.
     """
 
+    axes = get_axis_list(ds)
+    data_keys = get_data_list(ds)
+    all_keys = axes + data_keys
+    key_map = {k.lower(): k for k in all_keys}
+
+    # 1. Prioritize potential_names
+    for pname in potential_names:
+        if pname.lower() in key_map:
+            return key_map[pname.lower()]
+
+    # 2. Fallback to xc.get_dim_keys
     try:
         key = xc.get_dim_keys(ds, axis)
+        return key
     except Exception as e:
-        axes = get_axis_list(ds)
-        key_candidates = [k for k in axes if k.lower() in potential_names]
-        if len(key_candidates) > 0:
-            key = key_candidates[0]
-        else:
-            data_keys = get_data_list(ds)
-            key_candidates = [k for k in data_keys if k.lower() in potential_names]
-            if len(key_candidates) > 0:
-                key = key_candidates[0]
-            else:
-                all_keys = ", ".join(axes + data_keys)
-                print(
-                    f"Error: Cannot find a proper key name for {axis} from keys:{all_keys} {e}"
-                )
-    return key
+        all_keys_str = ", ".join(all_keys)
+        raise Exception(
+            f"Cannot find a proper key name for {axis} from keys: {all_keys_str} {e}"
+        )
 
 
 # Retrieve coordinate key names
