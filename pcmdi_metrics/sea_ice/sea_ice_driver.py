@@ -762,7 +762,7 @@ if __name__ == "__main__":
         else:
             obs_nh = None
             obs_sh = None
-        nc_dir = os.path.join(metrics_output_path, "netcdf/*")
+        nc_dir = os.path.join(metrics_output_path, "netcdf/*.nc")
         count = 0
         for file in glob.glob(nc_dir):
             print("Processing file for maps:", file)
