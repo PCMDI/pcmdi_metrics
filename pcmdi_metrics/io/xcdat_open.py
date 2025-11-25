@@ -63,7 +63,7 @@ def xcdat_open(
             ds = open_func(infile, data_var=data_var, decode_times=False, chunks=chunks)
             ds = fix_noncompliant_attr(ds)
         return ds
-    
+
     if isinstance(infile, list):
         if len(infile) == 0:
             raise ValueError("Input file list is empty")
