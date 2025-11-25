@@ -127,12 +127,14 @@ if __name__ == "__main__":
         area_val = obs[obs_area_var]
     else:
         area_val = obs_cell_area
+
     # Remove land areas (including lakes)
     mask = create_land_sea_mask(obs, lon_key=xvar, lat_key=yvar)
     obs[obs_var] = obs[obs_var].where(mask < 1)
+    nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+
     # Get regions
     clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
-    nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
     print("nh_obs_area:", nh_obs_area)
     arctic_clims = {
         "arctic": clims["arctic"],
@@ -140,7 +142,6 @@ if __name__ == "__main__":
         "np": clims["np"],
         "na": clims["na"],
     }
-
     arctic_means = {
         "arctic": means["arctic"],
         "ca": means["ca"],
@@ -148,10 +149,8 @@ if __name__ == "__main__":
         "na": means["na"],
     }
 
-    # Get climatology
-    print("Start get clim")
+    # Get climatology of Arctic observations
     nc_climo = lib.get_clim(obs, obs_var, ds=None)
-    print("End get clim")
 
     # Generate netcdf files of climatologies
     nc_dir = os.path.join(metrics_output_path, "netcdf")
@@ -189,11 +188,14 @@ if __name__ == "__main__":
         area_val = obs[obs_area_var]
     else:
         area_val = obs_cell_area
+
     # Remove land areas (including lakes)
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
     obs[obs_var] = obs[obs_var].where(mask < 1)
-    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
     sh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+
+    # Get regions
+    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
     print("sh_obs_area:", sh_obs_area)
     antarctic_clims = {
         "antarctic": clims["antarctic"],
@@ -201,7 +203,6 @@ if __name__ == "__main__":
         "sp": clims["sp"],
         "sa": clims["sa"],
     }
-
     antarctic_means = {
         "antarctic": means["antarctic"],
         "io": means["io"],
@@ -209,7 +210,7 @@ if __name__ == "__main__":
         "sa": means["sa"],
     }
 
-    # Get climatology
+    # Get climatology of Antarctic observations
     nc_climo = lib.get_clim(obs, obs_var, ds=None)
 
     # Generate netcdf files of climatologies
