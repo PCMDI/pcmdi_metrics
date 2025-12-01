@@ -70,7 +70,7 @@ def derive_rad_var(
     ac_dict,
     data_dict,
     out_path,
-    #in_progress=True,
+    # in_progress=True,
     data_type="ref",
     save_ac_netcdf=True,
 ):
@@ -127,7 +127,7 @@ def derive_rad_var(
         raise TypeError("Invalid data_name for the specified data_type.")
 
     # Early return if the process is marked as in-progress
-    #if in_progress:
+    # if in_progress:
     #    return None
 
     ref, model, run = None, None, None
