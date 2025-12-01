@@ -130,11 +130,16 @@ if __name__ == "__main__":
 
     # Remove land areas (including lakes)
     mask = create_land_sea_mask(obs, lon_key=xvar, lat_key=yvar)
+    ds_mask_nh = mask.to_dataset()
+    ds_mask_nh.to_netcdf("tmp/mask_nh.nc")
     obs[obs_var] = obs[obs_var].where(mask < 1)
-    nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    # nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    nh_obs_area = lib.get_ocean_area_for_regions(ds_mask_nh, "mask", area_val, pole)
 
     # Get regions
-    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
+    clims, means = lib.process_by_region(
+        obs, obs_var, area_val, pole, debug_tag="obs_nh"
+    )
     print("nh_obs_area:", nh_obs_area)
     arctic_clims = {
         "arctic": clims["arctic"],
@@ -191,11 +196,16 @@ if __name__ == "__main__":
 
     # Remove land areas (including lakes)
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
+    ds_mask_sh = mask.to_dataset()
+    ds_mask_sh.to_netcdf("tmp/mask_sh.nc")
     obs[obs_var] = obs[obs_var].where(mask < 1)
-    sh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    # sh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    sh_obs_area = lib.get_ocean_area_for_regions(ds_mask_sh, "mask", area_val, pole)
 
     # Get regions
-    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
+    clims, means = lib.process_by_region(
+        obs, obs_var, area_val, pole, debug_tag="obs_sh"
+    )
     print("sh_obs_area:", sh_obs_area)
     antarctic_clims = {
         "antarctic": clims["antarctic"],
@@ -497,7 +507,9 @@ if __name__ == "__main__":
 
                 # Get regions
                 print("Getting regional areas for run")
-                clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
+                clims, means = lib.process_by_region(
+                    ds, var, area[area_var].data, pole, debug_tag="model"
+                )
 
                 ds.close()
                 # Running sum of all realizations
@@ -591,20 +603,24 @@ if __name__ == "__main__":
             print("run_list:", run_list)
             print("before run_list loop: n_nh:", n_nh, "n_sh:", n_sh)
             for r in run_list:
+                wgted_nh_te_run = 0
+                wgted_nh_clim_run = 0
+                wgted_sh_te_run = 0
+                wgted_sh_clim_run = 0
                 # Skip run if regions are missing
                 if ~np.isnan(
                     mse[model]["arctic"][r][reference_data_set]["total_extent"]["mse"]
                 ):
                     for rgn in ["ca", "na", "np"]:
                         # Take the mse for the region and weigh by relative area of sector
-                        wgted_nh_te += (
+                        wgted_nh_te_run += (
                             mse[model][rgn][r][reference_data_set]["total_extent"][
                                 "mse"
                             ]
                             * nh_obs_area[rgn]
                             / nh_obs_area["arctic"]
                         )
-                        wgted_nh_clim += (
+                        wgted_nh_clim_run += (
                             mse[model][rgn][r][reference_data_set]["monthly_clim"][
                                 "mse"
                             ]
@@ -620,14 +636,14 @@ if __name__ == "__main__":
                     ]
                 ):
                     for rgn in ["sa", "io", "sp"]:
-                        wgted_sh_te += (
+                        wgted_sh_te_run += (
                             mse[model][rgn][r][reference_data_set]["total_extent"][
                                 "mse"
                             ]
                             * sh_obs_area[rgn]
                             / sh_obs_area["antarctic"]
                         )
-                        wgted_sh_clim += (
+                        wgted_sh_clim_run += (
                             mse[model][rgn][r][reference_data_set]["monthly_clim"][
                                 "mse"
                             ]
@@ -640,16 +656,22 @@ if __name__ == "__main__":
                 # Error values for single realization
                 mse[model]["arctic"][r][reference_data_set]["total_extent"][
                     "sector_mse"
-                ] = wgted_nh_te
+                ] = wgted_nh_te_run
                 mse[model]["arctic"][r][reference_data_set]["monthly_clim"][
                     "sector_mse"
-                ] = wgted_nh_clim
+                ] = wgted_nh_clim_run
                 mse[model]["antarctic"][r][reference_data_set]["total_extent"][
                     "sector_mse"
-                ] = wgted_sh_te
+                ] = wgted_sh_te_run
                 mse[model]["antarctic"][r][reference_data_set]["monthly_clim"][
                     "sector_mse"
-                ] = wgted_sh_clim
+                ] = wgted_sh_clim_run
+
+                # Accumulate for model mean
+                wgted_nh_te += wgted_nh_te_run
+                wgted_nh_clim += wgted_nh_clim_run
+                wgted_sh_te += wgted_sh_te_run
+                wgted_sh_clim += wgted_sh_clim_run
 
             print("after run_listloop: n_nh:", n_nh, "n_sh:", n_sh)
 

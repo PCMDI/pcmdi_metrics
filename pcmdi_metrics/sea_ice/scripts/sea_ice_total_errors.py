@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+# This code produces a figure like Fig. 8 of Ivanova et al. (2016) "Moving beyond the Total Sea Ice Extent in Gauging Model Biases".
+
 import argparse
 import glob
 import json
@@ -51,7 +54,7 @@ reference_data_set = list(metrics["RESULTS"][tmp]["arctic"]["model_mean"].keys()
 # ----------------
 sector_list = ["Arctic", "Antarctic"]
 sector_short = ["arctic", "antarctic"]
-fig7, ax7 = plt.subplots(2, 1, figsize=(5, 4))
+fig, axes = plt.subplots(2, 1, figsize=(5, 4))
 mlabels = model_list
 ind = np.arange(len(mlabels))  # the x locations for the groups
 width = 0.7
@@ -94,7 +97,7 @@ for inds, sector in enumerate(sector_list):
         )
 
     # plot bars
-    ax7[inds].bar(
+    axes[inds].bar(
         ind,
         mse_ext,
         width,
@@ -104,7 +107,7 @@ for inds, sector in enumerate(sector_list):
         label="Ann. Mean",
         bottom=np.zeros(np.shape(mse_ext)),
     )
-    ax7[inds].bar(
+    axes[inds].bar(
         ind,
         mse_clim,
         width,
@@ -115,7 +118,7 @@ for inds, sector in enumerate(sector_list):
         bottom=mse_ext,
     )
     bottom = [mse_ext[x] + mse_clim[x] for x in range(0, len(mse_ext))]
-    ax7[inds].bar(
+    axes[inds].bar(
         ind,
         reg_ext,
         width,
@@ -126,7 +129,7 @@ for inds, sector in enumerate(sector_list):
         bottom=bottom,
     )
     bottom = [mse_ext[x] + mse_clim[x] + reg_ext[x] for x in range(0, len(mse_ext))]
-    ax7[inds].bar(
+    axes[inds].bar(
         ind,
         reg_clim,
         width,
@@ -139,10 +142,10 @@ for inds, sector in enumerate(sector_list):
 
     # X axis label
     if inds == len(sector_list) - 1:
-        ax7[inds].set_xticks(ind, mlabels, rotation=90, size=4, weight="bold")
+        axes[inds].set_xticks(ind, mlabels, rotation=90, size=4, weight="bold")
     else:
-        ax7[inds].set_xticks(ind, labels="")
-    ax7[inds].set_xlim(-1, len(mse_ext))
+        axes[inds].set_xticks(ind, labels="")
+    axes[inds].set_xlim(-1, len(mse_ext))
 
     # Y axis
     tmp = [
@@ -151,22 +154,22 @@ for inds, sector in enumerate(sector_list):
     ]
     datamax = np.nanmax(np.array(tmp))
     ymax = (datamax) * 1.05
-    ax7[inds].set_ylim(0.0, ymax)
+    axes[inds].set_ylim(0.0, ymax)
     ticks = range(0, round(ymax), 10)
     labels = [str(round(x, 0)) for x in ticks]
-    ax7[inds].set_yticks(ticks, labels, fontsize=5)
+    axes[inds].set_yticks(ticks, labels, fontsize=5)
 
     # subplot frame styling
-    ax7[inds].tick_params(color=[0.3, 0.3, 0.3])
-    for spine in ax7[inds].spines.values():
+    axes[inds].tick_params(color=[0.3, 0.3, 0.3])
+    for spine in axes[inds].spines.values():
         spine.set_edgecolor([0.3, 0.3, 0.3])
         spine.set_linewidth(0.5)
     # labels etc
-    ax7[inds].set_ylabel("10${^1}{^2}$km${^4}$", size=6, weight="bold")
-    ax7[inds].grid(True, linestyle=":", linewidth=0.5)
-    ax7[inds].annotate(
+    axes[inds].set_ylabel("10${^1}{^2}$km${^4}$", size=6, weight="bold")
+    axes[inds].grid(True, linestyle=":", linewidth=0.5)
+    axes[inds].annotate(
         sector,
-        (0.35, 0.85),
+        (0.05, 0.85),
         xycoords="axes fraction",
         size=6,
         weight="bold",
@@ -174,7 +177,7 @@ for inds, sector in enumerate(sector_list):
     )
 
 # Add legend, save figure
-leg = ax7[0].legend(loc="upper right", fontsize=5, edgecolor=[0.3, 0.3, 0.3])
+leg = axes[0].legend(loc="upper right", fontsize=5, edgecolor=[0.3, 0.3, 0.3])
 leg.get_frame().set_linewidth(0.5)  # legend styling
 t = plt.suptitle(
     "Mean Square Error relative to " + reference_data_set, fontsize=8, y=0.93

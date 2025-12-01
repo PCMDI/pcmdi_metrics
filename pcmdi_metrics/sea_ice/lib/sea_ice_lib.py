@@ -208,6 +208,9 @@ def choose_region(region, ds, ds_var, xvar, yvar, pole):
         return indian_ocean(ds, ds_var, xvar, yvar)
 
 
+# ------------------------------------
+# Define other functions
+# ------------------------------------
 def get_total_extent(data, ds_area):
     xvar = get_longitude_key(data)
     coord_i, coord_j = get_xy_coords(data, xvar)
@@ -240,7 +243,7 @@ def get_clim(total_extent, ds_var, ds=None):
     return clim
 
 
-def process_by_region(ds, ds_var, ds_area, pole):
+def process_by_region(ds, ds_var, ds_area, pole, debug_tag):
     regions_list = ["arctic", "antarctic", "ca", "na", "np", "sa", "sp", "io"]
     clims = {}
     means = {}
@@ -248,6 +251,7 @@ def process_by_region(ds, ds_var, ds_area, pole):
         xvar = get_longitude_key(ds)
         yvar = get_latitude_key(ds)
         data = choose_region(region, ds, ds_var, xvar, yvar, pole)
+        # data.to_netcdf("tmp/debug_sea_ice_region_" + region + "_" + debug_tag + ".nc")
         total_extent, te_mean = get_total_extent(data, ds_area)
         clim = get_clim(total_extent, ds_var, ds)
         clims[region] = clim
@@ -268,12 +272,15 @@ def get_area(data, ds_area):
 
 
 def get_ocean_area_for_regions(ds, ds_var, area_val, pole):
-    # ds should have land/sea mask applied
+    # invert landmask (from 0:ocean 1:land to 0:land 1:ocean) to get ocean area
+    ds[ds_var] = 1 - ds[ds_var]
     regions_list = ["arctic", "antarctic", "ca", "na", "np", "sa", "sp", "io"]
     areas = {}
     # Only want spatial slice
     if "time" in ds:
+        print("len(ds.time):", len(ds.time))
         ds = ds.isel({"time": 0})
+        # ds = ds.isel({"time": 5})
     xvar = get_longitude_key(ds)
     yvar = get_latitude_key(ds)
     for region in regions_list:
@@ -378,6 +385,8 @@ def set_up_realizations(realization):
             realizations = [realization]
     elif isinstance(realization, list):
         realizations = realization
+    else:
+        raise ValueError("Error: realization must be a string or list of strings")
 
     return find_all_realizations, realizations
 
@@ -396,4 +405,6 @@ def get_xy_coords(ds, xvar):
     elif len(ds[xvar].dims) == 1:
         lon_j = get_longitude_key(ds)
         lon_i = get_latitude_key(ds)
+    else:
+        raise ValueError("Unexpected number of dimensions for coordinate variable")
     return lon_i, lon_j
