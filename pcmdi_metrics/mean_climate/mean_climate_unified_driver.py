@@ -65,7 +65,7 @@ variables = [
     "rt",  # net radiation at top of atmosphere
 ]
 
-#rad_diagnostic_variables = ["rt", "rst", "rstcre", "rltcre"]
+# rad_diagnostic_variables = ["rt", "rst", "rstcre", "rltcre"]
 
 
 # variables = ["pr"]
