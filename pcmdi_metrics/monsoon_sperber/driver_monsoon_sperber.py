@@ -423,7 +423,7 @@ for model in models:
                     print("\n")
                     print(" year = ", year)
                     print("\n")
-                    d = ds["pr"].sel(
+                    d = ds[var].sel(
                         time=slice(
                             str(year) + "-01-01 00:00:00",
                             str(year) + f"-12-{eday} 23:59:59",
@@ -442,10 +442,10 @@ for model in models:
 
                         # all grid point rainfall
                         d_sub_ds = region_subset(
-                            ds, region, data_var="pr", regions_specs=regions_specs
+                            ds, region, data_var=var, regions_specs=regions_specs
                         )
                         # must be entire calendar years
-                        d_sub_pr = d_sub_ds["pr"].sel(
+                        d_sub_pr = d_sub_ds[var].sel(
                             time=slice(
                                 str(year) + "-01-01 00:00:00",
                                 str(year) + f"-12-{eday} 23:59:59",
@@ -483,9 +483,9 @@ for model in models:
                             ds_sub_pr["lat_bnds"] = lat_bnds
 
                         ds_sub_aave = ds_sub_pr.spatial.average(
-                            "pr", axis=["X", "Y"], weights="generate"
+                            var, axis=["X", "Y"], weights="generate"
                         ).compute()
-                        da_sub_aave = ds_sub_aave["pr"]
+                        da_sub_aave = ds_sub_aave[var]
 
                         if debug:
                             print("debug: region:", region)
