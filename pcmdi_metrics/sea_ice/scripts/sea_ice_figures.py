@@ -46,6 +46,12 @@ for metrics_file in glob.glob(filelist):
     metrics["RESULTS"].update(results["RESULTS"])
 
 model_list.sort()
+
+if "EC-EARTH" in model_list:
+    model_list.remove("EC-EARTH")
+if "BNU-ESM" in model_list:
+    model_list.remove("BNU-ESM")
+
 tmp = model_list[0]
 reference_data_set = list(metrics["RESULTS"][tmp]["arctic"]["model_mean"].keys())[0]
 

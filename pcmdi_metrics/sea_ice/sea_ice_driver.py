@@ -3,7 +3,6 @@ import glob
 import json
 import logging
 import os
-import pprint
 
 import numpy as np
 import xarray
@@ -747,8 +746,6 @@ def main():
     # Update metrics JSON
     # -------------------
     metrics["RESULTS"] = mse
-
-    pprint.pprint(metrics)
 
     metricsfile = os.path.join(metrics_output_path, "sea_ice_metrics.json")
     JSON = Base(metrics_output_path, "sea_ice_metrics.json")
