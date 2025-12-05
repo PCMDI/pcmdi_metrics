@@ -3,6 +3,7 @@ import glob
 import json
 import logging
 import os
+import pprint
 
 import numpy as np
 import xarray
@@ -13,9 +14,10 @@ from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.sea_ice.lib import sea_ice_figures as fig
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
-from pcmdi_metrics.utils import create_land_sea_mask, fix_tuple
+from pcmdi_metrics.utils import fix_tuple
 
-if __name__ == "__main__":
+
+def main():
     logging.getLogger("xcdat").setLevel(logging.ERROR)
 
     parser = create_sea_ice_parser()
@@ -39,8 +41,8 @@ if __name__ == "__main__":
     AreaUnitsAdjust = parameter.AreaUnitsAdjust
     obs_area_var = parameter.obs_area_var
     obs_var = parameter.obs_var
-    obs_area_template_nh = parameter.obs_area_template_nh
-    obs_area_template_sh = parameter.obs_area_template_sh
+    # obs_area_template_nh = parameter.obs_area_template_nh
+    # obs_area_template_sh = parameter.obs_area_template_sh
     obs_cell_area = parameter.obs_cell_area
     ObsAreaUnitsAdjust = parameter.ObsAreaUnitsAdjust
     ModUnitsAdjust = parameter.ModUnitsAdjust
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     plot = parameter.plot
     pole = parameter.pole
     to_nc = parameter.netcdf
-    generate_mask = parameter.generate_mask
+    # generate_mask = parameter.generate_mask
     no_mask = parameter.no_mask
 
     print("Model list:", model_list)
@@ -65,12 +67,12 @@ if __name__ == "__main__":
         reference_data_set = reference_data_set[0]
 
     # Verify years
-    ok_mod = lib.verify_years(
+    lib.verify_years(
         msyear,
         meyear,
         msg="Error: Model msyear and meyear must both be set or both be None (unset).",
     )
-    ok_obs = lib.verify_years(
+    lib.verify_years(
         osyear,
         oeyear,
         msg="Error: Obs osyear and oeyear must both be set or both be None (unset).",
@@ -129,10 +131,15 @@ if __name__ == "__main__":
         area_val = obs_cell_area
 
     # Remove land areas (including lakes)
+    """
     mask = create_land_sea_mask(obs, lon_key=xvar, lat_key=yvar)
     ds_mask_nh = mask.to_dataset()
     ds_mask_nh.to_netcdf("tmp/mask_nh.nc")
     obs[obs_var] = obs[obs_var].where(mask < 1)
+    """
+    ds_mask_nh = lib.get_mask(obs, lon_key=xvar, lat_key=yvar)
+    ds_mask_nh.to_netcdf("tmp/mask_nh.nc")
+    obs[obs_var] = obs[obs_var].where(ds_mask_nh["mask"] < 1)
     # nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
     nh_obs_area = lib.get_ocean_area_for_regions(ds_mask_nh, "mask", area_val, pole)
 
@@ -195,10 +202,14 @@ if __name__ == "__main__":
         area_val = obs_cell_area
 
     # Remove land areas (including lakes)
+    """
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
     ds_mask_sh = mask.to_dataset()
     ds_mask_sh.to_netcdf("tmp/mask_sh.nc")
-    obs[obs_var] = obs[obs_var].where(mask < 1)
+    """
+    ds_mask_sh = lib.get_mask(obs, lon_key=xvar, lat_key=yvar)
+    ds_mask_sh.to_netcdf("tmp/mask_sh.nc")
+    obs[obs_var] = obs[obs_var].where(ds_mask_sh["mask"] < 1)
     # sh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
     sh_obs_area = lib.get_ocean_area_for_regions(ds_mask_sh, "mask", area_val, pole)
 
@@ -251,7 +262,7 @@ if __name__ == "__main__":
     clim_wts = [x / 365 for x in clim_wts]
     # Initialize JSON data
     mse = {}
-    mse_wgt = {}
+    # mse_wgt = {}
     df = {
         "Reference": {
             "arctic": {reference_data_set: {}},
@@ -489,7 +500,9 @@ if __name__ == "__main__":
                         mask = mask / 100
                 else:
                     print("Creating land/sea mask.")
-                    mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                    # mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                    mask = lib.get_mask(ds, lon_key=xvar, lat_key=yvar)["mask"]
+
                 ds[var] = ds[var].where(mask < 1)
                 # Option to weigh sea ice coverage by fraction of cell that is ocean.
                 # area[area_var] = area[area_var] * (1 - mask)
@@ -568,11 +581,15 @@ if __name__ == "__main__":
                         x * 1e-6 for x in df_list
                     ]
 
+                    # ---------------------------------
                     # Get errors, convert to 1e12 km^-4
+                    # ---------------------------------
                     if day360:
                         weights = None
                     else:
                         weights = clim_wts
+
+                    """
                     mse[model][rgn][run][reference_data_set]["monthly_clim"]["mse"] = (
                         lib.mse_t(
                             real_clim[rgn][run][var] - real_mean[rgn][run],
@@ -582,12 +599,40 @@ if __name__ == "__main__":
                         )
                         * 1e-12
                     )
+
                     mse[model][rgn][run][reference_data_set]["total_extent"]["mse"] = (
                         lib.mse_model(
                             real_mean[rgn][run], obs_means[reference_data_set][rgn]
                         )
                         * 1e-12
                     )
+                    """
+                    # Extract relevant data for clarity
+                    real_clim_data = real_clim[rgn][run][var]
+                    real_mean_data = real_mean[rgn][run]
+                    obs_clim_data = obs_clims[reference_data_set][rgn][obs_var]
+                    obs_mean_data = obs_means[reference_data_set][rgn]
+
+                    # Calculate anomalies
+                    real_anomaly = real_clim_data - real_mean_data
+                    obs_anomaly = obs_clim_data - obs_mean_data
+
+                    # Compute MSE for monthly climatology
+                    monthly_mse = (
+                        lib.mse_t(real_anomaly, obs_anomaly, weights=weights) * 1e-12
+                    )
+                    mse[model][rgn][run][reference_data_set]["monthly_clim"][
+                        "mse"
+                    ] = monthly_mse
+
+                    # Compute MSE for total extent
+                    total_extent_mse = (
+                        lib.mse_model(real_mean_data, obs_mean_data) * 1e-12
+                    )
+                    mse[model][rgn][run][reference_data_set]["total_extent"][
+                        "mse"
+                    ] = total_extent_mse
+
             # --------------------------
             # Get sector weighted metric
             # --------------------------
@@ -702,6 +747,8 @@ if __name__ == "__main__":
     # Update metrics JSON
     # -------------------
     metrics["RESULTS"] = mse
+
+    pprint.pprint(metrics)
 
     metricsfile = os.path.join(metrics_output_path, "sea_ice_metrics.json")
     JSON = Base(metrics_output_path, "sea_ice_metrics.json")
@@ -887,10 +934,9 @@ if __name__ == "__main__":
             )
             print(e)
 
-    # -----------------
-    # Update and write
-    # metadata file
-    # -----------------
+    # ------------------------------
+    # Update and write metadata file
+    # ------------------------------
     try:
         with open(os.path.join(metricsfile), "r") as f:
             tmp = json.load(f)
@@ -905,3 +951,7 @@ if __name__ == "__main__":
         meta.update_provenance("obsdata_nh", reference_data_path_nh)
         meta.update_provenance("obsdata_sh", reference_data_path_sh)
     meta.write()
+
+
+if __name__ == "__main__":
+    main()
