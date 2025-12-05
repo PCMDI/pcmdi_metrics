@@ -240,13 +240,6 @@ def get_total_extent(data, ds_area):
         (coord_i, coord_j), skipna=True
     )
     return total_extent
-    """
-    if isinstance(total_extent.data, dask.array.core.Array):
-        te_mean = total_extent.mean("time", skipna=True).data.compute().item()
-    else:
-        te_mean = total_extent.mean("time", skipna=True).data.item()
-    return total_extent, te_mean
-    """
 
 
 def get_clim(total_extent, ds_var, ds=None):
@@ -284,9 +277,6 @@ def get_mean(total_extent, ds_var, ds=None):
         ds_new = ds_new.drop_vars(tbkey)
         ds_new = ds_new.bounds.add_missing_bounds()
         te_mean = ds_new.temporal.average(ds_var, weighted=True)
-
-    print("te_mean:", te_mean)
-    print("type(te_mean[ds_var].data):", type(te_mean[ds_var].data))
 
     if isinstance(te_mean[ds_var].data, dask.array.core.Array):
         return te_mean[ds_var].data.compute().item()

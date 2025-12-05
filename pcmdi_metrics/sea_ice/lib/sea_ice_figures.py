@@ -1,6 +1,7 @@
 import os
 
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import matplotlib.colors as colors
 import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
@@ -55,7 +56,10 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
         )
         ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
         ax.coastlines(color=[0.3, 0.3, 0.3])
-        ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_facecolor([0, 85 / 255, 182 / 255])
+        # ax.set_facecolor([0.55, 0.55, 0.6])
+        land = cfeature.LAND.with_scale("110m")
+        ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
         ax.set_title("Feb\n" + model.replace("_", " "), fontsize=12)
         ax.annotate(
             "NA",
