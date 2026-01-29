@@ -3,8 +3,6 @@ import datetime
 
 def AddParserArgument(P):
     # Load pre-defined parsers
-    # P.use("--mip")
-    # P.use("--exp")
     P.use("--results_dir")
     P.use("--reference_data_path")
     P.use("--modpath")
@@ -68,6 +66,13 @@ def AddParserArgument(P):
         "--meyear", dest="meyear", type=int, help="End year for model data set"
     )
     P.add_argument(
+        "--seasons",
+        type=str,
+        nargs="+",
+        default=None,
+        help="List of seasons. Available: 'NDJFMA', 'MJJASO'",
+    )
+    P.add_argument(
         "--modnames",
         type=str,
         nargs="+",
@@ -97,6 +102,7 @@ def AddParserArgument(P):
         "-d",
         "--debug",
         type=bool,
+        dest="debug",
         default=False,
         help="Option for debug: False (defualt) or True",
     )

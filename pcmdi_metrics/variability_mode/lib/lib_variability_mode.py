@@ -33,7 +33,96 @@ def tree():
     return defaultdict(tree)
 
 
-def write_nc_output(output_file_name, eofMap, pc, frac, slopeMap, interceptMap):
+def get_eof_numbers(mode: str, param) -> tuple:
+    """
+    Determine the EOF (Empirical Orthogonal Function) numbers for observations and models.
+
+    Parameters
+    ----------
+    mode : str
+        The climate variability mode. Supported modes include:
+        - "NAM", "NAO", "SAM", "PNA", "PDO", "AMO" (expected EOF number: 1)
+        - "NPGO", "NPO", "PSA1", "EA" (expected EOF number: 2)
+        - "PSA2", "SCA" (expected EOF number: 3)
+        If the mode is not recognized, a warning is issued, and the expected EOF number is set to None.
+    param : object
+        An object containing the following attributes:
+        - eofn_obs : int or None
+            The EOF number for observations. Defaults to the expected EOF number if not provided.
+        - eofn_mod : int or None
+            The EOF number for models. Defaults to the expected EOF number if not provided.
+        - eofn_mod_max : int or None
+            The maximum EOF number for models. Defaults to `eofn_mod` if not provided.
+
+    Returns
+    -------
+    tuple
+        A tuple containing:
+        - eofn_obs : int
+            The EOF number for observations.
+        - eofn_mod : int
+            The EOF number for models.
+        - eofn_mod_max : int
+            The maximum EOF number for models.
+        - eofn_expected : int
+            The expected EOF number for the given mode.
+
+    Notes
+    -----
+    - If the provided `eofn_obs` or `eofn_mod` does not match the expected EOF number for the given mode,
+      a warning is issued.
+    - If the mode is not recognized, the expected EOF number is set to None, and the function attempts to
+      use the provided `eofn_mod` as the fallback expected value.
+    """
+
+    eofn_obs = param.eofn_obs
+    eofn_mod = param.eofn_mod
+    eofn_mod_max = param.eofn_mod_max
+
+    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
+        eofn_expected = 1
+    elif mode in ["NPGO", "NPO", "PSA1", "EA"]:
+        eofn_expected = 2
+    elif mode in ["PSA2", "SCA"]:
+        eofn_expected = 3
+    else:
+        print(
+            f"Warning: Mode '{mode}' is not defined with an associated expected EOF number"
+        )
+        eofn_expected = None
+
+    if eofn_obs is None:
+        eofn_obs = eofn_expected
+    else:
+        eofn_obs = int(eofn_obs)
+        if eofn_expected is not None:
+            if eofn_obs != eofn_expected:
+                print(
+                    f"Warning: Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+                )
+
+    if eofn_mod is None:
+        eofn_mod = eofn_expected
+    else:
+        eofn_mod = int(eofn_mod)
+        if eofn_expected is not None:
+            if eofn_mod != eofn_expected:
+                print(
+                    f"Warning: Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+                )
+
+    if eofn_expected is None:
+        eofn_expected = eofn_mod
+
+    if eofn_mod_max is None:
+        eofn_mod_max = eofn_mod
+
+    return eofn_obs, eofn_mod, eofn_mod_max, eofn_expected
+
+
+def write_nc_output(
+    output_file_name, eofMap, pc, frac, slopeMap, interceptMap, identifier=None
+):
     # Create a dataset
     ds = xr.Dataset(
         {
@@ -46,6 +135,23 @@ def write_nc_output(output_file_name, eofMap, pc, frac, slopeMap, interceptMap):
             ),  # single number having no axis
         }
     )
+    # Add global attributes
+    ds.attrs["title"] = (
+        "PCMDI Metrics Package Extratropical Modes of Variability diagnostics"
+    )
+    ds.attrs["author"] = "PCMDI"
+    ds.attrs["contact"] = "pcmdi-metrics@llnl.gov"
+    ds.attrs["creation_date"] = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+    ds.attrs[
+        "references"
+    ] = """
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019: Quantifying the Agreement Between Observed and Simulated Extratropical Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089, doi: 10.1007/s00382-018-4355-4,
+    Lee, J., K. Sperber, P. Gleckler, K. Taylor, and C. Bonfils, 2021: Benchmarking performance changes in the simulation of extratropical modes of variability across CMIP generations. Journal of Climate, 34, 6945–6969, doi: 10.1175/JCLI-D-20-0832.1,
+    Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, doi: 10.5194/gmd-17-3919-2024
+    """
+    if identifier is not None:
+        ds.attrs["identifier"] = identifier
+    # Save the dataset to a netcdf file
     ds.to_netcdf(output_file_name + ".nc")
     ds.close()
 
@@ -75,7 +181,7 @@ def read_data_in(
     debug: bool = False,
 ) -> xr.Dataset:
     # Open data file
-    ds = xcdat_open(path)
+    ds = xcdat_open(path, chunks=None)
 
     # Data QC check -- time axis check
     check_monthly_time_axis(ds)
@@ -197,7 +303,8 @@ def adjust_units(da: xr.DataArray, adjust_tuple: tuple) -> xr.DataArray:
 
 
 def check_missing_data(da: xr.DataArray):
-    """Sanity check for dataset time steps
+    """
+    Sanity check for dataset time steps
 
     Parameters
     ----------
@@ -295,6 +402,7 @@ def variability_metrics_to_json(
     model: str = None,
     run: str = None,
     cmec_flag: bool = False,
+    include_provenance: bool = True,
 ):
     # Open JSON
     JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
@@ -326,6 +434,7 @@ def variability_metrics_to_json(
         sort_keys=True,
         indent=4,
         separators=(",", ": "),
+        include_provenance=include_provenance,
     )
     if cmec_flag:
         print("Writing cmec file")

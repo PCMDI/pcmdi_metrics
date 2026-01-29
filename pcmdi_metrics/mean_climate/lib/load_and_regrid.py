@@ -2,7 +2,13 @@ import numpy as np
 import xarray as xr
 import xcdat as xc
 
-from pcmdi_metrics.io import get_latitude, get_longitude, xcdat_open
+from pcmdi_metrics.io import (
+    get_latitude,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_key,
+    xcdat_open,
+)
 
 
 def load_and_regrid(
@@ -80,7 +86,7 @@ def load_and_regrid(
                     '[WARNING]: calendar info not found for time axis. ds.time.attrs["calendar"] is adjusted to standard'
                 )
 
-    # time bound check #1 -- add proper time bound info if cdms-generated annual cycle is loaded
+    # time bound check #1 -- add proper time bound info if non-xcdat-generated annual cycle is loaded
     if isinstance(
         ds.time.values[0], np.float64
     ):  # and "units" not in list(ds.time.attrs.keys()):
@@ -100,6 +106,16 @@ def load_and_regrid(
     if level is not None:
         ds = extract_level(ds, level, debug=debug)
 
+    # coordinate names
+    lon_key = get_longitude_key(ds)
+    lat_key = get_latitude_key(ds)
+    if lon_key != "lon":
+        ds = ds.rename({lon_key: "lon"})
+        lon_key = "lon"
+    if lat_key != "lat":
+        ds = ds.rename({lat_key: "lat"})
+        lat_key = "lat"
+
     # axis
     lat = get_latitude(ds)
     lon = get_longitude(ds)
@@ -107,6 +123,10 @@ def load_and_regrid(
         ds[lat.name].attrs["axis"] = "Y"
     if "axis" not in lon.attrs:
         ds[lon.name].attrs["axis"] = "X"
+
+    if debug:
+        print("(before regrid) Dimension coordiates of ds:", ds.dims)
+        print("(before regrid) Dimension coordiates of ds:", ds.dims)
 
     # regrid
     if regrid_tool == "regrid2":
@@ -119,6 +139,10 @@ def load_and_regrid(
         ds_regridded = ds.regridder.horizontal(
             varname_in_file, t_grid, tool=regrid_tool, method=regrid_method
         )
+
+    if debug:
+        print("(after regrid) Dimension coordiates of ds:", ds_regridded.dims)
+        print("(after regrid) Dimension coordiates of ds:", ds_regridded.dims)
 
     if varname != varname_in_file:
         ds_regridded[varname] = ds_regridded[varname_in_file]

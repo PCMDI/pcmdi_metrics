@@ -6,7 +6,14 @@ import numpy as np
 import xarray as xr
 import xcdat as xc
 
-from pcmdi_metrics.mean_climate.lib import compute_statistics
+# from pcmdi_metrics.mean_climate.lib import compute_statistics
+from pcmdi_metrics.stats import bias_xy as compute_bias_xy
+from pcmdi_metrics.stats import cor_xy as compute_cor_xy
+from pcmdi_metrics.stats import mean_xy as compute_mean_xy
+from pcmdi_metrics.stats import meanabs_xy as compute_meanabs_xy
+from pcmdi_metrics.stats import rms_xy as compute_rms_xy
+from pcmdi_metrics.stats import rmsc_xy as compute_rmsc_xy
+from pcmdi_metrics.stats import std_xy as compute_std_xy
 
 
 class TimeSeriesData:
@@ -464,14 +471,14 @@ def init_metrics_dict(
             "season": ["ANN", "DJF", "MAM", "JJA", "SON"],
             "index": {},
             "statistic": {
-                "mean": compute_statistics.mean_xy(None),
-                "std_xy": compute_statistics.std_xy(None, None),
-                "bias_xy": compute_statistics.bias_xy(None, None),
-                "cor_xy": compute_statistics.cor_xy(None, None),
-                "mae_xy": compute_statistics.meanabs_xy(None, None),
-                "rms_xy": compute_statistics.rms_xy(None, None),
-                "rmsc_xy": compute_statistics.rmsc_xy(None, None),
-                "std-obs_xy": compute_statistics.std_xy(None, None),
+                "mean": compute_mean_xy(None),
+                "std_xy": compute_std_xy(None, None),
+                "bias_xy": compute_bias_xy(None, None),
+                "cor_xy": compute_cor_xy(None, None),
+                "mae_xy": compute_meanabs_xy(None, None),
+                "rms_xy": compute_rms_xy(None, None),
+                "rmsc_xy": compute_rmsc_xy(None, None),
+                "std-obs_xy": compute_std_xy(None, None),
                 "pct_dif": {
                     "Abstract": "Bias xy as a percentage of the Observed mean.",
                     "Contact": "pcmdi-metrics@llnl.gov",
@@ -555,7 +562,7 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
             # Global mean over land
             met_dict[m][region]["mean"][season] = mean_xy(ds_m, season)
             a = ds_m.temporal.average(season)
-            std_xy = compute_statistics.std_xy(a, season)
+            std_xy = compute_std_xy(a, season)
             met_dict[m][region]["std_xy"][season] = std_xy
 
             if len(obs_dict) > 0 and not obs_dict[m].equals(ds_m):
@@ -578,14 +585,12 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
                 a = ds_m.temporal.average(season)
                 b = obs_m.temporal.average(season)
                 weights = ds_m.spatial.get_weights(axis=["X", "Y"])
-                rms_xy = compute_statistics.rms_xy(a, b, var=season, weights=weights)
-                meanabs_xy = compute_statistics.meanabs_xy(
-                    a, b, var=season, weights=weights
-                )
-                bias_xy = compute_statistics.bias_xy(a, b, var=season, weights=weights)
-                cor_xy = compute_statistics.cor_xy(a, b, var=season, weights=weights)
-                rmsc_xy = compute_statistics.rmsc_xy(a, b, var=season, weights=weights)
-                std_obs_xy = compute_statistics.std_xy(b, season)
+                rms_xy = compute_rms_xy(a, b, var=season, weights=weights)
+                meanabs_xy = compute_meanabs_xy(a, b, var=season, weights=weights)
+                bias_xy = compute_bias_xy(a, b, var=season, weights=weights)
+                cor_xy = compute_cor_xy(a, b, var=season, weights=weights)
+                rmsc_xy = compute_rmsc_xy(a, b, var=season, weights=weights)
+                std_obs_xy = compute_std_xy(b, season)
                 pct_dif = percent_difference(b, bias_xy, season, weights)
 
                 met_dict[m][region]["pct_dif"][season] = pct_dif
@@ -641,7 +646,7 @@ def metrics_json_return_value(
         # Global mean over land
         rv_tmp[season] = remove_outliers(rv[season], blockex[season])
         met_dict[stat][region]["mean"][season] = mean_xy(rv_tmp, season)
-        std_xy = compute_statistics.std_xy(rv_tmp, season)
+        std_xy = compute_std_xy(rv_tmp, season)
         met_dict[stat][region]["std_xy"][season] = std_xy
 
         if obs is not None and not obs[season].equals(rv_tmp):
@@ -661,22 +666,12 @@ def metrics_json_return_value(
 
             # Get xy stats for temporal average
             weights = rv_tmp.spatial.get_weights(axis=["X", "Y"])
-            rms_xy = compute_statistics.rms_xy(
-                rv_tmp, obs_m, var=season, weights=weights
-            )
-            meanabs_xy = compute_statistics.meanabs_xy(
-                rv_tmp, obs_m, var=season, weights=weights
-            )
-            bias_xy = compute_statistics.bias_xy(
-                rv_tmp, obs_m, var=season, weights=weights
-            )
-            cor_xy = compute_statistics.cor_xy(
-                rv_tmp, obs_m, var=season, weights=weights
-            )
-            rmsc_xy = compute_statistics.rmsc_xy(
-                rv_tmp, obs_m, var=season, weights=weights
-            )
-            std_obs_xy = compute_statistics.std_xy(rv_tmp, season)
+            rms_xy = compute_rms_xy(rv_tmp, obs_m, var=season, weights=weights)
+            meanabs_xy = compute_meanabs_xy(rv_tmp, obs_m, var=season, weights=weights)
+            bias_xy = compute_bias_xy(rv_tmp, obs_m, var=season, weights=weights)
+            cor_xy = compute_cor_xy(rv_tmp, obs_m, var=season, weights=weights)
+            rmsc_xy = compute_rmsc_xy(rv_tmp, obs_m, var=season, weights=weights)
+            std_obs_xy = compute_std_xy(rv_tmp, season)
             pct_dif = percent_difference(obs_m, bias_xy, season, weights)
 
             met_dict[stat][region]["pct_dif"][season] = pct_dif

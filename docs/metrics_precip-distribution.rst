@@ -1,3 +1,6 @@
+.. title:: PMP Precip Distribution
+
+
 .. _metrics_precip-distribution:
 
 **************************

@@ -1,3 +1,4 @@
+.. title:: PMP ENSO
 .. _using-the-package:
 
 *****************
@@ -9,7 +10,7 @@ Overview
 The El Niño-Southern Oscillation (ENSO) is the dominant mode of 
 interannual variability in the tropical Pacific and has far-reaching 
 impacts on climate around the world. It is therefore key to ensure 
-the correct simulation of ENSO in state-of-the-art climate models. 
+the correct simulation of ENSO in state-of-the-art Earth System models. 
 A community-wide synthesis of metrics to evaluate the performance, 
 teleconnections and processes of ENSO in coupled GCMs have been implemented 
 to PMP as a result of the collaboration with the ENSO Metrics Working Group 
@@ -38,4 +39,4 @@ Additional Resources
 .. _Description for the results: https://pcmdi.llnl.gov/metrics/enso/
 .. _Description for included metrics: https://github.com/CLIVAR-PRP/ENSO_metrics/wiki
 .. _Interactive graphics for PMP-calculated ENSO Metrics: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20210723.html
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_6_ENSO.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_6_ENSO.html

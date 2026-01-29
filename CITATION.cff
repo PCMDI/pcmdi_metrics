@@ -1,0 +1,43 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: PCMDI Metrics Package
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Jiwoo
+    family-names: Lee
+    email: lee1043@llnl.gov
+    affiliation: Lawrence Livermore National Laboratory
+    orcid: 'https://orcid.org/0000-0002-0016-7199'
+  - affiliation: Lawrence Livermore National Laboratory
+    given-names: Kristin
+    family-names: Chang
+  - family-names: Gleckler
+    given-names: Peter
+    affiliation: Lawrence Livermore National Laboratory
+    orcid: 'https://orcid.org/0000-0003-2816-6224'
+  - given-names: Paul
+    family-names: Ullrich
+    affiliation: Lawrence Livermore National Laboratory and UC Davis
+    orcid: 'https://orcid.org/0000-0003-4118-4590'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.592790
+    description: Software
+repository-code: 'https://github.com/PCMDI/pcmdi_metrics'
+url: 'http://pcmdi.github.io/pcmdi_metrics/'
+abstract: ' Open-source Python package for Systematic Evaluation of Climate and Earth System Models '
+keywords:
+  - climate
+  - climate modeling
+  - climate model evaluation
+  - Earth System Model evaluation
+  - climatology
+  - climate variability
+license: BSD-3-Clause
+version: '4.0.1'
+date-released: '2025-10-13'

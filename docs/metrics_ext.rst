@@ -1,3 +1,5 @@
+.. title:: PMP Extremes
+
 *****************
 Extremes
 *****************
@@ -11,16 +13,16 @@ Demo
 =====
 * `PMP demo Jupyter notebook`_
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_8_extremes.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_8_extremes.html
 
 * `Extremes Portrait Plot demo Jupyter notebook`_
 
-.. _Extremes Portrait Plot demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/graphics/portrait_plot/return_value_portrait_plot_demo.ipynb
+.. _Extremes Portrait Plot demo Jupyter notebook: examples/return_value_portrait_plot_demo
 
 Inputs
 ========
 
-The Extremes Driver works on daily gridded climate data. This package expects input NetCDF files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
+The Extremes Driver works on daily gridded meteorological record data. This package expects input NetCDF files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
 
 Reference data
 ####################

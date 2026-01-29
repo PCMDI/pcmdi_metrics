@@ -28,6 +28,8 @@ regions_specs = {
     # Modes of variability
     "NAM": {"domain": cdutil.region.domain(latitude=(20.0, 90), longitude=(-180, 180))},
     "NAO": {"domain": cdutil.region.domain(latitude=(20.0, 80), longitude=(-90, 40))},
+    "EA": {"domain": cdutil.region.domain(latitude=(20.0, 80), longitude=(-90, 40))},
+    "SCA": {"domain": cdutil.region.domain(latitude=(20.0, 80), longitude=(-90, 40))},
     "SAM": {"domain": cdutil.region.domain(latitude=(-20.0, -90), longitude=(0, 360))},
     "PNA": {"domain": cdutil.region.domain(latitude=(20.0, 85), longitude=(120, 240))},
     "PDO": {"domain": cdutil.region.domain(latitude=(20.0, 70), longitude=(110, 260))},

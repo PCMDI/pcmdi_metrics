@@ -2,7 +2,6 @@ import copy
 import glob
 import os
 
-import numpy as np
 import pandas as pd
 
 from pcmdi_metrics.graphics import combine_ref_dicts, read_mean_clim_json_files
@@ -135,7 +134,7 @@ class Metrics:
 
                     result.df_dict[stat][season][region] = pd.concat(
                         [_df1, _df2], ignore_index=True
-                    ).fillna(value=np.nan)
+                    )
 
         # determine the superset of the other attributes
 

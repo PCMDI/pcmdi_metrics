@@ -46,7 +46,6 @@ import sys
 from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
-# import matplotlib
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -55,7 +54,6 @@ from matplotlib import pyplot as plt
 
 from pcmdi_metrics.io import load_regions_specs, region_subset, xcdat_open
 from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
     YearCheck,
@@ -65,7 +63,7 @@ from pcmdi_metrics.monsoon_sperber.lib import (
     sperber_metrics,
     tree,
 )
-from pcmdi_metrics.utils import create_land_sea_mask, fill_template
+from pcmdi_metrics.utils import create_land_sea_mask, fill_template, pmp_parser
 
 # How many elements each list should have
 n = 5  # pentad

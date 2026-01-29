@@ -1,12 +1,25 @@
+.. title:: PMP API
+
 API Reference
 =============
 
-APIs for Developers
--------------------
+APIs
+----
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of APIs available in `pcmdi_metrics (> v3.6.1)` for developers.
+Below is a list of Application Programming Interfaces (APIs) available in `pcmdi_metrics (> v3.6.1)`.
+
+
+Custom calendars
+~~~~~~~~~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    utils.custom_season_average
+    utils.custom_season_departure
+    utils.replace_date_pattern
+
 
 Data load
 ~~~~~~~~~
@@ -14,6 +27,16 @@ Data load
     :toctree: generated/
 
     io.xcdat_open
+
+
+Date
+~~~~
+.. autosummary::
+    :toctree: generated/
+
+    utils.date_to_str
+    utils.extract_date_components
+    utils.find_overlapping_dates
 
 
 Land-sea mask
@@ -26,6 +49,19 @@ Land-sea mask
     utils.apply_oceanmask
 
 
+Graphics
+~~~~~~~~
+
+Example usages of the following plotting functions are available in the `demo notebooks <demo-notebooks.html#plots>`_.
+
+.. autosummary::
+    :toctree: generated/
+
+    graphics.parallel_coordinate_plot
+    graphics.portrait_plot
+    graphics.TaylorDiagram
+
+
 Grid and regrid
 ~~~~~~~~~~~~~~~
 .. autosummary::
@@ -35,20 +71,12 @@ Grid and regrid
     utils.regrid
 
 
-Custom calendars
-~~~~~~~~~~~~~~~~
-.. autosummary::
-    :toctree: generated/
-
-    utils.custom_season_average
-    utils.custom_season_departure
-
-
 Region handling
 ~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/
 
+    io.load_regions_specs
     io.region_subset
     io.region_from_file
 
@@ -92,3 +120,14 @@ Miscellaneous tools
     utils.sort_human
     utils.fill_template
     utils.tree
+
+
+Viewer
+~~~~~~
+
+Viewer will be available in `pcmdi_metrics (> v3.9.1)`.
+
+.. autosummary::
+    :toctree: generated/
+
+    viewer.generate_pmp_output_viewer_multimodel

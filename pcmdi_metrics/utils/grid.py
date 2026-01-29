@@ -195,6 +195,10 @@ def regrid(
     -------
     xr.Dataset
         Regridded dataset.
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.utils import regrid
     """
 
     target_grid = get_grid(target_grid)  # To remove time dimension if exist

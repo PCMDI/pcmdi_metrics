@@ -43,6 +43,9 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 * **realization**: List of realizations or "*" to use all realizations.
 * **test_data_path**: File path to directory containing model/test data.
 * **filename_template**: File name template for test data, e.g., "%(variable)\_SImon_%(model_version)_historical_r1i2p2f1_gr_201001-201112.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
+* **sft_filename_template**: File name template for land/sea mask. If sft_filename_template is not provided and no_mask is False, PMP will generate a land/sea mask by default.
+* **generate_mask**: Set to True to use PMP-generated land/sea mask (default False). The sft_filename_template variable takes priority over this option if both are set.
+* **no_mask**: Set to True to skip the use of a land/sea mask (default False). The sft_filename_template variable takes priority over this option if both are set.
 * **var**: Name of model sea ice variable
 * **msyear**: Start year for test data set.
 * **meyear**: End year for test data set.
@@ -63,10 +66,11 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 * **obs_area_var**: Name of reference area variable, if available. If unavailable, skip and use "obs_cell_area".
 * **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km2. Only required if obs area file is not available.
 * **pole**: Set the maximum latitude for the Central Arctic and Arctic regions to exclude ice over the pole. Default is 90.1 to include all ice.
+* **netcdf**: Set to True to save the netcdf files of sea ice climatologies (default False).
 
 ## Postprocessing
 
-A script is provided to create a multi-model bar chart using results from multiple runs of the sea ice driver. This script can be found in `./scripts/sea_ice_figures.py`. 
+Two postprocessing scripts are provided in `./scripts/sea_ice_figures.py`. The script `sea_ice_figures.py` creates a multi-model bar chart for all sectors using results from a model ensemble. The script `sea_ice_total_errors.py` plots the total errors for the Arctic and Antarctic for a model ensemble.
 
 Example command:
 ```

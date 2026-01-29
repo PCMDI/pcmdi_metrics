@@ -19,6 +19,8 @@ from scipy import signal
 from pcmdi_metrics.io import base, get_time_key, select_subset
 from pcmdi_metrics.utils import create_target_grid, regrid
 
+np_float = np.float64
+
 
 def interp2commonGrid(ds, data_var, dlat, dlon=None, debug=False):
     if dlon is None:
@@ -121,7 +123,7 @@ def space_time_spectrum(d_seg_x_ano: xr.Dataset, data_var: str) -> np.ndarray:
     C = np.absolute(EE[NTSub // 2 : NTSub, 0 : NL // 2 + 1]) ** 2
     D = np.absolute(EE[0 : NTSub // 2 + 1, 0 : NL // 2 + 1]) ** 2
     # Define returning array
-    p = np.zeros((NTSub + 1, NL + 1), np.float)
+    p = np.zeros((NTSub + 1, NL + 1), np_float)
     p[NTSub // 2 :, : NL // 2] = A[:, ::-1]
     p[: NTSub // 2, : NL // 2] = B[:, ::-1]
     p[NTSub // 2 + 1 :, NL // 2 :] = C[::-1, :]

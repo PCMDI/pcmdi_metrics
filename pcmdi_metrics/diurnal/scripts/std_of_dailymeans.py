@@ -13,11 +13,10 @@
 
 # ---> python std_of_dailymeansWrappedInOut.py -i out -o jsons -m 7
 
-#       Charles Doutriaux September 2017
-# Curt Covey (from ./old_std_of_dailymeansWrappedInOut.py)
-# July 2017
+# Charles Doutriaux September 2017
+# Curt Covey (from ./old_std_of_dailymeansWrappedInOut.py) July 2017
+# Jiwoo Lee July 2025 Modernized the code to use xarray
 
-from __future__ import print_function
 
 import collections
 import glob
@@ -25,10 +24,7 @@ import json
 import multiprocessing as mp
 import os
 
-import cdms2
-import cdp
-import cdutil
-import numpy.ma
+import numpy as np
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
@@ -38,6 +34,13 @@ from pcmdi_metrics.diurnal.common import (
     monthname_d,
     populateStringConstructor,
 )
+from pcmdi_metrics.io import (
+    get_latitude_key,
+    get_longitude_key,
+    get_time_key,
+    xcdat_open,
+)
+from pcmdi_metrics.utils import cdp_run
 
 
 def main():
@@ -52,28 +55,34 @@ def main():
         datanameID = "dailySD"  # Short ID name of output data
         latrange = (param.args.lat1, param.args.lat2)
         lonrange = (param.args.lon1, param.args.lon2)
-        region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
         if param.args.region_name == "":
-            region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange + lonrange))
+            region_name = (
+                f"{latrange[0]:g}_{latrange[1]:g}&{lonrange[0]:g}_{lonrange[1]:g}"
+            )
         else:
             region_name = param.args.region_name
-        print("Reading {} ...".format(fnameRoot))
+        region = f"lat {latrange[0]:g} to {latrange[1]:g} and lon {lonrange[0]:g} to {lonrange[1]:g}"
+        print(f"Reading {fnameRoot}")
         try:
-            f = cdms2.open(fnameRoot)
-            x = f(datanameID, region)
-            units = x.units
-            print("  Shape =", x.shape)
-            print("Finding RMS area-average ...")
-            x = x * x
-            x = cdutil.averager(x, axis="xy")
-            x = numpy.ma.sqrt(x)
-            print(
-                "For %8s in %s, average variance of daily values = (%5.2f %s)^2"
-                % (model, monthname, x, units)
+            ds = xcdat_open(fnameRoot)
+            lat_key = get_latitude_key(ds)
+            lon_key = get_longitude_key(ds)
+            x = ds[datanameID].sel(
+                {lat_key: slice(*latrange), lon_key: slice(*lonrange)}
             )
-            f.close()
+            units = x.units
+            print("Shape =", x.shape)
+            print("units =", units)
+            print("Finding RMS area-average ...")
+
+            x = compute_area_weighted_rms(x, lat_key=lat_key, lon_key=lon_key)
+            print(
+                f"For {model} in {monthname}, average variance of daily values = ({x:5.2f} {units})^2"
+            )
+
+            ds.close()
         except Exception as err:
-            print("Failed for model %s with error %s" % (model, err))
+            print(f"Failed for model {model} with error {err}")
             x = 1.0e20
         return model, region, {region_name: x}
 
@@ -121,8 +130,6 @@ def main():
     args = P.get_parameter()
     month = args.month
     monthname = monthname_d[month]
-    startyear = args.firstyear  # noqa: F841
-    finalyear = args.lastyear  # noqa: F841
     cmec = args.cmec
 
     template = populateStringConstructor(args.filename_template, args)
@@ -160,7 +167,7 @@ def main():
     params = [INPUT(args, name, template) for name in files]
     print("PARAMS:", params)
 
-    results = cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+    results = cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
 
     for r in results:
         m, region, res = r
@@ -173,10 +180,10 @@ def main():
     metrics_dictionary["RESULTS"] = stats_dic
     rgmsk = metrics_dictionary.get("RegionalMasking", {})
     print("REG MASK:", rgmsk)
-    nm = list(res.keys())[0]
-    region.id = nm
+    nm = list(res.keys())[0]  # region id
     rgmsk[nm] = {"id": nm, "domain": region}
     metrics_dictionary["RegionalMasking"] = rgmsk
+
     OUT.write(
         metrics_dictionary,
         json_structure=["model", "domain"],
@@ -187,6 +194,63 @@ def main():
         print("Writing cmec file")
         OUT.write_cmec(indent=4, separators=(",", ": "))
     print("done")
+
+
+def compute_area_weighted_rms(
+    x, lat_key="lat", lon_key="lon", time_average=False, debug=False
+):
+    """
+    Compute area-weighted RMS over spatial dimensions of an xarray.DataArray.
+
+    Parameters:
+    ----------
+    x : xarray.DataArray
+        The input data array with spatial dimensions (lat, lon). The input data should have a 'time' or equivalent dimension if `time_average` is True.
+    lat_key : str
+        The name of the latitude coordinate. Defaults to 'lat'.
+    lon_key : str
+        The name of the longitude coordinate. Defaults to 'lon'.
+    time_average : bool
+        If True, compute the RMS over time-averaged data. Default is False.
+    debug : bool
+        If True, print debug information. Default is False.
+
+    Returns:
+    -------
+    xr.DataArray
+        Area-weighted RMS as a 1D DataArray (e.g., over time).
+    """
+    # Step 1: Square the data
+    x_squared = x**2
+
+    if time_average:
+        # If averaging over time, ensure the time dimension is present
+        time_key = get_time_key(x_squared)
+        if time_key not in x_squared.dims:
+            raise ValueError(
+                "Input DataArray must have a 'time' dimension for time averaging."
+            )
+        x_squared = x_squared.mean(dim=time_key)
+
+    # Step 2: Compute cosine-based latitude weights
+    weights = np.cos(np.deg2rad(x[lat_key]))
+    weights = weights / weights.mean()  # optional: normalize weights
+
+    # Step 3: Weighted mean over spatial dims
+    weighted_mean = x_squared.weighted(weights).mean(dim=[lat_key, lon_key])
+
+    # Step 4: Square root to get RMS
+    rms = np.sqrt(weighted_mean)
+
+    # Preserve units if available
+    rms.attrs["units"] = x.attrs.get("units", "")
+
+    if debug:
+        print("RMS shape:", rms.shape)
+        print("RMS units:", rms.attrs.get("units", ""))
+        print("RMS values:", rms.values)
+
+    return float(rms.values)
 
 
 # Good practice to place contents of script under this check

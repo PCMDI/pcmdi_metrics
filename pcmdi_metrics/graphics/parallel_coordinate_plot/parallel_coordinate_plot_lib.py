@@ -61,73 +61,156 @@ def parallel_coordinate_plot(
     debug=False,
 ):
     """
+    Create a parallel coordinate plot for visualizing multi-dimensional data.
+
+    .. image:: /_static/images/parallel_coordiate_plot_docstring_example.png
+        :alt: Example parallel coordinate plot
+        :align: center
+        :width: 600px
+
     Parameters
     ----------
-    - `data`: 2-d numpy array for metrics
-    - `metric_names`: list, names of metrics for individual vertical axes (axis=1)
-    - `model_names`: list, name of models for markers/lines (axis=0)
-    - `models_to_highlight`: list, default=None, List of models to highlight as lines or marker
-    - `models_to_highlight_by_line`: bool, default=True, highlight as lines. If False, as marker
-    - `models_to_highlight_colors`: list, default=None, List of colors for models to highlight as lines
-    - `models_to_highlight_labels`: list, default=None, List of string labels for models to highlight as lines
-    - `models_to_highlight_markers`: list, matplotlib markers for models to highlight if as marker
-    - `models_to_highlight_markers_size`: float, size of matplotlib markers for models to highlight if as marker
-    - `fig`: `matplotlib.figure` instance to which the parallel coordinate plot is plotted.
-             If not provided, use current axes or create a new one.  Optional.
-    - `ax`: `matplotlib.axes.Axes` instance to which the parallel coordinate plot is plotted.
-            If not provided, use current axes or create a new one.  Optional.
-    - `figsize`: tuple (two numbers), default=(15,5), image size
-    - `show_boxplot`: bool, default=False, show box and wiskers plot
-    - `show_violin`: bool, default=False, show violin plot
-    - `violin_colors`: tuple or list containing two strings for colors of violin. Default=("lightgrey", "pink")
-    - `violin_label`: string to label the violin plot, when violin plot is not splited. Default is None.
-    - `title`: string, default=None, plot title
-    - `identify_all_models`: bool, default=True. Show and identify all models using markers
-    - `xtick_labelsize`: number, fontsize for x-axis tick labels (optional)
-    - `ytick_labelsize`: number, fontsize for x-axis tick labels (optional)
-    - `colormap`: string, default='viridis', matplotlib colormap
-    - `num_color`: integer, default=20, how many color to use.
-    - `legend_off`: bool, default=False, turn off legend
-    - `legend_ncol`: integer, default=6, number of columns for legend text
-    - `legend_bbox_to_anchor`: tuple, defulat=(0.5, -0.14), set legend box location
-    - `legend_loc`: string, default="upper center", set legend box location
-    - `legend_fontsize`: float, default=8, legend font size
-    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes.
-                   All quantities are in fractions of figure width and height.  Optional.
-    - `logo_off`: bool, default=False, turn off PMP logo
-    - `model_names2`: list of string, should be a subset of `model_names`.  If given, violin plot will be split into 2 groups. Optional.
-    - `group1_name`: string, needed for violin plot legend if splited to two groups, for the 1st group. Default is 'group1'.
-    - `group2_name`: string, needed for violin plot legend if splited to two groups, for the 2nd group. Default is 'group2'.
-    - `comparing_models`: tuple or list containing two strings for models to compare with colors filled between the two lines.
-    - `fill_between_lines`: bool, default=False, fill color between lines for models in comparing_models
-    - `fill_between_lines_colors`: tuple or list containing two strings of colors for filled between the two lines. Default=('red', 'green')
-    - `arrow_between_lines`: bool, default=False, place arrows between two lines for models in comparing_models
-    - `arrow_between_lines_colors`: tuple or list containing two strings of colors for arrow between the two lines. Default=('red', 'green')
-    - `arrow_alpha`: float, default=1, transparency of arrow (faction between 0 to 1)
-    - `arrow_width`: float, default is 0.05, width of arrow
-    - `arrow_linewidth`: float, default is 0, width of arrow edge line
-    - `arrow_head_width`: float, default is 0.15, widht of arrow head
-    - `arrow_head_length`: float, default is 0.15, length of arrow head
-    - `vertical_center`: string ("median", "mean")/float/integer, default=None, adjust range of vertical axis to set center of vertical axis as median, mean, or given number
-    - `vertical_center_line`: bool, default=False, show median as line
-    - `vertical_center_line_label`: str, default=None, label in legend for the horizontal vertical center line. If not given, it will be automatically assigned. It can be turned off by "off"
-    - `ymax`: int or float or string ('percentile'), default=None, specify value of vertical axis top. If percentile, 95th percentile or extended for top
-    - `ymin`: int or float or string ('percentile'), default=None, specify value of vertical axis bottom. If percentile, 5th percentile or extended for bottom
+    data : ndarray
+        2-d numpy array for metrics.
+    metric_names : list
+        Names of metrics for individual vertical axes (axis=1).
+    model_names : list
+        Name of models for markers/lines (axis=0).
+    models_to_highlight : list, optional
+        List of models to highlight as lines or markers.
+    models_to_highlight_by_line : bool, optional
+        If True, highlight as lines. If False, highlight as markers. Default is True.
+    models_to_highlight_colors : list, optional
+        List of colors for models to highlight as lines.
+    models_to_highlight_labels : list, optional
+        List of string labels for models to highlight as lines.
+    models_to_highlight_markers : list, optional
+        Matplotlib markers for models to highlight if as marker. Default is ["s", "o", "^", "*"].
+    models_to_highlight_markers_size : float, optional
+        Size of matplotlib markers for models to highlight if as marker. Default is 10.
+    fig : matplotlib.figure.Figure, optional
+        Figure instance to which the parallel coordinate plot is plotted.
+    ax : matplotlib.axes.Axes, optional
+        Axes instance to which the parallel coordinate plot is plotted.
+    figsize : tuple, optional
+        Figure size (width, height) in inches. Default is (15, 5).
+    show_boxplot : bool, optional
+        If True, show box and whiskers plot. Default is False.
+    show_violin : bool, optional
+        If True, show violin plot. Default is False.
+    violin_colors : tuple or list, optional
+        Two strings for colors of violin. Default is ("lightgrey", "pink").
+    violin_label : str, optional
+        Label for the violin plot when not split. Default is None.
+    title : str, optional
+        Plot title.
+    identify_all_models : bool, optional
+        If True, show and identify all models using markers. Default is True.
+    xtick_labelsize : int or str, optional
+        Fontsize for x-axis tick labels.
+    ytick_labelsize : int or str, optional
+        Fontsize for y-axis tick labels.
+    colormap : str, optional
+        Matplotlib colormap. Default is 'viridis'.
+    num_color : int, optional
+        Number of colors to use. Default is 20.
+    legend_off : bool, optional
+        If True, turn off legend. Default is False.
+    legend_ncol : int, optional
+        Number of columns for legend text. Default is 6.
+    legend_bbox_to_anchor : tuple, optional
+        Set legend box location. Default is (0.5, -0.14).
+    legend_loc : str, optional
+        Set legend box location. Default is "upper center".
+    legend_fontsize : float, optional
+        Legend font size. Default is 10.
+    logo_rect : sequence of float, optional
+        The dimensions [left, bottom, width, height] of the new Axes for logo.
+    logo_off : bool, optional
+        If True, turn off PMP logo. Default is False.
+    model_names2 : list of str, optional
+        Should be a subset of `model_names`. If given, violin plot will be split into 2 groups.
+    group1_name : str, optional
+        Name for the first group in split violin plot. Default is 'group1'.
+    group2_name : str, optional
+        Name for the second group in split violin plot. Default is 'group2'.
+    comparing_models : tuple or list, optional
+        Two strings for models to compare with colors filled between the two lines.
+    fill_between_lines : bool, optional
+        If True, fill color between lines for models in comparing_models. Default is False.
+    fill_between_lines_colors : tuple or list, optional
+        Two strings of colors for filled between the two lines. Default is ('red', 'green').
+    arrow_between_lines : bool, optional
+        If True, place arrows between two lines for models in comparing_models. Default is False.
+    arrow_between_lines_colors : tuple or list, optional
+        Two strings of colors for arrow between the two lines. Default is ('red', 'green').
+    arrow_alpha : float, optional
+        Transparency of arrow (fraction between 0 to 1). Default is 1.
+    arrow_width : float, optional
+        Width of arrow. Default is 0.05.
+    arrow_linewidth : float, optional
+        Width of arrow edge line. Default is 0.
+    arrow_head_width : float, optional
+        Width of arrow head. Default is 0.15.
+    arrow_head_length : float, optional
+        Length of arrow head. Default is 0.15.
+    vertical_center : str or float or int, optional
+        Adjust range of vertical axis to set center of vertical axis as median, mean, or given number.
+    vertical_center_line : bool, optional
+        If True, show median as line. Default is False.
+    vertical_center_line_label : str, optional
+        Label in legend for the horizontal vertical center line. If not given, it will be automatically assigned.
+    ymax : int or float or str, optional
+        Specify value of vertical axis top. If 'percentile', 95th percentile or extended for top.
+    ymin : int or float or str, optional
+        Specify value of vertical axis bottom. If 'percentile', 5th percentile or extended for bottom.
+    debug : bool, optional
+        If True, print debug information. Default is False.
 
-    Return
-    ------
-    - `fig`: matplotlib component for figure
-    - `ax`: matplotlib component for axis
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure component of the plot.
+    ax : matplotlib.axes.Axes
+        The axes component of the plot.
+
+    Notes
+    -----
+    This function creates a parallel coordinate plot for visualizing multi-dimensional data.
+    It supports various customization options including highlighting specific models,
+    adding violin plots, and comparing models with filled areas or arrows.
+
+    The function uses matplotlib for plotting and can integrate with existing figure and axes objects.
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
+
     Update history:
-    2021-07 Plotting code created. Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
-    2022-09 violin plots added
-    2023-03 median centered option added
-    2023-04 vertical center option diversified (median, mean, or given number)
-    2024-03 parameter added for violin plot label
-    2024-04 parameters added for arrow and option added for ymax/ymin setting
+
+    - 2021-07 Plotting code created. Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
+    - 2022-09 violin plots added
+    - 2023-03 median centered option added
+    - 2023-04 vertical center option diversified (median, mean, or given number)
+    - 2024-03 parameter added for violin plot label
+    - 2024-04 parameters added for arrow and option added for ymax/ymin setting
+    - 2024-11 docstring cleaned up
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.graphics import parallel_coordinate_plot
+    >>> import numpy as np
+    >>> data = np.random.rand(10, 10)
+    >>> metric_names = ['Metric' + str(i) for i in range(10)]
+    >>> model_names = ['Model' + str(i) for i in range(10)]
+    >>> fig, ax = parallel_coordinate_plot(data, metric_names, model_names, models_to_highlight=model_names[0])
+
+    .. image:: /_static/images/parallel_coordiate_plot_docstring_example.png
+        :alt: Example parallel coordinate plot
+        :align: center
+        :width: 600px
+
+    Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/parallel_coordinate_plot#readme>`__.
     """
+
     params = {
         "legend.fontsize": "large",
         "axes.labelsize": "x-large",
@@ -247,9 +330,11 @@ def parallel_coordinate_plot(
                         group1_name: violin_colors[0],
                         group2_name: violin_colors[1],
                     },
+                    cut=0,
                 )
 
     # Line or marker
+    num_color = min(len(model_names), num_color)
     colors = [plt.get_cmap(colormap)(c) for c in np.linspace(0, 1, num_color)]
     marker_types = ["o", "s", "*", "^", "X", "D", "p"]
     markers = list(flatten([[marker] * len(colors) for marker in marker_types]))
@@ -396,7 +481,7 @@ def parallel_coordinate_plot(
     return fig, ax
 
 
-def _quick_qc(data, model_names, metric_names, model_names2=None):
+def _quick_qc(data, model_names, metric_names, model_names2=None, debug=False):
     # Quick initial QC
     if data.shape[0] != len(model_names):
         sys.exit(
@@ -421,7 +506,8 @@ def _quick_qc(data, model_names, metric_names, model_names2=None):
                     + model
                     + " is not in model_names"
                 )
-    print("Passed a quick QC")
+    if debug:
+        print("Passed a quick QC")
 
 
 def _data_transform(
@@ -464,6 +550,13 @@ def _data_transform(
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
 
+    # Convert to float type for further calculations
+    ymaxs = ymaxs.astype(float)
+    ymins = ymins.astype(float)
+    ymeds = ymeds.astype(float)
+    ymean = ymean.astype(float)
+
+    # Adjust vertical axis range to set center as median/mean/given number
     if vertical_center is not None:
         if vertical_center == "median":
             ymids = ymeds
@@ -523,22 +616,61 @@ def _data_transform(
 
 
 def _to_pd_dataframe(
-    data,
-    metric_names,
-    model_names,
-    model_names2=None,
-    group1_name="group1",
-    group2_name="group2",
-):
-    print("data.shape:", data.shape)
-    # Pandas dataframe for seaborn plotting
+    data: np.ndarray,
+    metric_names: list[str],
+    model_names: list[str],
+    model_names2: list[str] = None,
+    group1_name: str = "group1",
+    group2_name: str = "group2",
+    debug=False,
+) -> pd.DataFrame:
+    """
+    Converts data into a stacked pandas DataFrame for seaborn plotting.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        2D array of data values, where rows correspond to `model_names` and columns to `metric_names`.
+    metric_names : list of str
+        List of metric names for DataFrame columns.
+    model_names : list of str
+        List of model names for DataFrame index.
+    model_names2 : list of str, optional
+        Secondary list of model names for alternate grouping.
+    group1_name : str, default="group1"
+        Name assigned to the group when `model_names2` is not matched.
+    group2_name : str, default="group2"
+        Name assigned to the group when `model_names2` is matched.
+    debug : bool, default=False
+        If True, print debug information.
+
+    Returns
+    -------
+    pd.DataFrame
+        Stacked DataFrame with columns: 'Model', 'Metric', 'value', and 'group'.
+    """
+    if debug:
+        print("data.shape:", data.shape)
+
+    # Check input validity
+    if data.shape[1] != len(metric_names):
+        raise ValueError(
+            "Number of columns in `data` must match length of `metric_names`."
+        )
+    if data.shape[0] != len(model_names):
+        raise ValueError("Number of rows in `data` must match length of `model_names`.")
+
+    # Create DataFrame
     df = pd.DataFrame(data, columns=metric_names, index=model_names)
-    # Stack
-    df_stacked = df.stack(dropna=False).reset_index()
+
+    # Stack without dropna (using new stack implementation)
+    df_stacked = df.stack(future_stack=True).reset_index()
     df_stacked = df_stacked.rename(
         columns={"level_0": "Model", "level_1": "Metric", 0: "value"}
     )
-    df_stacked = df_stacked.assign(group=group1_name)
+    df_stacked["group"] = group1_name
+
+    # Update group column based on model_names2
     if model_names2 is not None:
         for model2 in model_names2:
             df_stacked["group"] = np.where(

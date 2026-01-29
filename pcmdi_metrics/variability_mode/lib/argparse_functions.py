@@ -29,9 +29,11 @@ def AddParserArgument(P):
         "--variability_mode",
         type=str,
         default="NAO",
-        help="Mode of variability: NAM, NAO, SAM, PNA, PDO, NPO, NPGO, AMO\n"
+        help="Mode of variability: NAM, NAO, EA, SCA, SAM, PNA, PDO, NPO, NPGO, AMO\n"
         "- NAM: Northern Annular Mode\n"
         "- NAO: Northern Atlantic Oscillation\n"
+        "- EA: East Atlantic Pattern\n"
+        "- SCA: Scandinavian Pattern\n"
         "- SAM: Southern Annular Mode\n"
         "- PSA1: Pacific–South American pattern 1\n"
         "- PSA2: Pacific–South American pattern 2\n"
@@ -77,6 +79,12 @@ def AddParserArgument(P):
         help="EOF mode from observation as reference",
     )
     P.add_argument("--eofn_mod", type=int, default=None, help="EOF mode from model")
+    P.add_argument(
+        "--eofn_mod_max",
+        type=int,
+        default=None,
+        help="Maximun order of EOF mode to calculate from the model for the conventional EOF method",
+    )
     P.add_argument(
         "--osyear", type=int, default=1900, help="Start year for reference data"
     )
@@ -201,6 +209,20 @@ def AddParserArgument(P):
         help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)",
     )
     P.add_argument(
+        "--provenance",
+        dest="provenance",
+        action="store_true",
+        default=True,
+        help="Save provenance in output JSON",
+    )
+    P.add_argument(
+        "--no_provenance",
+        dest="provenance",
+        action="store_false",
+        default=False,
+        help="Option to not save provenance in output JSON",
+    )
+    P.add_argument(
         "--cmec",
         dest="cmec",
         action="store_true",
@@ -225,6 +247,8 @@ def VariabilityModeCheck(mode, P):
         if mode.upper() not in [
             "NAM",
             "NAO",
+            "EA",
+            "SCA",
             "SAM",
             "PSA1",
             "PSA2",

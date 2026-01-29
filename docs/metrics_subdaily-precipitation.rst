@@ -1,3 +1,5 @@
+.. title:: PMP Sub-daily precip
+
 .. _subdaily-precipitation:
 
 ***********************
@@ -24,4 +26,4 @@ References
 
 
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_3_diurnal_cycle.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_3_diurnal_cycle.html

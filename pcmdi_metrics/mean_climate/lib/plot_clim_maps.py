@@ -11,6 +11,7 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm
 
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.stats import cor_xy, mean_xy, rms_xy, seasonal_mean
 
 from .colormap import colormap_WhiteBlueGreenYellowRed
@@ -45,6 +46,10 @@ def plot_climatology_diff(
     # variable name to avoid original dataset to be modified
     ds_test = ds_test.copy(deep=True)
     ds_ref = ds_ref.copy(deep=True)
+
+    # Get longitude and latitude keys
+    lon_key = get_longitude_key(ds_test)
+    lat_key = get_latitude_key(ds_test)
 
     # Extract specified level if provided
     if level is not None:
@@ -133,8 +138,8 @@ def plot_climatology_diff(
         ax.set_global()
 
         ax.contourf(
-            da_plot.lon,
-            da_plot.lat,
+            ds_test[lon_key],
+            ds_test[lat_key],
             da_plot,
             transform=ccrs.PlateCarree(),
             levels=contour_levels_plot,
@@ -337,6 +342,9 @@ def plot_climatology(
     # variable name (ds) to avoid original dataset to be modified
     ds = ds.copy(deep=True)
 
+    lon_key = get_longitude_key(ds)
+    lat_key = get_latitude_key(ds)
+
     # Define available seasons
     available_seasons = ["AC", "DJF", "MAM", "JJA", "SON"]
 
@@ -414,9 +422,10 @@ def plot_climatology(
         # Set the global extent to cover the entire globe regardless of region that data exists
         ax.set_global()
 
+        # Plot the data
         ax.contourf(
-            da_season.lon,
-            da_season.lat,
+            da_season[lon_key],
+            da_season[lat_key],
             da_season,
             transform=ccrs.PlateCarree(),
             levels=contour_levels,
@@ -890,6 +899,12 @@ def _load_variable_setting(
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "jet",
             },
+            500: {
+                "levels": np.linspace(-45, 5, 21),
+                "levels_diff": None,
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": np.arange(-35, 40, 5),
                 "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
@@ -936,6 +951,12 @@ def _load_variable_setting(
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
+            500: {
+                "levels": np.arange(-40, 45, 5),
+                "levels_diff": np.linspace(-20, 20, 21),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": [
                     -25,
@@ -967,6 +988,12 @@ def _load_variable_setting(
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
+            500: {
+                "levels": np.linspace(-10, 10, 11),
+                "levels_diff": np.linspace(-5, 5, 6),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": np.linspace(-10, 10, 11),
                 "levels_diff": np.linspace(-5, 5, 6),
@@ -984,30 +1011,39 @@ def _load_variable_setting(
         },
     }
 
+    # Initialize
+    levels = None
+    levels_diff = None
+    cmap = None
+    cmap_diff = None
+    cmap_ext = None
+    cmap_ext_diff = None
+
     # Check if the variable and level exist in the settings
-
-    in_dict = False
-
     if data_var in var_setting_dict:
         if level in var_setting_dict[data_var]:
             settings = var_setting_dict[data_var][level]
-            levels = settings["levels"]
-            levels_diff = settings["levels_diff"]
-            cmap = _get_colormap(settings["colormap"])
-            cmap_diff = _get_colormap(settings["colormap_diff"])
+            levels = settings.get("levels", None)
+            levels_diff = settings.get("levels_diff", None)
+            cmap = _get_colormap(settings.get("colormap", None))
+            cmap_diff = _get_colormap(settings.get("colormap_diff", None))
             cmap_ext = settings.get("colormap_ext", "both")
             cmap_ext_diff = "both"
-            in_dict = True
 
     # Use default settings if not found
-    if not in_dict:
-        vmin = float(ds[data_var].min())
-        vmax = float(ds[data_var].max())
+    vmin = float(ds[data_var].min())
+    vmax = float(ds[data_var].max())
+    if levels is None:
         levels = np.linspace(vmin, vmax, 21)
+    if levels_diff is None:
         levels_diff = np.linspace(vmin / 2.0, vmax / 2.0, 21)
+    if cmap is None:
         cmap = plt.get_cmap("jet")
+    if cmap_diff is None:
         cmap_diff = plt.get_cmap("RdBu_r")
+    if cmap_ext is None:
         cmap_ext = "both"
+    if cmap_ext_diff is None:
         cmap_ext_diff = "both"
 
     if diff:
