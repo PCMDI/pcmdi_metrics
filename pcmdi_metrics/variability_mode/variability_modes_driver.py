@@ -373,7 +373,7 @@ if obs_compare:
 
         # Calculate stdv of pc time series
         debug_print("calculate stdv of pc time series", debug)
-        stdv_pc_obs[season] = calcSTD(pc_obs[season])    
+        stdv_pc_obs[season] = calcSTD(pc_obs[season])
 
         # Linear regression to have extended global map; teleconnection purpose
         (
@@ -496,7 +496,7 @@ for model in models:
 
     if model not in result_dict["RESULTS"]:
         result_dict["RESULTS"][model] = {}
-        
+
     print("modpath:", modpath)
 
     model_path_list = glob.glob(
