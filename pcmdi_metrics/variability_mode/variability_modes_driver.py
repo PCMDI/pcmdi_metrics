@@ -133,8 +133,13 @@ obs_var = param.varOBS
 
 # Path to model data as string template
 modpath = param.modpath
+print("modpath (from param):", modpath)
+
+modpath_lf = param.modpath_lf
 if LandMask:
-    modpath_lf = param.modpath_lf
+    print("modpath_lf (from param):", modpath_lf)
+else:
+    modpath_lf = None
 
 # Check given model option
 models = param.modnames
@@ -368,7 +373,7 @@ if obs_compare:
 
         # Calculate stdv of pc time series
         debug_print("calculate stdv of pc time series", debug)
-        stdv_pc_obs[season] = calcSTD(pc_obs[season])
+        stdv_pc_obs[season] = calcSTD(pc_obs[season])    
 
         # Linear regression to have extended global map; teleconnection purpose
         (
@@ -405,7 +410,7 @@ if obs_compare:
 
         # Set output file name for NetCDF and plot
         output_filename_obs = (
-            f"{mode}_{var}_EOF{eofn_obs}_{season}_obs_{osyear}-{oeyear}"
+            f"{mode}_{obs_var}_EOF{eofn_obs}_{season}_obs_{osyear}-{oeyear}"
         )
 
         if EofScaling:
@@ -491,6 +496,8 @@ for model in models:
 
     if model not in result_dict["RESULTS"]:
         result_dict["RESULTS"][model] = {}
+        
+    print("modpath:", modpath)
 
     model_path_list = glob.glob(
         fill_template(
@@ -560,7 +567,7 @@ for model in models:
                 "target_model_eofs"
             ] = eofn_mod
 
-            if LandMask:
+            if LandMask and modpath_lf is not None:
                 model_lf_path = fill_template(modpath_lf, mip=mip, exp=exp, model=model)
             else:
                 model_lf_path = None
