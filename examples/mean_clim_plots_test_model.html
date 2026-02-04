@@ -1,0 +1,2523 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Portrait Plot: ENSO" href="enso_portrait_plot.html" /><link rel="prev" title="Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models" href="taylor_diagram_multiple_CMIPs.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>PMP mean climate: Compare user’s model with CMIP6 - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/mean_clim_plots_test_model.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/mean_clim_plots_test_model.ipynb" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="PMP-mean-climate:-Compare-user's-model-with-CMIP6">
+<h1>PMP mean climate: Compare user’s model with CMIP6<a class="headerlink" href="#PMP-mean-climate:-Compare-user's-model-with-CMIP6" title="Link to this heading"></a></h1>
+<p>In this document, you will visualize PMP’s mean climate results for your own model, together with CMIP6, to compare performace. You will create following plots.</p>
+<ul class="simple">
+<li><p>Portrait plot</p></li>
+<li><p>Parallel coordinate plot</p></li>
+<li><p>Box plot</p></li>
+<li><p>Taylor Diagram</p></li>
+</ul>
+<p>Written by Jiwoo Lee (LLNL/PCMDI), with contribution from Ana Ordonez (LLNL/PCMDI) and John Krasting (NOAA/GFDL)</p>
+<p>Last update: September 2022</p>
+<section id="Contents">
+<h2>Contents<a class="headerlink" href="#Contents" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Read data from JSON files</p></li>
+</ol>
+<ul class="simple">
+<li><p>1.1 Download PMP output JSON files for CMIP models</p></li>
+<li><p>1.2 Provide PMP results for the user’s model</p></li>
+<li><p>1.3 Extract data from JSON files</p></li>
+<li><p>1.4 Combine your PMP output with CMIP results</p></li>
+<li><p>1.5 Normalize each column by its median for portrait plot</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>Portrait Plot</p></li>
+<li><p>Parallel Coordinate Plot</p></li>
+<li><p>Box plots</p></li>
+<li><p>Taylor Diagram</p></li>
+</ol>
+<ul class="simple">
+<li><p>5.1 Identify all models</p></li>
+<li><p>5.2 Highlight user’s model</p></li>
+</ul>
+</section>
+<section id="1.-Read-data-from-JSON-files">
+<h2>1. Read data from JSON files<a class="headerlink" href="#1.-Read-data-from-JSON-files" title="Link to this heading"></a></h2>
+<p>Input data for portrait plot is expected as a set a (stacked or list of) 2-d numpy array(s) with list of strings for x and y axes labels.</p>
+<section id="1.1-Download-PMP-output-JSON-files-for-CMIP-models">
+<h3>1.1 Download PMP output JSON files for CMIP models<a class="headerlink" href="#1.1-Download-PMP-output-JSON-files-for-CMIP-models" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.graphics</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_archived_results</span>
+</pre></div>
+</div>
+</div>
+<p>PMP output files downloadable from the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics_results_archive">PMP results archive</a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pr&#39;</span><span class="p">,</span> <span class="s1">&#39;prw&#39;</span><span class="p">,</span> <span class="s1">&#39;psl&#39;</span><span class="p">,</span> <span class="s1">&#39;rlds&#39;</span><span class="p">,</span> <span class="s1">&#39;rltcre&#39;</span><span class="p">,</span> <span class="s1">&#39;rlus&#39;</span><span class="p">,</span> <span class="s1">&#39;rlut&#39;</span><span class="p">,</span> <span class="s1">&#39;rlutcs&#39;</span><span class="p">,</span> <span class="s1">&#39;rsds&#39;</span><span class="p">,</span> <span class="s1">&#39;rsdscs&#39;</span><span class="p">,</span> <span class="s1">&#39;rsdt&#39;</span><span class="p">,</span> <span class="s1">&#39;rstcre&#39;</span><span class="p">,</span> <span class="s1">&#39;rsut&#39;</span><span class="p">,</span> <span class="s1">&#39;rsutcs&#39;</span><span class="p">,</span> <span class="s1">&#39;sfcWind&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ta-200&#39;</span><span class="p">,</span> <span class="s1">&#39;ta-850&#39;</span><span class="p">,</span> <span class="s1">&#39;tas&#39;</span><span class="p">,</span> <span class="s1">&#39;tauu&#39;</span><span class="p">,</span> <span class="s1">&#39;ts&#39;</span><span class="p">,</span> <span class="s1">&#39;ua-200&#39;</span><span class="p">,</span> <span class="s1">&#39;ua-850&#39;</span><span class="p">,</span> <span class="s1">&#39;va-200&#39;</span><span class="p">,</span> <span class="s1">&#39;va-850&#39;</span><span class="p">,</span> <span class="s1">&#39;zg-500&#39;</span><span class="p">]</span>
+
+<span class="n">mip</span> <span class="o">=</span> <span class="s2">&quot;cmip6&quot;</span>
+<span class="n">exp</span> <span class="o">=</span> <span class="s2">&quot;historical&quot;</span>
+<span class="n">data_version</span> <span class="o">=</span> <span class="s2">&quot;v20210811&quot;</span>
+<span class="n">json_dir</span> <span class="o">=</span> <span class="s1">&#39;./json_files&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>Provide directory path and filename in the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics_results_archive">PMP results archive</a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;metrics_results/mean_climate/&quot;</span><span class="o">+</span><span class="n">mip</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">exp</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">data_version</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">var</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="o">+</span><span class="n">mip</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="o">+</span><span class="n">exp</span><span class="o">+</span><span class="s2">&quot;.regrid2.2p5x2p5.&quot;</span><span class="o">+</span><span class="n">data_version</span><span class="o">+</span><span class="s2">&quot;.json&quot;</span>
+    <span class="n">download_archived_results</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">json_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Check JSON files</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">json_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">json_dir</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="n">mip</span> <span class="o">+</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="n">data_version</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">json_file</span> <span class="ow">in</span> <span class="n">json_list</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">json_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+pr.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+prw.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+psl.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rlds.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rltcre.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rlus.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rlut.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rlutcs.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rsds.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rsdscs.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rsdt.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rstcre.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rsut.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+rsutcs.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+sfcWind.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+ta-200.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+ta-850.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+tas.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+tauu.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+ts.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+ua-200.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+ua-850.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+va-200.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+va-850.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+zg-500.cmip6.historical.regrid2.2p5x2p5.v20210811.json
+</pre></div></div>
+</div>
+</section>
+<section id="1.2-Provide-PMP-results-for-the-user's-model">
+<h3>1.2 Provide PMP results for the user’s model<a class="headerlink" href="#1.2-Provide-PMP-results-for-the-user's-model" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">json_dir_test</span> <span class="o">=</span> <span class="s1">&#39;./json_files_test_case&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;test_case/mean_climate/my_model.&quot;</span><span class="o">+</span><span class="n">var</span><span class="o">+</span><span class="s2">&quot;.regrid2.2p5x2p5.json&quot;</span>
+    <span class="n">download_archived_results</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">json_dir_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+test_case/mean_climate/my_model.prw.regrid2.2p5x2p5.json not exist in  https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/
+test_case/mean_climate/my_model.rsdscs.regrid2.2p5x2p5.json not exist in  https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/
+test_case/mean_climate/my_model.tauu.regrid2.2p5x2p5.json not exist in  https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">json_list_test</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">json_dir_test</span><span class="p">,</span> <span class="s1">&#39;*.json&#39;</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">json_file</span> <span class="ow">in</span> <span class="n">json_list_test</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">json_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+my_model.pr.regrid2.2p5x2p5.json
+my_model.psl.regrid2.2p5x2p5.json
+my_model.rlds.regrid2.2p5x2p5.json
+my_model.rltcre.regrid2.2p5x2p5.json
+my_model.rlus.regrid2.2p5x2p5.json
+my_model.rlut.regrid2.2p5x2p5.json
+my_model.rlutcs.regrid2.2p5x2p5.json
+my_model.rsds.regrid2.2p5x2p5.json
+my_model.rsdt.regrid2.2p5x2p5.json
+my_model.rstcre.regrid2.2p5x2p5.json
+my_model.rsut.regrid2.2p5x2p5.json
+my_model.rsutcs.regrid2.2p5x2p5.json
+my_model.sfcWind.regrid2.2p5x2p5.json
+my_model.ta-200.regrid2.2p5x2p5.json
+my_model.ta-850.regrid2.2p5x2p5.json
+my_model.tas.regrid2.2p5x2p5.json
+my_model.ts.regrid2.2p5x2p5.json
+my_model.ua-200.regrid2.2p5x2p5.json
+my_model.ua-850.regrid2.2p5x2p5.json
+my_model.va-200.regrid2.2p5x2p5.json
+my_model.va-850.regrid2.2p5x2p5.json
+my_model.zg-500.regrid2.2p5x2p5.json
+</pre></div></div>
+</div>
+</section>
+<section id="1.3-Extract-data-from-JSON-files">
+<h3>1.3 Extract data from JSON files<a class="headerlink" href="#1.3-Extract-data-from-JSON-files" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">Metrics</span></code> class (that use <code class="docutils literal notranslate"><span class="pre">read_mean_clim_json_files</span></code> function underneath) to extract data from the above JSON files.</p>
+<section id="Parameters">
+<h4>Parameters<a class="headerlink" href="#Parameters" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">json_list</span></code>: list of string, where each element is for path/file for PMP output JSON files</p></li>
+</ul>
+</section>
+<section id="Returned-object-includes">
+<h4>Returned object includes<a class="headerlink" href="#Returned-object-includes" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">df_dict</span></code>: dictionary that has <code class="docutils literal notranslate"><span class="pre">[stat][season][region]</span></code> hierarchy structure storing pandas dataframe for metric numbers (Rows: models, Columns: variables (i.e., 2d array)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">var_list</span></code>: list of string, all variables from JSON files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">var_unit_list</span></code>: list of string, all variables and its units from JSON files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">var_ref_dict</span></code>: dictonary for reference dataset used for each variable</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">regions</span></code>: list of string, regions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stats</span></code>: list of string, statistics</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.graphics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Metrics</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># existing library of mean climate metrics downloaded</span>
+<span class="n">library</span> <span class="o">=</span> <span class="n">Metrics</span><span class="p">(</span><span class="n">json_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Warning: The provided level value 20000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 85000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 20000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 85000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 20000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 85000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 50000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># new test case</span>
+<span class="n">test_case</span> <span class="o">=</span> <span class="n">Metrics</span><span class="p">(</span><span class="n">json_list_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Warning: The provided level value 20000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 85000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 20000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 85000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 20000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 85000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+Warning: The provided level value 50000 appears to be in Pa. It will be automatically converted to hPa by dividing by 100.
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="1.4-Combine-your-PMP-output-with-CMIP-results">
+<h3>1.4 Combine your PMP output with CMIP results<a class="headerlink" href="#1.4-Combine-your-PMP-output-with-CMIP-results" title="Link to this heading"></a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># merged</span>
+<span class="n">combined</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">test_case</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_dict</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">df_dict</span>
+<span class="n">var_list</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">var_list</span>
+<span class="n">var_unit_list</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">var_unit_list</span>
+<span class="n">var_ref_dict</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">var_ref_dict</span>
+<span class="n">regions</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">regions</span>
+<span class="n">stats</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">stats</span>
+</pre></div>
+</div>
+</div>
+<section id="Check-loaded-data">
+<h4>Check loaded data<a class="headerlink" href="#Check-loaded-data" title="Link to this heading"></a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;var_list:&#39;</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">var_list</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;var_unit_list:&#39;</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">var_unit_list</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;var_ref_dict:&#39;</span><span class="p">,</span> <span class="n">var_ref_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+var_list: [&#39;pr&#39;, &#39;prw&#39;, &#39;psl&#39;, &#39;rlds&#39;, &#39;rltcre&#39;, &#39;rlus&#39;, &#39;rlut&#39;, &#39;rlutcs&#39;, &#39;rsds&#39;, &#39;rsdscs&#39;, &#39;rsdt&#39;, &#39;rstcre&#39;, &#39;rsut&#39;, &#39;rsutcs&#39;, &#39;sfcWind&#39;, &#39;ta-200&#39;, &#39;ta-850&#39;, &#39;tas&#39;, &#39;tauu&#39;, &#39;ts&#39;, &#39;ua-200&#39;, &#39;ua-850&#39;, &#39;va-200&#39;, &#39;va-850&#39;, &#39;zg-500&#39;]
+var_unit_list: [&#39;pr [N/A]&#39;, &#39;pr [kg m-2 s-1]&#39;, &#39;prw [N/A]&#39;, &#39;psl [N/A]&#39;, &#39;psl [Pa]&#39;, &#39;rlds [N/A]&#39;, &#39;rlds [W m-2]&#39;, &#39;rltcre [W m-2]&#39;, &#39;rlus [N/A]&#39;, &#39;rlus [W m-2]&#39;, &#39;rlut [N/A]&#39;, &#39;rlut [W m-2]&#39;, &#39;rlutcs [N/A]&#39;, &#39;rlutcs [W m-2]&#39;, &#39;rsds [N/A]&#39;, &#39;rsds [W m-2]&#39;, &#39;rsdscs [N/A]&#39;, &#39;rsdt [N/A]&#39;, &#39;rsdt [W m-2]&#39;, &#39;rstcre [W m-2]&#39;, &#39;rsut [N/A]&#39;, &#39;rsut [W m-2]&#39;, &#39;rsutcs [N/A]&#39;, &#39;rsutcs [W m-2]&#39;, &#39;sfcWind [N/A]&#39;, &#39;sfcWind [m s-1]&#39;, &#39;ta-200 [K]&#39;, &#39;ta-200 [N/A]&#39;, &#39;ta-850 [K]&#39;, &#39;ta-850 [N/A]&#39;, &#39;tas [K]&#39;, &#39;tas [N/A]&#39;, &#39;tauu [N/A]&#39;, &#39;ts [K]&#39;, &#39;ts [N/A]&#39;, &#39;ua-200 [N/A]&#39;, &#39;ua-200 [m s-1]&#39;, &#39;ua-850 [N/A]&#39;, &#39;ua-850 [m s-1]&#39;, &#39;va-200 [N/A]&#39;, &#39;va-200 [m s-1]&#39;, &#39;va-850 [N/A]&#39;, &#39;va-850 [m s-1]&#39;, &#39;zg-500 [N/A]&#39;, &#39;zg-500 [m]&#39;]
+var_ref_dict: {&#39;pr&#39;: &#39;GPCP-2-3&#39;, &#39;prw&#39;: &#39;REMSS-PRW-v07r01&#39;, &#39;psl&#39;: &#39;ERA-5&#39;, &#39;rlds&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rltcre&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rlus&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rlut&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rlutcs&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rsds&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rsdscs&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rsdt&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rstcre&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rsut&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;rsutcs&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;sfcWind&#39;: &#39;REMSS-PRW-v07r01&#39;, &#39;ta-200&#39;: &#39;ERA-5&#39;, &#39;ta-850&#39;: &#39;ERA-5&#39;, &#39;tas&#39;: &#39;ERA-5&#39;, &#39;tauu&#39;: &#39;ERA-INT&#39;, &#39;ts&#39;: &#39;ERA-5&#39;, &#39;ua-200&#39;: &#39;ERA-5&#39;, &#39;ua-850&#39;: &#39;ERA-5&#39;, &#39;va-200&#39;: &#39;ERA-5&#39;, &#39;va-850&#39;: &#39;ERA-5&#39;, &#39;zg-500&#39;: &#39;ERA-5&#39;}
+</pre></div></div>
+</div>
+<p>In pandas dataframe, you will see your model is now included in the last row, as below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xy&#39;</span><span class="p">][</span><span class="s1">&#39;djf&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>model</th>
+      <th>run</th>
+      <th>model_run</th>
+      <th>pr</th>
+      <th>prw</th>
+      <th>psl</th>
+      <th>rlds</th>
+      <th>rltcre</th>
+      <th>rlus</th>
+      <th>rlut</th>
+      <th>...</th>
+      <th>ta-200</th>
+      <th>ta-850</th>
+      <th>tas</th>
+      <th>tauu</th>
+      <th>ts</th>
+      <th>ua-200</th>
+      <th>ua-850</th>
+      <th>va-200</th>
+      <th>va-850</th>
+      <th>zg-500</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ACCESS-CM2</td>
+      <td>r1i1p1</td>
+      <td>ACCESS-CM2_r1i1p1</td>
+      <td>1.661</td>
+      <td>139.039</td>
+      <td>245.952</td>
+      <td>11.552</td>
+      <td>8.519</td>
+      <td>10.560</td>
+      <td>10.991</td>
+      <td>...</td>
+      <td>2.717</td>
+      <td>1.495</td>
+      <td>2.508</td>
+      <td>0.040</td>
+      <td>2.770</td>
+      <td>4.174</td>
+      <td>1.421</td>
+      <td>1.689</td>
+      <td>0.799</td>
+      <td>26.053</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ACCESS-ESM1-5</td>
+      <td>r1i1p1</td>
+      <td>ACCESS-ESM1-5_r1i1p1</td>
+      <td>1.739</td>
+      <td>139.068</td>
+      <td>215.795</td>
+      <td>10.553</td>
+      <td>7.358</td>
+      <td>10.352</td>
+      <td>10.875</td>
+      <td>...</td>
+      <td>2.551</td>
+      <td>1.335</td>
+      <td>2.106</td>
+      <td>0.035</td>
+      <td>2.250</td>
+      <td>3.305</td>
+      <td>1.408</td>
+      <td>1.804</td>
+      <td>0.859</td>
+      <td>25.470</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AWI-CM-1-1-MR</td>
+      <td>r1i1p1</td>
+      <td>AWI-CM-1-1-MR_r1i1p1</td>
+      <td>1.604</td>
+      <td>139.179</td>
+      <td>170.936</td>
+      <td>11.231</td>
+      <td>7.957</td>
+      <td>8.496</td>
+      <td>8.960</td>
+      <td>...</td>
+      <td>1.847</td>
+      <td>1.074</td>
+      <td>1.414</td>
+      <td>0.028</td>
+      <td>1.609</td>
+      <td>2.483</td>
+      <td>1.251</td>
+      <td>1.586</td>
+      <td>0.711</td>
+      <td>16.738</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>AWI-ESM-1-1-LR</td>
+      <td>r1i1p1</td>
+      <td>AWI-ESM-1-1-LR_r1i1p1</td>
+      <td>1.937</td>
+      <td>139.199</td>
+      <td>201.589</td>
+      <td>14.743</td>
+      <td>8.935</td>
+      <td>12.495</td>
+      <td>11.630</td>
+      <td>...</td>
+      <td>3.966</td>
+      <td>2.224</td>
+      <td>2.039</td>
+      <td>0.034</td>
+      <td>2.317</td>
+      <td>3.835</td>
+      <td>1.684</td>
+      <td>2.241</td>
+      <td>1.024</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>BCC-CSM2-MR</td>
+      <td>r1i1p1</td>
+      <td>BCC-CSM2-MR_r1i1p1</td>
+      <td>1.700</td>
+      <td>139.251</td>
+      <td>237.180</td>
+      <td>13.025</td>
+      <td>7.370</td>
+      <td>11.014</td>
+      <td>9.984</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.669</td>
+      <td>0.034</td>
+      <td>2.585</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>BCC-ESM1</td>
+      <td>r1i1p1</td>
+      <td>BCC-ESM1_r1i1p1</td>
+      <td>1.631</td>
+      <td>139.152</td>
+      <td>237.973</td>
+      <td>14.469</td>
+      <td>8.423</td>
+      <td>12.970</td>
+      <td>12.763</td>
+      <td>...</td>
+      <td>4.343</td>
+      <td>2.055</td>
+      <td>3.211</td>
+      <td>0.038</td>
+      <td>3.188</td>
+      <td>4.673</td>
+      <td>1.849</td>
+      <td>2.119</td>
+      <td>1.118</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>CAMS-CSM1-0</td>
+      <td>r1i1p1</td>
+      <td>CAMS-CSM1-0_r1i1p1</td>
+      <td>1.721</td>
+      <td>139.513</td>
+      <td>182.945</td>
+      <td>19.644</td>
+      <td>8.397</td>
+      <td>14.631</td>
+      <td>11.507</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.462</td>
+      <td>NaN</td>
+      <td>3.858</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>CanESM5</td>
+      <td>r1i1p1</td>
+      <td>CanESM5_r1i1p1</td>
+      <td>1.779</td>
+      <td>138.924</td>
+      <td>240.049</td>
+      <td>16.095</td>
+      <td>8.406</td>
+      <td>12.479</td>
+      <td>11.047</td>
+      <td>...</td>
+      <td>3.066</td>
+      <td>1.905</td>
+      <td>2.465</td>
+      <td>0.055</td>
+      <td>2.622</td>
+      <td>4.055</td>
+      <td>1.706</td>
+      <td>2.013</td>
+      <td>1.008</td>
+      <td>32.574</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>CESM2</td>
+      <td>r1i1p1</td>
+      <td>CESM2_r1i1p1</td>
+      <td>1.234</td>
+      <td>139.212</td>
+      <td>210.704</td>
+      <td>11.026</td>
+      <td>6.979</td>
+      <td>9.611</td>
+      <td>7.908</td>
+      <td>...</td>
+      <td>2.057</td>
+      <td>1.309</td>
+      <td>1.483</td>
+      <td>0.089</td>
+      <td>1.800</td>
+      <td>3.433</td>
+      <td>1.377</td>
+      <td>1.973</td>
+      <td>0.800</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>CESM2-FV2</td>
+      <td>r1i1p1</td>
+      <td>CESM2-FV2_r1i1p1</td>
+      <td>1.397</td>
+      <td>139.161</td>
+      <td>242.138</td>
+      <td>12.376</td>
+      <td>7.835</td>
+      <td>10.690</td>
+      <td>8.740</td>
+      <td>...</td>
+      <td>3.026</td>
+      <td>1.987</td>
+      <td>1.892</td>
+      <td>0.090</td>
+      <td>2.142</td>
+      <td>4.017</td>
+      <td>2.061</td>
+      <td>2.204</td>
+      <td>0.988</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>CESM2-WACCM</td>
+      <td>r1i1p1</td>
+      <td>CESM2-WACCM_r1i1p1</td>
+      <td>1.203</td>
+      <td>139.166</td>
+      <td>205.141</td>
+      <td>10.544</td>
+      <td>6.761</td>
+      <td>9.166</td>
+      <td>7.680</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.462</td>
+      <td>0.088</td>
+      <td>1.750</td>
+      <td>3.131</td>
+      <td>1.481</td>
+      <td>1.761</td>
+      <td>0.787</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>CESM2-WACCM-FV2</td>
+      <td>r1i1p1</td>
+      <td>CESM2-WACCM-FV2_r1i1p1</td>
+      <td>1.517</td>
+      <td>139.211</td>
+      <td>194.140</td>
+      <td>12.047</td>
+      <td>7.890</td>
+      <td>10.551</td>
+      <td>9.264</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.744</td>
+      <td>0.089</td>
+      <td>2.095</td>
+      <td>3.086</td>
+      <td>1.871</td>
+      <td>1.976</td>
+      <td>0.903</td>
+      <td>22.056</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>CIESM</td>
+      <td>r1i1p1</td>
+      <td>CIESM_r1i1p1</td>
+      <td>3.627</td>
+      <td>139.554</td>
+      <td>175.697</td>
+      <td>10.636</td>
+      <td>8.130</td>
+      <td>8.867</td>
+      <td>7.649</td>
+      <td>...</td>
+      <td>3.773</td>
+      <td>1.221</td>
+      <td>1.512</td>
+      <td>0.151</td>
+      <td>1.802</td>
+      <td>3.106</td>
+      <td>1.264</td>
+      <td>1.635</td>
+      <td>0.834</td>
+      <td>39.275</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>CMCC-CM2-HR4</td>
+      <td>r1i1p1</td>
+      <td>CMCC-CM2-HR4_r1i1p1</td>
+      <td>1.599</td>
+      <td>139.313</td>
+      <td>327.559</td>
+      <td>13.640</td>
+      <td>8.576</td>
+      <td>9.807</td>
+      <td>10.873</td>
+      <td>...</td>
+      <td>3.350</td>
+      <td>1.575</td>
+      <td>1.675</td>
+      <td>0.175</td>
+      <td>1.865</td>
+      <td>4.592</td>
+      <td>2.092</td>
+      <td>2.294</td>
+      <td>1.140</td>
+      <td>41.643</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>CMCC-CM2-SR5</td>
+      <td>r1i1p1</td>
+      <td>CMCC-CM2-SR5_r1i1p1</td>
+      <td>1.529</td>
+      <td>139.410</td>
+      <td>294.997</td>
+      <td>11.556</td>
+      <td>8.437</td>
+      <td>10.053</td>
+      <td>8.629</td>
+      <td>...</td>
+      <td>3.479</td>
+      <td>1.774</td>
+      <td>1.903</td>
+      <td>0.150</td>
+      <td>2.216</td>
+      <td>3.781</td>
+      <td>1.530</td>
+      <td>1.770</td>
+      <td>0.886</td>
+      <td>29.599</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>E3SM-1-0</td>
+      <td>r1i1p1</td>
+      <td>E3SM-1-0_r1i1p1</td>
+      <td>1.358</td>
+      <td>139.355</td>
+      <td>263.067</td>
+      <td>13.937</td>
+      <td>6.388</td>
+      <td>10.892</td>
+      <td>7.968</td>
+      <td>...</td>
+      <td>2.954</td>
+      <td>2.322</td>
+      <td>2.156</td>
+      <td>0.048</td>
+      <td>2.312</td>
+      <td>3.283</td>
+      <td>1.538</td>
+      <td>1.759</td>
+      <td>0.846</td>
+      <td>31.321</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>E3SM-1-1</td>
+      <td>r1i1p1</td>
+      <td>E3SM-1-1_r1i1p1</td>
+      <td>1.384</td>
+      <td>139.305</td>
+      <td>286.393</td>
+      <td>14.353</td>
+      <td>6.715</td>
+      <td>11.588</td>
+      <td>8.222</td>
+      <td>...</td>
+      <td>3.055</td>
+      <td>NaN</td>
+      <td>2.293</td>
+      <td>0.037</td>
+      <td>2.429</td>
+      <td>3.477</td>
+      <td>NaN</td>
+      <td>1.954</td>
+      <td>NaN</td>
+      <td>33.610</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>E3SM-1-1-ECA</td>
+      <td>r1i1p1</td>
+      <td>E3SM-1-1-ECA_r1i1p1</td>
+      <td>1.349</td>
+      <td>139.318</td>
+      <td>277.138</td>
+      <td>14.140</td>
+      <td>6.519</td>
+      <td>11.746</td>
+      <td>8.159</td>
+      <td>...</td>
+      <td>3.094</td>
+      <td>26.727</td>
+      <td>2.367</td>
+      <td>0.037</td>
+      <td>2.507</td>
+      <td>3.483</td>
+      <td>1.555</td>
+      <td>1.871</td>
+      <td>0.885</td>
+      <td>36.308</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>EC-Earth3</td>
+      <td>r1i1p1</td>
+      <td>EC-Earth3_r1i1p1</td>
+      <td>1.239</td>
+      <td>139.257</td>
+      <td>167.478</td>
+      <td>15.160</td>
+      <td>6.863</td>
+      <td>12.768</td>
+      <td>9.741</td>
+      <td>...</td>
+      <td>1.701</td>
+      <td>1.755</td>
+      <td>2.450</td>
+      <td>0.024</td>
+      <td>3.674</td>
+      <td>3.163</td>
+      <td>0.991</td>
+      <td>1.662</td>
+      <td>0.677</td>
+      <td>31.607</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>EC-Earth3-AerChem</td>
+      <td>r1i1p1</td>
+      <td>EC-Earth3-AerChem_r1i1p1</td>
+      <td>1.291</td>
+      <td>139.269</td>
+      <td>176.365</td>
+      <td>14.411</td>
+      <td>6.825</td>
+      <td>12.037</td>
+      <td>9.629</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.229</td>
+      <td>0.025</td>
+      <td>3.634</td>
+      <td>3.352</td>
+      <td>1.033</td>
+      <td>1.599</td>
+      <td>0.669</td>
+      <td>33.658</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>EC-Earth3-Veg</td>
+      <td>r1i1p1</td>
+      <td>EC-Earth3-Veg_r1i1p1</td>
+      <td>1.262</td>
+      <td>139.308</td>
+      <td>159.077</td>
+      <td>13.688</td>
+      <td>6.945</td>
+      <td>11.592</td>
+      <td>9.661</td>
+      <td>...</td>
+      <td>1.613</td>
+      <td>1.635</td>
+      <td>2.004</td>
+      <td>0.026</td>
+      <td>3.610</td>
+      <td>3.315</td>
+      <td>1.015</td>
+      <td>1.534</td>
+      <td>0.677</td>
+      <td>28.996</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>EC-Earth3-Veg-LR</td>
+      <td>r1i1p1</td>
+      <td>EC-Earth3-Veg-LR_r1i1p1</td>
+      <td>1.266</td>
+      <td>139.286</td>
+      <td>158.686</td>
+      <td>16.394</td>
+      <td>6.922</td>
+      <td>13.260</td>
+      <td>10.065</td>
+      <td>...</td>
+      <td>2.019</td>
+      <td>1.797</td>
+      <td>2.502</td>
+      <td>0.024</td>
+      <td>3.708</td>
+      <td>3.264</td>
+      <td>1.098</td>
+      <td>1.591</td>
+      <td>0.706</td>
+      <td>33.999</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>FGOALS-f3-L</td>
+      <td>r1i1p1</td>
+      <td>FGOALS-f3-L_r1i1p1</td>
+      <td>1.449</td>
+      <td>NaN</td>
+      <td>359.037</td>
+      <td>11.759</td>
+      <td>10.375</td>
+      <td>12.101</td>
+      <td>10.129</td>
+      <td>...</td>
+      <td>3.215</td>
+      <td>1.683</td>
+      <td>2.779</td>
+      <td>0.171</td>
+      <td>2.889</td>
+      <td>4.494</td>
+      <td>1.693</td>
+      <td>2.272</td>
+      <td>0.973</td>
+      <td>54.113</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>FGOALS-g3</td>
+      <td>r1i1p1</td>
+      <td>FGOALS-g3_r1i1p1</td>
+      <td>1.658</td>
+      <td>138.888</td>
+      <td>292.081</td>
+      <td>19.393</td>
+      <td>9.125</td>
+      <td>15.059</td>
+      <td>12.801</td>
+      <td>...</td>
+      <td>5.826</td>
+      <td>1.823</td>
+      <td>3.562</td>
+      <td>0.163</td>
+      <td>3.895</td>
+      <td>3.641</td>
+      <td>1.909</td>
+      <td>2.136</td>
+      <td>1.050</td>
+      <td>29.997</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>FIO-ESM-2-0</td>
+      <td>r1i1p1</td>
+      <td>FIO-ESM-2-0_r1i1p1</td>
+      <td>1.388</td>
+      <td>NaN</td>
+      <td>228.979</td>
+      <td>10.459</td>
+      <td>7.668</td>
+      <td>8.932</td>
+      <td>9.352</td>
+      <td>...</td>
+      <td>3.792</td>
+      <td>1.551</td>
+      <td>1.586</td>
+      <td>0.151</td>
+      <td>1.776</td>
+      <td>3.900</td>
+      <td>1.462</td>
+      <td>2.196</td>
+      <td>0.890</td>
+      <td>26.022</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>GFDL-CM4</td>
+      <td>r1i1p1</td>
+      <td>GFDL-CM4_r1i1p1</td>
+      <td>1.337</td>
+      <td>139.040</td>
+      <td>196.965</td>
+      <td>14.900</td>
+      <td>6.849</td>
+      <td>9.760</td>
+      <td>8.148</td>
+      <td>...</td>
+      <td>2.109</td>
+      <td>1.830</td>
+      <td>2.331</td>
+      <td>0.027</td>
+      <td>2.226</td>
+      <td>2.844</td>
+      <td>1.379</td>
+      <td>1.323</td>
+      <td>0.707</td>
+      <td>42.543</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>GFDL-ESM4</td>
+      <td>r1i1p1</td>
+      <td>GFDL-ESM4_r1i1p1</td>
+      <td>1.375</td>
+      <td>139.071</td>
+      <td>204.671</td>
+      <td>12.807</td>
+      <td>6.885</td>
+      <td>9.041</td>
+      <td>8.459</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.034</td>
+      <td>0.028</td>
+      <td>2.067</td>
+      <td>2.754</td>
+      <td>1.376</td>
+      <td>1.457</td>
+      <td>0.730</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>GISS-E2-1-G</td>
+      <td>r1i1p1</td>
+      <td>GISS-E2-1-G_r1i1p1</td>
+      <td>1.631</td>
+      <td>139.025</td>
+      <td>302.630</td>
+      <td>15.092</td>
+      <td>9.973</td>
+      <td>12.631</td>
+      <td>11.219</td>
+      <td>...</td>
+      <td>3.685</td>
+      <td>2.058</td>
+      <td>2.643</td>
+      <td>0.047</td>
+      <td>2.867</td>
+      <td>5.480</td>
+      <td>1.832</td>
+      <td>2.889</td>
+      <td>1.128</td>
+      <td>46.220</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>GISS-E2-1-G-CC</td>
+      <td>r1i1p1</td>
+      <td>GISS-E2-1-G-CC_r1i1p1</td>
+      <td>1.699</td>
+      <td>139.058</td>
+      <td>302.395</td>
+      <td>15.650</td>
+      <td>10.280</td>
+      <td>12.949</td>
+      <td>11.922</td>
+      <td>...</td>
+      <td>3.737</td>
+      <td>2.034</td>
+      <td>2.663</td>
+      <td>0.046</td>
+      <td>2.905</td>
+      <td>5.951</td>
+      <td>1.898</td>
+      <td>3.107</td>
+      <td>1.159</td>
+      <td>45.968</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>GISS-E2-1-H</td>
+      <td>r1i1p1</td>
+      <td>GISS-E2-1-H_r1i1p1</td>
+      <td>1.675</td>
+      <td>139.224</td>
+      <td>486.524</td>
+      <td>16.427</td>
+      <td>9.876</td>
+      <td>13.117</td>
+      <td>11.333</td>
+      <td>...</td>
+      <td>3.881</td>
+      <td>1.990</td>
+      <td>2.482</td>
+      <td>0.050</td>
+      <td>2.806</td>
+      <td>5.074</td>
+      <td>1.890</td>
+      <td>2.974</td>
+      <td>1.166</td>
+      <td>56.408</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>INM-CM4-8</td>
+      <td>r1i1p1</td>
+      <td>INM-CM4-8_r1i1p1</td>
+      <td>1.724</td>
+      <td>139.201</td>
+      <td>243.852</td>
+      <td>18.399</td>
+      <td>10.049</td>
+      <td>11.774</td>
+      <td>12.460</td>
+      <td>...</td>
+      <td>3.799</td>
+      <td>2.989</td>
+      <td>2.597</td>
+      <td>0.074</td>
+      <td>2.769</td>
+      <td>5.865</td>
+      <td>2.035</td>
+      <td>2.760</td>
+      <td>1.199</td>
+      <td>52.334</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>INM-CM5-0</td>
+      <td>r1i1p1</td>
+      <td>INM-CM5-0_r1i1p1</td>
+      <td>1.667</td>
+      <td>139.189</td>
+      <td>197.334</td>
+      <td>16.972</td>
+      <td>8.735</td>
+      <td>10.580</td>
+      <td>10.378</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.199</td>
+      <td>0.071</td>
+      <td>2.380</td>
+      <td>4.022</td>
+      <td>1.688</td>
+      <td>2.309</td>
+      <td>1.074</td>
+      <td>51.208</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>IPSL-CM6A-LR</td>
+      <td>r1i1p1</td>
+      <td>IPSL-CM6A-LR_r1i1p1</td>
+      <td>1.625</td>
+      <td>139.137</td>
+      <td>240.321</td>
+      <td>13.602</td>
+      <td>7.105</td>
+      <td>9.523</td>
+      <td>8.710</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.073</td>
+      <td>0.036</td>
+      <td>1.987</td>
+      <td>3.033</td>
+      <td>1.661</td>
+      <td>1.803</td>
+      <td>0.973</td>
+      <td>63.596</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>KACE-1-0-G</td>
+      <td>r1i1p1</td>
+      <td>KACE-1-0-G_r1i1p1</td>
+      <td>1.457</td>
+      <td>139.082</td>
+      <td>208.175</td>
+      <td>11.662</td>
+      <td>8.174</td>
+      <td>11.210</td>
+      <td>10.097</td>
+      <td>...</td>
+      <td>3.300</td>
+      <td>1.399</td>
+      <td>2.462</td>
+      <td>0.036</td>
+      <td>2.715</td>
+      <td>3.707</td>
+      <td>1.346</td>
+      <td>1.845</td>
+      <td>0.825</td>
+      <td>23.343</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>MCM-UA-1-0</td>
+      <td>r1i1p1</td>
+      <td>MCM-UA-1-0_r1i1p1</td>
+      <td>1.605</td>
+      <td>NaN</td>
+      <td>355.577</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>14.301</td>
+      <td>...</td>
+      <td>2.990</td>
+      <td>4.290</td>
+      <td>3.190</td>
+      <td>0.150</td>
+      <td>3.289</td>
+      <td>4.458</td>
+      <td>1.929</td>
+      <td>2.470</td>
+      <td>1.142</td>
+      <td>63.850</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>MIROC6</td>
+      <td>r1i1p1</td>
+      <td>MIROC6_r1i1p1</td>
+      <td>1.411</td>
+      <td>139.478</td>
+      <td>371.381</td>
+      <td>11.968</td>
+      <td>6.001</td>
+      <td>11.836</td>
+      <td>13.347</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.566</td>
+      <td>0.079</td>
+      <td>2.882</td>
+      <td>3.742</td>
+      <td>1.539</td>
+      <td>1.891</td>
+      <td>0.931</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>MPI-ESM-1-2-HAM</td>
+      <td>r1i1p1</td>
+      <td>MPI-ESM-1-2-HAM_r1i1p1</td>
+      <td>1.935</td>
+      <td>139.333</td>
+      <td>182.547</td>
+      <td>13.682</td>
+      <td>9.330</td>
+      <td>11.438</td>
+      <td>11.509</td>
+      <td>...</td>
+      <td>5.209</td>
+      <td>2.242</td>
+      <td>2.071</td>
+      <td>0.034</td>
+      <td>2.339</td>
+      <td>3.703</td>
+      <td>1.602</td>
+      <td>1.835</td>
+      <td>0.942</td>
+      <td>35.808</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>MPI-ESM1-2-HR</td>
+      <td>r1i1p1</td>
+      <td>MPI-ESM1-2-HR_r1i1p1</td>
+      <td>1.558</td>
+      <td>139.185</td>
+      <td>175.940</td>
+      <td>11.483</td>
+      <td>7.972</td>
+      <td>8.214</td>
+      <td>9.257</td>
+      <td>...</td>
+      <td>1.855</td>
+      <td>1.226</td>
+      <td>1.518</td>
+      <td>0.029</td>
+      <td>1.667</td>
+      <td>3.610</td>
+      <td>1.464</td>
+      <td>1.869</td>
+      <td>0.785</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>MPI-ESM1-2-LR</td>
+      <td>r1i1p1</td>
+      <td>MPI-ESM1-2-LR_r1i1p1</td>
+      <td>1.586</td>
+      <td>139.240</td>
+      <td>169.975</td>
+      <td>12.861</td>
+      <td>7.665</td>
+      <td>9.964</td>
+      <td>9.711</td>
+      <td>...</td>
+      <td>3.753</td>
+      <td>1.650</td>
+      <td>1.675</td>
+      <td>0.031</td>
+      <td>1.981</td>
+      <td>3.258</td>
+      <td>1.405</td>
+      <td>1.842</td>
+      <td>0.879</td>
+      <td>25.125</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>MRI-ESM2-0</td>
+      <td>r1i1p1</td>
+      <td>MRI-ESM2-0_r1i1p1</td>
+      <td>1.542</td>
+      <td>139.105</td>
+      <td>262.614</td>
+      <td>12.888</td>
+      <td>7.231</td>
+      <td>9.446</td>
+      <td>9.306</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.619</td>
+      <td>0.033</td>
+      <td>1.820</td>
+      <td>5.641</td>
+      <td>2.041</td>
+      <td>2.302</td>
+      <td>0.942</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>NESM3</td>
+      <td>r1i1p1</td>
+      <td>NESM3_r1i1p1</td>
+      <td>1.958</td>
+      <td>139.286</td>
+      <td>252.038</td>
+      <td>16.135</td>
+      <td>11.223</td>
+      <td>13.198</td>
+      <td>15.035</td>
+      <td>...</td>
+      <td>3.635</td>
+      <td>2.314</td>
+      <td>2.673</td>
+      <td>0.040</td>
+      <td>2.878</td>
+      <td>5.600</td>
+      <td>2.080</td>
+      <td>2.459</td>
+      <td>1.177</td>
+      <td>33.842</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>NorCPM1</td>
+      <td>r1i1p1</td>
+      <td>NorCPM1_r1i1p1</td>
+      <td>1.562</td>
+      <td>139.040</td>
+      <td>302.481</td>
+      <td>16.905</td>
+      <td>10.218</td>
+      <td>13.985</td>
+      <td>13.010</td>
+      <td>...</td>
+      <td>4.101</td>
+      <td>2.341</td>
+      <td>2.775</td>
+      <td>0.039</td>
+      <td>3.017</td>
+      <td>3.423</td>
+      <td>2.401</td>
+      <td>2.197</td>
+      <td>1.290</td>
+      <td>27.684</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>NorESM2-MM</td>
+      <td>r1i1p1</td>
+      <td>NorESM2-MM_r1i1p1</td>
+      <td>0.995</td>
+      <td>139.146</td>
+      <td>187.760</td>
+      <td>11.090</td>
+      <td>6.325</td>
+      <td>8.893</td>
+      <td>7.007</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.900</td>
+      <td>0.032</td>
+      <td>2.038</td>
+      <td>3.128</td>
+      <td>1.273</td>
+      <td>NaN</td>
+      <td>0.828</td>
+      <td>19.449</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>SAM0-UNICON</td>
+      <td>r1i1p1</td>
+      <td>SAM0-UNICON_r1i1p1</td>
+      <td>1.444</td>
+      <td>139.142</td>
+      <td>238.562</td>
+      <td>13.340</td>
+      <td>9.123</td>
+      <td>11.336</td>
+      <td>10.244</td>
+      <td>...</td>
+      <td>3.560</td>
+      <td>1.479</td>
+      <td>2.478</td>
+      <td>0.036</td>
+      <td>2.609</td>
+      <td>3.293</td>
+      <td>1.736</td>
+      <td>2.036</td>
+      <td>0.939</td>
+      <td>23.985</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>TaiESM1</td>
+      <td>r1i1p1</td>
+      <td>TaiESM1_r1i1p1</td>
+      <td>1.335</td>
+      <td>139.102</td>
+      <td>211.710</td>
+      <td>11.730</td>
+      <td>8.043</td>
+      <td>10.044</td>
+      <td>8.601</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.243</td>
+      <td>0.044</td>
+      <td>2.406</td>
+      <td>NaN</td>
+      <td>1.508</td>
+      <td>NaN</td>
+      <td>0.814</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>my_model</td>
+      <td>r1i1p1</td>
+      <td>my_model_r1i1p1</td>
+      <td>1.359</td>
+      <td>NaN</td>
+      <td>266.107</td>
+      <td>13.913</td>
+      <td>6.382</td>
+      <td>10.892</td>
+      <td>7.969</td>
+      <td>...</td>
+      <td>2.906</td>
+      <td>26.545</td>
+      <td>2.090</td>
+      <td>NaN</td>
+      <td>2.276</td>
+      <td>3.033</td>
+      <td>1.508</td>
+      <td>1.577</td>
+      <td>0.793</td>
+      <td>24.472</td>
+    </tr>
+  </tbody>
+</table>
+<p>46 rows × 28 columns</p>
+</div></div>
+</div>
+</section>
+<section id="Customize-variables-to-show-(optional)">
+<h4>Customize variables to show (optional)<a class="headerlink" href="#Customize-variables-to-show-(optional)" title="Link to this heading"></a></h4>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># customize variables shown in portrait plot</span>
+<span class="c1">#var_list = [&quot;pr&quot;, &quot;psl&quot;, &quot;rltcre&quot;, &quot;rlut&quot;, &quot;rstcre&quot;, &quot;rsut&quot;, &quot;ta-200&quot;, &quot;ta-850&quot;, &quot;tas&quot;, &quot;ts&quot;,</span>
+<span class="c1">#            &quot;ua-200&quot;, &quot;ua-850&quot;, &quot;va-200&quot;, &quot;va-850&quot;, &quot;zg-500&quot;]</span>
+<span class="n">var_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+<span class="n">var_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;sfcWind&#39;</span><span class="p">)</span>  <span class="c1"># temporarliy removed sfc wind due to problem in observation</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simple re-order variables</span>
+<span class="k">if</span> <span class="s1">&#39;zg-500&#39;</span> <span class="ow">in</span> <span class="n">var_list</span> <span class="ow">and</span> <span class="s1">&#39;sfcWind&#39;</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+    <span class="n">var_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;zg-500&#39;</span><span class="p">)</span>
+    <span class="n">idx_sfcWind</span> <span class="o">=</span> <span class="n">var_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;sfcWind&#39;</span><span class="p">)</span>
+    <span class="n">var_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx_sfcWind</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;zg-500&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;var_list:&quot;</span><span class="p">,</span> <span class="n">var_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+var_list: [&#39;pr&#39;, &#39;prw&#39;, &#39;psl&#39;, &#39;rlds&#39;, &#39;rltcre&#39;, &#39;rlus&#39;, &#39;rlut&#39;, &#39;rlutcs&#39;, &#39;rsds&#39;, &#39;rsdscs&#39;, &#39;rsdt&#39;, &#39;rstcre&#39;, &#39;rsut&#39;, &#39;rsutcs&#39;, &#39;ta-200&#39;, &#39;ta-850&#39;, &#39;tas&#39;, &#39;tauu&#39;, &#39;ts&#39;, &#39;ua-200&#39;, &#39;ua-850&#39;, &#39;va-200&#39;, &#39;va-850&#39;, &#39;zg-500&#39;]
+</pre></div></div>
+</div>
+</section>
+<section id="Prepare-input-for-portrait-plot-plotting-function">
+<h4>Prepare input for portrait plot plotting function<a class="headerlink" href="#Prepare-input-for-portrait-plot-plotting-function" title="Link to this heading"></a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_djf</span> <span class="o">=</span> <span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xy&#39;</span><span class="p">][</span><span class="s1">&#39;djf&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="n">var_list</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">data_mam</span> <span class="o">=</span> <span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xy&#39;</span><span class="p">][</span><span class="s1">&#39;mam&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="n">var_list</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">data_jja</span> <span class="o">=</span> <span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xy&#39;</span><span class="p">][</span><span class="s1">&#39;jja&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="n">var_list</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">data_son</span> <span class="o">=</span> <span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xy&#39;</span><span class="p">][</span><span class="s1">&#39;son&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="n">var_list</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">model_names</span> <span class="o">=</span> <span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xyt&#39;</span><span class="p">][</span><span class="s1">&#39;ann&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">data_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">data_djf</span><span class="p">,</span> <span class="n">data_mam</span><span class="p">,</span> <span class="n">data_jja</span><span class="p">,</span> <span class="n">data_son</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;data.shape:&#39;</span><span class="p">,</span> <span class="n">data_all</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;len(var_list): &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_list</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;len(model_names): &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_names</span><span class="p">))</span>
+
+<span class="n">xaxis_labels</span> <span class="o">=</span> <span class="n">var_list</span>
+<span class="n">yaxis_labels</span> <span class="o">=</span> <span class="n">model_names</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+data.shape: (4, 46, 24)
+len(var_list):  24
+len(model_names):  46
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="1.5-Normalize-each-column-by-its-median-for-portrait-plot">
+<h3>1.5 Normalize each column by its median for portrait plot<a class="headerlink" href="#1.5-Normalize-each-column-by-its-median-for-portrait-plot" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">normalize_by_median</span></code> function.</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: 2d numpy array</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span></code>: 0 (normalize each column) or 1 (normalize each row), default=0</p></li>
+</ul>
+</section>
+<section id="Return">
+<h4>Return<a class="headerlink" href="#Return" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data_nor</span></code>: 2d numpy array</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.graphics</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_by_median</span>
+
+<span class="n">data_djf_nor</span> <span class="o">=</span> <span class="n">normalize_by_median</span><span class="p">(</span><span class="n">data_djf</span><span class="p">)</span>
+<span class="n">data_mam_nor</span> <span class="o">=</span> <span class="n">normalize_by_median</span><span class="p">(</span><span class="n">data_mam</span><span class="p">)</span>
+<span class="n">data_jja_nor</span> <span class="o">=</span> <span class="n">normalize_by_median</span><span class="p">(</span><span class="n">data_jja</span><span class="p">)</span>
+<span class="n">data_son_nor</span> <span class="o">=</span> <span class="n">normalize_by_median</span><span class="p">(</span><span class="n">data_son</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_all_nor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">data_djf_nor</span><span class="p">,</span> <span class="n">data_mam_nor</span><span class="p">,</span> <span class="n">data_jja_nor</span><span class="p">,</span> <span class="n">data_son_nor</span><span class="p">])</span>
+<span class="n">data_all_nor</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(4, 46, 24)
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+<section id="2.-Portrait-Plot">
+<h2>2. Portrait Plot<a class="headerlink" href="#2.-Portrait-Plot" title="Link to this heading"></a></h2>
+<p>Use Matplotlib-based PMP Visualization Function. Detailed description for the functions parameters and returns can be found in the <a class="reference external" href="http://pcmdi.github.io/pcmdi_metrics/generated/pcmdi_metrics.graphics.portrait_plot.html#pcmdi_metrics.graphics.portrait_plot">API documentation</a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.graphics</span><span class="w"> </span><span class="kn">import</span> <span class="n">portrait_plot</span>
+</pre></div>
+</div>
+</div>
+<section id="Portrait-Plot-with-4-Triangles-(4-seasons)">
+<h3>Portrait Plot with 4 Triangles (4 seasons)<a class="headerlink" href="#Portrait-Plot-with-4-Triangles-(4-seasons)" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>data order is clockwise from top: top, right, bottom, left</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">cbar</span> <span class="o">=</span> <span class="n">portrait_plot</span><span class="p">(</span><span class="n">data_all_nor</span><span class="p">,</span>
+                              <span class="n">xaxis_labels</span><span class="o">=</span><span class="n">xaxis_labels</span><span class="p">,</span>
+                              <span class="n">yaxis_labels</span><span class="o">=</span><span class="n">yaxis_labels</span><span class="p">,</span>
+                              <span class="n">cbar_label</span><span class="o">=</span><span class="s1">&#39;RMSE&#39;</span><span class="p">,</span>
+                              <span class="n">box_as_square</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">vrange</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+                              <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span>
+                              <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdYlBu_r&#39;</span><span class="p">,</span>
+                              <span class="n">cmap_bounds</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+                              <span class="n">cbar_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;extend&quot;</span><span class="p">:</span> <span class="s2">&quot;both&quot;</span><span class="p">},</span>
+                              <span class="n">missing_color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+                              <span class="n">legend_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">legend_labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span> <span class="s1">&#39;MAM&#39;</span><span class="p">,</span> <span class="s1">&#39;JJA&#39;</span><span class="p">,</span> <span class="s1">&#39;SON&#39;</span><span class="p">],</span>
+                              <span class="n">legend_box_xy</span><span class="o">=</span><span class="p">(</span><span class="mf">1.25</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                              <span class="n">legend_box_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                              <span class="n">legend_lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                              <span class="n">legend_fontsize</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span>
+                              <span class="n">logo_rect</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">]</span>
+                             <span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xaxis_labels</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+
+<span class="c1"># Add title</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Seasonal climatology RMSE&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># Add data info</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">1.25</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s1">&#39;Data version</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="n">data_version</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+         <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,)</span>
+
+<span class="c1"># Add Watermark</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;Example&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 0.5, &#39;Example&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_mean_clim_plots_test_model_36_1.png" src="../_images/examples_mean_clim_plots_test_model_36_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save figure as an image file</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;mean_clim_portrait_plot_4seasons_example_user_model.png&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="3.-Parallel-Coordinate-Plot">
+<h2>3. Parallel Coordinate Plot<a class="headerlink" href="#3.-Parallel-Coordinate-Plot" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xyt&#39;</span><span class="p">][</span><span class="s1">&#39;ann&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="n">var_list</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">model_names</span> <span class="o">=</span> <span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xyt&#39;</span><span class="p">][</span><span class="s1">&#39;ann&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="c1">#metric_names = [&#39;\n[&#39;.join(var_unit.split(&#39; [&#39;)) for var_unit in var_unit_list]</span>
+<span class="n">metric_names</span> <span class="o">=</span> <span class="n">var_list</span>
+<span class="n">model_highlights</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;my_model&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;data.shape:&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;len(metric_names): &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">metric_names</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;len(model_names): &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_names</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+data.shape: (46, 24)
+len(metric_names):  24
+len(model_names):  46
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">units_all</span> <span class="o">=</span> <span class="s1">&#39;prw [kg m-2], pr [mm d-1], psl [Pa], rlds [W m-2], rsdscs [W m-2], rltcre [W m-2], rlus [W m-2], rlut [W m-2], rlutcs [W m-2], rsds [W m-2], rsdt [W m-2], rstcre [W m-2], rsus [W m-2], rsut [W m-2], rsutcs [W m-2], sfcWind [m s-1], zg-500 [m], ta-200 [K], ta-850 [K], tas [K], ts [K], ua-200 [m s-1], ua-850 [m s-1], uas [m s-1], va-200 [m s-1], va-850 [m s-1], vas [m s-1], tauu [Pa]&#39;</span>
+<span class="n">units_all</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+<span class="n">var_unit_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">var_units</span> <span class="ow">in</span> <span class="n">units_all</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">):</span>
+        <span class="n">tmp1</span> <span class="o">=</span> <span class="n">var_units</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; [&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1">#print(var, tmp1)</span>
+        <span class="k">if</span> <span class="n">tmp1</span> <span class="o">==</span> <span class="n">var</span><span class="p">:</span>
+            <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="n">var_units</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; [&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">var_unit_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">unit</span><span class="p">)</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="n">found</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s1">&#39;not found&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;var_unit_list:&#39;</span><span class="p">,</span> <span class="n">var_unit_list</span><span class="p">)</span>
+
+<span class="n">metric_names</span> <span class="o">=</span> <span class="n">var_unit_list</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+var_unit_list: [&#39;pr\n[mm d-1]&#39;, &#39;prw\n[kg m-2]&#39;, &#39;psl\n[Pa]&#39;, &#39;rlds\n[W m-2]&#39;, &#39;rltcre\n[W m-2]&#39;, &#39;rlus\n[W m-2]&#39;, &#39;rlut\n[W m-2]&#39;, &#39;rlutcs\n[W m-2]&#39;, &#39;rsds\n[W m-2]&#39;, &#39;rsdscs\n[W m-2]&#39;, &#39;rsdt\n[W m-2]&#39;, &#39;rstcre\n[W m-2]&#39;, &#39;rsut\n[W m-2]&#39;, &#39;rsutcs\n[W m-2]&#39;, &#39;ta-200\n[K]&#39;, &#39;ta-850\n[K]&#39;, &#39;tas\n[K]&#39;, &#39;tauu\n[Pa]&#39;, &#39;ts\n[K]&#39;, &#39;ua-200\n[m s-1]&#39;, &#39;ua-850\n[m s-1]&#39;, &#39;va-200\n[m s-1]&#39;, &#39;va-850\n[m s-1]&#39;, &#39;zg-500\n[m]&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;rms_xyt&#39;</span><span class="p">][</span><span class="s1">&#39;ann&#39;</span><span class="p">][</span><span class="s1">&#39;global&#39;</span><span class="p">][</span><span class="n">var_list</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Index([&#39;pr&#39;, &#39;prw&#39;, &#39;psl&#39;, &#39;rlds&#39;, &#39;rltcre&#39;, &#39;rlus&#39;, &#39;rlut&#39;, &#39;rlutcs&#39;, &#39;rsds&#39;,
+       &#39;rsdscs&#39;, &#39;rsdt&#39;, &#39;rstcre&#39;, &#39;rsut&#39;, &#39;rsutcs&#39;, &#39;ta-200&#39;, &#39;ta-850&#39;, &#39;tas&#39;,
+       &#39;tauu&#39;, &#39;ts&#39;, &#39;ua-200&#39;, &#39;ua-850&#39;, &#39;va-200&#39;, &#39;va-850&#39;, &#39;zg-500&#39;],
+      dtype=&#39;object&#39;)
+</pre></div></div>
+</div>
+<section id="Use-parallel-coordinate-plot-function-of-PMP">
+<h3>Use parallel coordinate plot function of PMP<a class="headerlink" href="#Use-parallel-coordinate-plot-function-of-PMP" title="Link to this heading"></a></h3>
+<p>Detailed description for the functions parameters and returns can be found in the <a class="reference external" href="http://pcmdi.github.io/pcmdi_metrics/generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html#pcmdi_metrics.graphics.parallel_coordinate_plot">API documentation</a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.graphics</span><span class="w"> </span><span class="kn">import</span> <span class="n">parallel_coordinate_plot</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">parallel_coordinate_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metric_names</span><span class="p">,</span> <span class="n">model_names</span><span class="p">,</span> <span class="n">model_highlights</span><span class="p">,</span>
+                                   <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Mean Climate: RMS_XYT, ANN, Global&#39;</span><span class="p">,</span>
+                                   <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>
+                                   <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;tab20&#39;</span><span class="p">,</span>
+                                   <span class="n">show_boxplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">show_violin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                   <span class="n">xtick_labelsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                   <span class="n">logo_rect</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">])</span>
+<span class="c1">#fig.text(0.99, -0.45, &#39;Data version\n&#39;+data_version, transform=ax.transAxes,</span>
+<span class="c1">#         fontsize=12, color=&#39;black&#39;, alpha=0.6, ha=&#39;right&#39;, va=&#39;bottom&#39;,)</span>
+
+<span class="c1"># Add Watermark</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;Example&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 0.5, &#39;Example&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_mean_clim_plots_test_model_44_1.png" src="../_images/examples_mean_clim_plots_test_model_44_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save figure as an image file</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;mean_clim_parallel_coordinate_plot_example_user_model.png&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="4.-Box-plots">
+<h2>4. Box plots<a class="headerlink" href="#4.-Box-plots" title="Link to this heading"></a></h2>
+<p>Generate a set of box plots using <code class="docutils literal notranslate"><span class="pre">`matplotlib</span></code> &lt;<a class="reference external" href="https://matplotlib.org/">https://matplotlib.org/</a>&gt;`__ and <code class="docutils literal notranslate"><span class="pre">`pandas.DataFrame.boxplot</span></code> &lt;<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.boxplot.html">https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.boxplot.html</a>&gt;`__.</p>
+<p>Note: The box extends from the first quartile (Q1) to the third quartile (Q3) of the data, with a line at the median. The whiskers extend from the box by 1.5x the inter-quartile range (IQR). Flier points are those past the end of the whiskers. See <a class="reference external" href="https://matplotlib.org/3.5.0/api/_as_gen/matplotlib.pyplot.boxplot.html">https://matplotlib.org/3.5.0/api/_as_gen/matplotlib.pyplot.boxplot.html</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/Box_plot">https://en.wikipedia.org/wiki/Box_plot</a> for reference.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stat</span> <span class="o">=</span> <span class="s1">&#39;rms_xyt&#39;</span>
+<span class="n">season</span> <span class="o">=</span> <span class="s1">&#39;ann&#39;</span>
+<span class="n">region</span> <span class="o">=</span> <span class="s1">&#39;global&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpatches</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">14</span><span class="p">))</span>
+
+<span class="n">ncols</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">nrows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span><span class="o">/</span><span class="n">ncols</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Box plot for library (i.e., CMIP6 models)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">df_dict</span><span class="p">[</span><span class="n">stat</span><span class="p">][</span><span class="n">season</span><span class="p">][</span><span class="n">region</span><span class="p">]</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">var</span><span class="p">],</span>
+        <span class="c1"># Customize box plot</span>
+        <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">boxes</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">whiskers</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">medians</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">caps</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">),</span>
+        <span class="n">boxprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="n">flierprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="n">medianprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">),</span>
+        <span class="n">whiskerprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="n">capprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">),</span>
+        <span class="n">showfliers</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># mute showing outliers</span>
+        <span class="n">rot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="c1"># Add marker for test case (i.e. user models)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">my_model</span> <span class="o">=</span> <span class="n">test_case</span><span class="o">.</span><span class="n">df_dict</span><span class="p">[</span><span class="n">stat</span><span class="p">][</span><span class="n">season</span><span class="p">][</span><span class="n">region</span><span class="p">][</span><span class="n">var</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">my_model</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="c1"># Show unit as y-axis label</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">var_unit_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># Show legend at upper right corner of the figure</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="n">ncols</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">l</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+        <span class="n">black_patch</span> <span class="o">=</span> <span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;CMIP6&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span> <span class="p">[</span><span class="n">black_patch</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span>
+                  <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Add Watermark</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s1">&#39;Example&#39;</span><span class="p">,</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;rms_xyt, ann, global&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_mean_clim_plots_test_model_48_0.png" src="../_images/examples_mean_clim_plots_test_model_48_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;mean_clim_box_plot_example_user_model.png&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="5.-Taylor-Diagram">
+<h2>5. Taylor Diagram<a class="headerlink" href="#5.-Taylor-Diagram" title="Link to this heading"></a></h2>
+<p>Detailed description for the functions parameters and returns can be found in the <a class="reference external" href="http://pcmdi.github.io/pcmdi_metrics/generated/pcmdi_metrics.graphics.TaylorDiagram.html#pcmdi_metrics.graphics.TaylorDiagram">API documentation</a>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.graphics</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaylorDiagram</span>
+</pre></div>
+</div>
+</div>
+<p>Select variabile, season, and region for Taylor Diagram</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="o">=</span> <span class="s2">&quot;ts&quot;</span>
+<span class="n">season</span> <span class="o">=</span> <span class="s2">&quot;djf&quot;</span>
+<span class="n">region</span> <span class="o">=</span> <span class="s2">&quot;global&quot;</span>
+</pre></div>
+</div>
+</div>
+<section id="5.1-Identify-all-models">
+<h3>5.1 Identify all models<a class="headerlink" href="#5.1-Identify-all-models" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+
+<span class="n">stddev</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">df_dict</span><span class="p">[</span><span class="s2">&quot;std_xy&quot;</span><span class="p">][</span><span class="n">season</span><span class="p">][</span><span class="n">region</span><span class="p">][</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">refstd</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">df_dict</span><span class="p">[</span><span class="s1">&#39;std-obs_xy&#39;</span><span class="p">][</span><span class="n">season</span><span class="p">][</span><span class="n">region</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">corrcoeff</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">df_dict</span><span class="p">[</span><span class="s2">&quot;cor_xy&quot;</span><span class="p">][</span><span class="n">season</span><span class="p">][</span><span class="n">region</span><span class="p">][</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">models</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">df_dict</span><span class="p">[</span><span class="s2">&quot;cor_xy&quot;</span><span class="p">][</span><span class="n">season</span><span class="p">][</span><span class="n">region</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+
+<span class="n">colors</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)))</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">TaylorDiagram</span><span class="p">(</span><span class="n">stddev</span><span class="p">,</span> <span class="n">corrcoeff</span><span class="p">,</span> <span class="n">refstd</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">models</span><span class="p">,</span> <span class="n">ref_label</span><span class="o">=</span><span class="s1">&#39;Ref: &#39;</span><span class="o">+</span><span class="n">var_ref_dict</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower left&#39;</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">var</span><span class="p">,</span> <span class="n">season</span><span class="p">,</span> <span class="n">region</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># Add Watermark</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s1">&#39;Example&#39;</span><span class="p">,</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 0.4, &#39;Example&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_mean_clim_plots_test_model_55_1.png" src="../_images/examples_mean_clim_plots_test_model_55_1.png" />
+</div>
+</div>
+</section>
+<section id="5.2-Highlight-user's-model">
+<h3>5.2 Highlight user’s model<a class="headerlink" href="#5.2-Highlight-user's-model" title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+
+<span class="c1"># Customize plot to highlight user&#39;s model in red, others in grey</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="n">markers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="n">markersizes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="n">zorders</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">models</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+        <span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+        <span class="n">markersizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">zorders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;CMIP6 models&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+        <span class="n">markersizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+        <span class="n">zorders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">TaylorDiagram</span><span class="p">(</span><span class="n">stddev</span><span class="p">,</span> <span class="n">corrcoeff</span><span class="p">,</span> <span class="n">refstd</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">markers</span><span class="p">,</span>
+                        <span class="n">markersizes</span><span class="o">=</span><span class="n">markersizes</span><span class="p">,</span> <span class="n">zorders</span><span class="o">=</span><span class="n">zorders</span><span class="p">,</span> <span class="n">ref_label</span><span class="o">=</span><span class="s1">&#39;Ref: &#39;</span><span class="o">+</span><span class="n">var_ref_dict</span><span class="p">[</span><span class="n">var</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">var</span><span class="p">,</span> <span class="n">season</span><span class="p">,</span> <span class="n">region</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># Add Watermark</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s1">&#39;Example&#39;</span><span class="p">,</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 0.4, &#39;Example&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_mean_clim_plots_test_model_57_1.png" src="../_images/examples_mean_clim_plots_test_model_57_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;mean_clim_taylor_diagram_example_user_model.png&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="enso_portrait_plot.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Portrait Plot: ENSO</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="taylor_diagram_multiple_CMIPs.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">PMP mean climate: Compare user’s model with CMIP6</a><ul>
+<li><a class="reference internal" href="#Contents">Contents</a></li>
+<li><a class="reference internal" href="#1.-Read-data-from-JSON-files">1. Read data from JSON files</a><ul>
+<li><a class="reference internal" href="#1.1-Download-PMP-output-JSON-files-for-CMIP-models">1.1 Download PMP output JSON files for CMIP models</a></li>
+<li><a class="reference internal" href="#1.2-Provide-PMP-results-for-the-user's-model">1.2 Provide PMP results for the user’s model</a></li>
+<li><a class="reference internal" href="#1.3-Extract-data-from-JSON-files">1.3 Extract data from JSON files</a><ul>
+<li><a class="reference internal" href="#Parameters">Parameters</a></li>
+<li><a class="reference internal" href="#Returned-object-includes">Returned object includes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#1.4-Combine-your-PMP-output-with-CMIP-results">1.4 Combine your PMP output with CMIP results</a><ul>
+<li><a class="reference internal" href="#Check-loaded-data">Check loaded data</a></li>
+<li><a class="reference internal" href="#Customize-variables-to-show-(optional)">Customize variables to show (optional)</a></li>
+<li><a class="reference internal" href="#Prepare-input-for-portrait-plot-plotting-function">Prepare input for portrait plot plotting function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#1.5-Normalize-each-column-by-its-median-for-portrait-plot">1.5 Normalize each column by its median for portrait plot</a><ul>
+<li><a class="reference internal" href="#id1">Parameters</a></li>
+<li><a class="reference internal" href="#Return">Return</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#2.-Portrait-Plot">2. Portrait Plot</a><ul>
+<li><a class="reference internal" href="#Portrait-Plot-with-4-Triangles-(4-seasons)">Portrait Plot with 4 Triangles (4 seasons)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#3.-Parallel-Coordinate-Plot">3. Parallel Coordinate Plot</a><ul>
+<li><a class="reference internal" href="#Use-parallel-coordinate-plot-function-of-PMP">Use parallel coordinate plot function of PMP</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#4.-Box-plots">4. Box plots</a></li>
+<li><a class="reference internal" href="#5.-Taylor-Diagram">5. Taylor Diagram</a><ul>
+<li><a class="reference internal" href="#5.1-Identify-all-models">5.1 Identify all models</a></li>
+<li><a class="reference internal" href="#5.2-Highlight-user's-model">5.2 Highlight user’s model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

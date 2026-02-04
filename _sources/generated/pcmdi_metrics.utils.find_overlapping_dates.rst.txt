@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.utils.find\_overlapping\_dates
+=============================================
+
+.. currentmodule:: pcmdi_metrics.utils
+
+.. autofunction:: find_overlapping_dates

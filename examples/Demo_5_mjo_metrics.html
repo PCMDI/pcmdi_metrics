@@ -1,0 +1,1113 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="6. ENSO" href="Demo_6_ENSO.html" /><link rel="prev" title="4. Modes of Variability" href="Demo_4_modes_of_variability.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>5. MJO - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/Demo_5_mjo_metrics.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/Demo_5_mjo_metrics.ipynb" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="5.-MJO">
+<h1>5. MJO<a class="headerlink" href="#5.-MJO" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates the basic usage of the Madden-Julian Oscillation (MJO) metrics driver.</p>
+<p>Before running this demo, please ensure that the sample data has been downloaded by running the <a class="reference external" href="http://pcmdi.github.io/pcmdi_metrics/examples/Demo_0_download_data.html">Demo 0</a>: Download Data notebook, if you haven’t already.</p>
+<p>Scientific information about the MJO metrics is available through the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/master/pcmdi_metrics/mjo">README</a>.</p>
+<p>References:</p>
+<ul class="simple">
+<li><p>Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, <a class="reference external" href="https://doi.org/10.5194/gmd-17-3919-2024">doi:
+10.5194/gmd-17-3919-2024</a>.</p></li>
+<li><p>Ahn, M.-S., D. Kim, K. R. Sperber, I.-S. Kang, E. Maloney, D. Waliser, H. Hendon, 2017: MJO simulation in CMIP5 climate models: MJO skill metrics and process-oriented diagnosis. Clim. Dynam., 49, 4023-4045. <a class="reference external" href="https://doi.org/10.1007/s00382-017-3558-4">doi: 10.1007/s00382-017-3558-4</a>.</p></li>
+</ul>
+<p>First we load the demo directory choices (read from <code class="docutils literal notranslate"><span class="pre">user_choices.py</span></code> file in the current directory, which is generated when running the <a class="reference external" href="http://pcmdi.github.io/pcmdi_metrics/examples/Demo_0_download_data.html">Demo 0</a>):</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">user_choices</span><span class="w"> </span><span class="kn">import</span> <span class="n">demo_data_directory</span><span class="p">,</span> <span class="n">demo_output_directory</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag is available to provide more information on the mjo_metrics_driver:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+mjo_metrics_driver.py<span class="w"> </span>--help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: mjo_metrics_driver.py [-h] [--parameters PARAMETERS]
+                             [--diags OTHER_PARAMETERS [OTHER_PARAMETERS ...]]
+                             [--results_dir RESULTS_DIR]
+                             [--reference_data_path REFERENCE_DATA_PATH]
+                             [--modpath MODPATH] [--mip MIP] [--exp EXP]
+                             [--frequency FREQUENCY] [--realm REALM]
+                             [--reference_data_name REFERENCE_DATA_NAME]
+                             [--reference_data_lf_path REFERENCE_DATA_LF_PATH]
+                             [--modpath_lf MODPATH_LF] [--varOBS VAROBS]
+                             [--varModel VARMODEL]
+                             [--ObsUnitsAdjust OBSUNITSADJUST]
+                             [--ModUnitsAdjust MODUNITSADJUST] [--units UNITS]
+                             [--osyear OSYEAR] [--msyear MSYEAR]
+                             [--oeyear OEYEAR] [--meyear MEYEAR]
+                             [--seasons SEASONS [SEASONS ...]]
+                             [--modnames MODNAMES [MODNAMES ...]]
+                             [-r REALIZATION] [--case_id CASE_ID] [-d DEBUG]
+                             [--nc_out NC_OUT] [--plot PLOT]
+                             [--update_json UPDATE_JSON] [--cmec] [--no_cmec]
+                             [--parallel] [--includeOBS] [--no_OBS]
+                             [--num_workers NUM_WORKERS]
+
+Runs PCMDI MJO Computations
+
+options:
+  -h, --help            show this help message and exit
+  --parameters PARAMETERS, -p PARAMETERS
+  --diags OTHER_PARAMETERS [OTHER_PARAMETERS ...]
+                        Path to other user-defined parameter file.
+  --results_dir RESULTS_DIR, --rd RESULTS_DIR
+                        The name of the folder where all runs will be stored.
+  --reference_data_path REFERENCE_DATA_PATH, --rdp REFERENCE_DATA_PATH
+                        The path/filename of reference (obs) data.
+  --modpath MODPATH, --mp MODPATH
+                        Explicit path to model data
+  --mip MIP             A WCRP MIP project such as CMIP3 and CMIP5
+  --exp EXP             An experiment such as amip, historical or piContorl
+  --frequency FREQUENCY
+  --realm REALM
+  --reference_data_name REFERENCE_DATA_NAME
+                        Name of reference data set
+  --reference_data_lf_path REFERENCE_DATA_LF_PATH
+                        Path of landsea mask for reference data set
+  --modpath_lf MODPATH_LF
+                        Path of landsea mask for model data set
+  --varOBS VAROBS       Name of variable in reference data
+  --varModel VARMODEL   Name of variable in model(s)
+  --ObsUnitsAdjust OBSUNITSADJUST
+                        For unit adjust for OBS dataset. For example:
+                        - (True, &#39;divide&#39;, 100.0)  # Pa to hPa
+                        - (True, &#39;subtract&#39;, 273.15)  # degK to degC
+                        - (False, 0, 0) # No adjustment (default)
+  --ModUnitsAdjust MODUNITSADJUST
+                        For unit adjust for model dataset. For example:
+                        - (True, &#39;divide&#39;, 100.0)  # Pa to hPa
+                        - (True, &#39;subtract&#39;, 273.15)  # degK to degC
+                        - (False, 0, 0) # No adjustment (default)
+  --units UNITS         Final units for the variable
+  --osyear OSYEAR       Start year for reference data set
+  --msyear MSYEAR       Start year for model data set
+  --oeyear OEYEAR       End year for reference data set
+  --meyear MEYEAR       End year for model data set
+  --seasons SEASONS [SEASONS ...]
+                        List of seasons. Available: &#39;NDJFMA&#39;, &#39;MJJASO&#39;
+  --modnames MODNAMES [MODNAMES ...]
+                        List of models. &#39;all&#39; for every available models
+  -r REALIZATION, --realization REALIZATION
+                        Consider all accessible realizations as idividual
+                        - r1i1p1: default, consider only &#39;r1i1p1&#39; member
+                                  Or, specify realization, e.g, r3i1p1&#39;
+                        - *: consider all available realizations
+  --case_id CASE_ID     version as date, e.g., v20191116 (yyyy-mm-dd)
+  -d DEBUG, --debug DEBUG
+                        Option for debug: False (defualt) or True
+  --nc_out NC_OUT       Option for generate netCDF file output: True (default) / False
+  --plot PLOT           Option for generate individual plots: True (default) / False
+  --update_json UPDATE_JSON
+                        Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)
+  --cmec                Option to save metrics in CMEC format
+  --no_cmec             Option to not save metrics in CMEC format
+  --parallel            Turn on the parallel mode for running code using multiple CPUs
+  --includeOBS          include observation
+  --no_OBS              include observation
+  --num_workers NUM_WORKERS
+                        Start year for model data set
+</pre></div></div>
+</div>
+<section id="Basic-Use">
+<h2>Basic Use<a class="headerlink" href="#Basic-Use" title="Link to this heading"></a></h2>
+<p>The MJO driver can read a parameter file to load user settings. A basic parameter file is shown here:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_mjo_param.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+import os
+
+#
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
+#
+#
+
+case_id = &#39;Ex1&#39;
+realization = &#39;r6i1p1&#39;
+
+# ROOT PATH FOR MODELS CLIMATOLOGIES
+modnames = [&#39;GISS-E2-H&#39;]
+modpath = &#39;demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_%(model)_historical_r6i1p1_20000101-20051231.nc&#39;
+varModel = &#39;pr&#39;
+ModUnitsAdjust = (True, &#39;multiply&#39;, 86400.0, &#39;mm d-1&#39;)  # kg m-2 s-1 to mm day-1
+units = &#39;mm/d&#39;
+msyear = 2000
+meyear = 2002
+seasons = [&#39;NDJFMA&#39;, &#39;MJJASO&#39;]
+
+# ROOT PATH FOR OBSERVATIONS
+reference_data_name = &#39;GPCP-IP&#39;
+reference_data_path = &#39;demo_data_tmp/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc&#39;
+varOBS = &#39;pr&#39;
+ObsUnitsAdjust = (True, &#39;multiply&#39;, 86400.0, &#39;mm d-1&#39;)  # kg m-2 s-1 to mm day-1
+osyear = 1998
+oeyear = 1999
+
+# DIRECTORY WHERE TO PUT RESULTS
+results_dir = &#39;demo_output_tmp/mjo/%(case_id)&#39;
+
+# MISCELLANEOUS
+nc_out = False
+plot = True  # Create map graphics
+update_json = True
+
+</pre></div></div>
+</div>
+<p>This parameter file can be passed to the mjo driver via the command line:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mjo_metrics_driver.py -p basic_mjo_param.py
+</pre></div>
+</div>
+<p>This example is run as a subprocess in the next cell.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+mjo_metrics_driver.py<span class="w"> </span>-p<span class="w"> </span>basic_mjo_param.py<span class="w"> </span>--debug<span class="w"> </span>True
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+includeOBS: True
+models: [&#39;GISS-E2-H&#39;]
+realization:  r6i1p1
+output directories:
+graphics : demo_output_tmp/mjo/Ex1
+diagnostic_results : demo_output_tmp/mjo/Ex1
+metrics_results : demo_output_tmp/mjo/Ex1
+CMEC: False
+debug:  True
+parallel: False
+ -----  obs  ---------------------
+ ---  GPCP-IP  ---
+demo_data_tmp/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc
+ --  NDJFMA  --
+debug: open file: demo_data_tmp/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc
+debug: check time
+debug: startYear, endYear: 1998 1999
+debug: NL, NT: 144 180
+debug: before year loop: daSeaCyc.shape: (180, 180, 360)
+1998
+Converting units by  multiply 86400.0
+debug: year, segment[year][data_var].shape: 1998 (180, 180, 360)
+debug: after year loop: daSeaCyc.shape: (180, 180, 360)
+debug: year loop start
+chk: year: 1998
+debug: ds_regrid_subset[data_var] shape: (180, 8, 144)
+debug: compute space-time spectrum
+OEE: &lt;xarray.DataArray &#39;power&#39; (zonalwavenumber: 11, frequency: 21)&gt; Size: 2kB
+array([[2.36910155e-03, 1.51265210e-02, 1.18739458e-02, 5.81161638e-03,
+        1.09830500e-02, 3.86928395e-03, 2.14416805e-03, 6.52917233e-03,
+        7.07560778e-03, 1.00309803e-02, 1.72325645e-03, 1.00309803e-02,
+        7.07560778e-03, 6.52917233e-03, 2.14416805e-03, 3.86928395e-03,
+        1.09830500e-02, 5.81161638e-03, 1.18739458e-02, 1.51265210e-02,
+        2.36910155e-03],
+       [6.76338315e-04, 1.83563496e-02, 3.45146917e-02, 6.74832770e-03,
+        1.81981936e-03, 1.70161928e-03, 2.96769991e-03, 8.84541268e-03,
+        3.23222820e-03, 4.41311440e-02, 4.91307731e-05, 1.45325759e-02,
+        7.52461145e-03, 4.30240226e-02, 5.40665900e-02, 7.44683041e-03,
+        1.03330797e-02, 2.99916358e-02, 1.05103023e-02, 2.55793002e-02,
+        5.17013345e-03],
+       [7.27431391e-03, 1.19201516e-02, 1.78900079e-02, 3.08577963e-03,
+        9.87644521e-03, 4.45900288e-04, 1.32125728e-02, 1.37242942e-02,
+        4.18005179e-03, 1.80659496e-03, 2.42318412e-04, 1.13157799e-02,
+        7.62902212e-03, 7.89011934e-04, 5.12348651e-03, 6.78978981e-03,
+        2.72573875e-02, 2.91306810e-02, 1.73124011e-03, 1.10582104e-02,
+        1.52611855e-02],
+       [1.73798501e-03, 9.34147546e-03, 5.01560228e-03, 3.22126950e-03,
+        3.87026649e-03, 9.81667141e-03, 1.44738178e-03, 4.25091598e-05,
+...
+        1.40514039e-03, 6.80917483e-04, 1.09931305e-03, 1.30763266e-03,
+        2.68237799e-03],
+       [2.97364870e-03, 3.76882823e-03, 1.49080137e-04, 4.11393259e-04,
+        2.84524633e-03, 9.98019537e-04, 2.75820340e-04, 3.99225284e-03,
+        6.86621160e-03, 1.83329828e-03, 3.92054558e-04, 5.50241078e-03,
+        1.97972992e-03, 3.75883174e-04, 8.41614999e-04, 2.83386424e-03,
+        2.74953637e-03, 4.87153083e-03, 6.70786834e-04, 1.90195272e-03,
+        3.78144418e-03],
+       [1.21214996e-05, 9.66304428e-04, 9.26323304e-04, 4.48698192e-03,
+        8.90605606e-04, 3.62311193e-05, 3.00316967e-04, 7.91572265e-04,
+        4.09180258e-04, 1.50752530e-03, 5.63113947e-04, 3.37306368e-03,
+        7.22179810e-05, 5.13499723e-05, 3.16019678e-03, 7.53727326e-04,
+        9.13666688e-05, 5.21764319e-04, 9.67519360e-04, 1.94941967e-03,
+        2.14967914e-03],
+       [9.76033329e-04, 7.81640969e-04, 6.96038209e-03, 1.40803352e-03,
+        3.60859518e-03, 1.02872093e-03, 3.81870585e-06, 2.70593758e-04,
+        1.23662802e-03, 1.70441680e-03, 2.65195130e-04, 8.58281940e-04,
+        3.11981369e-03, 5.42573427e-04, 8.72481664e-04, 1.58997452e-03,
+        9.45615999e-04, 2.57441323e-04, 9.25116598e-04, 5.45678800e-03,
+        1.51478898e-03]])
+Coordinates:
+  * frequency        (frequency) float64 168B -0.05556 -0.05 ... 0.05 0.05556
+  * zonalwavenumber  (zonalwavenumber) float64 88B 0.0 1.0 2.0 ... 8.0 9.0 10.0
+OEE.shape: (11, 21)
+ewr:  2.933687364115082
+east power:  0.016568144258499968
+west power:  0.0056475493814241474
+type(segment_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_year.shape: (180, 180, 360)
+type(daSeaCyc) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+daSeaCyc.shape: (180, 180, 360)
+type(segment_ano_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_ano_year.shape: (180, 180, 360)
+ --  MJJASO  --
+debug: open file: demo_data_tmp/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc
+debug: check time
+debug: startYear, endYear: 1998 1999
+debug: NL, NT: 144 180
+debug: before year loop: daSeaCyc.shape: (180, 180, 360)
+1998
+Converting units by  multiply 86400.0
+debug: year, segment[year][data_var].shape: 1998 (180, 180, 360)
+debug: after year loop: daSeaCyc.shape: (180, 180, 360)
+debug: year loop start
+chk: year: 1998
+debug: ds_regrid_subset[data_var] shape: (180, 8, 144)
+debug: compute space-time spectrum
+OEE: &lt;xarray.DataArray &#39;power&#39; (zonalwavenumber: 11, frequency: 21)&gt; Size: 2kB
+array([[3.89178303e-04, 1.36427559e-03, 2.39908917e-04, 6.63884694e-04,
+        1.29732316e-03, 1.35521970e-03, 6.10000806e-05, 9.68272687e-04,
+        6.11418059e-04, 4.90337391e-03, 1.11859899e-03, 4.90337391e-03,
+        6.11418059e-04, 9.68272687e-04, 6.10000806e-05, 1.35521970e-03,
+        1.29732316e-03, 6.63884694e-04, 2.39908917e-04, 1.36427559e-03,
+        3.89178303e-04],
+       [5.60566177e-04, 6.57301438e-04, 1.55138802e-04, 2.89633340e-04,
+        3.06136221e-04, 3.47677265e-04, 5.72217362e-04, 1.98912958e-04,
+        3.56935402e-04, 3.65104771e-03, 2.67765996e-05, 3.43633828e-03,
+        2.22699153e-03, 1.37715115e-03, 1.42980885e-03, 4.33880746e-03,
+        3.05412428e-03, 1.47275421e-03, 1.64137719e-03, 7.42480172e-04,
+        7.67868566e-04],
+       [4.60953083e-04, 7.57756074e-04, 8.82322357e-04, 4.64370677e-05,
+        2.64032001e-04, 1.36031928e-03, 1.17741674e-04, 8.05659435e-04,
+        1.12712697e-03, 1.12726433e-03, 6.84354795e-05, 5.84512517e-05,
+        6.43167162e-04, 2.32909502e-04, 1.89794647e-04, 1.16183962e-03,
+        7.76742995e-04, 3.42364544e-04, 2.91442379e-04, 1.83797701e-03,
+        4.33671663e-04],
+       [4.64462031e-04, 6.01709637e-06, 3.62327007e-04, 2.44055959e-04,
+        3.80722798e-04, 2.37705067e-04, 4.01768218e-04, 4.17011347e-04,
+...
+        1.11095138e-03, 1.41661755e-04, 1.70812899e-04, 9.95550999e-05,
+        2.83714845e-04],
+       [5.16888681e-04, 1.70354216e-04, 2.14118515e-04, 5.10481581e-05,
+        1.49944180e-04, 1.70695099e-04, 4.94393477e-04, 8.93534280e-05,
+        5.39842182e-04, 1.38691601e-03, 5.69297256e-05, 8.26071042e-05,
+        1.11349285e-04, 1.28926148e-04, 5.08707440e-05, 2.73543104e-04,
+        6.54749470e-04, 1.61615082e-05, 2.30005168e-04, 2.40995402e-04,
+        1.28346746e-04],
+       [1.28127636e-04, 1.48374130e-04, 7.36876051e-05, 2.35398700e-04,
+        7.47705421e-04, 4.37864949e-05, 1.63964594e-04, 1.73373331e-04,
+        2.07126293e-04, 6.98486954e-05, 4.86252807e-05, 4.32442391e-04,
+        4.85609546e-04, 3.26246975e-04, 1.98445218e-04, 6.37773215e-05,
+        3.44230344e-04, 3.07861123e-04, 1.88144883e-05, 5.11511060e-06,
+        1.00155341e-04],
+       [9.35751402e-05, 4.52634926e-04, 6.60347511e-05, 1.01850054e-04,
+        2.69079882e-04, 1.44148578e-04, 3.47006042e-06, 2.43341358e-04,
+        1.90731161e-04, 1.64827549e-04, 2.29285163e-05, 8.66081727e-05,
+        5.71547310e-05, 2.38952656e-04, 4.66312730e-05, 6.24048396e-05,
+        1.33667694e-04, 9.34240916e-05, 7.89594640e-05, 3.09491377e-04,
+        1.09553161e-04]])
+Coordinates:
+  * frequency        (frequency) float64 168B -0.05556 -0.05 ... 0.05 0.05556
+  * zonalwavenumber  (zonalwavenumber) float64 88B 0.0 1.0 2.0 ... 8.0 9.0 10.0
+OEE.shape: (11, 21)
+ewr:  2.8125107874563495
+east power:  0.001267951025419202
+west power:  0.0004508253021016655
+type(segment_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_year.shape: (180, 180, 360)
+type(daSeaCyc) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+daSeaCyc.shape: (180, 180, 360)
+type(segment_ano_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_ano_year.shape: (180, 180, 360)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:32::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_obs_GPCP-IP_2000-2002.json
+2025-09-09 13:32:42,528 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_obs_GPCP-IP_2000-2002.json
+2025-09-09 13:32:42,528 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_obs_GPCP-IP_2000-2002.json
+INFO::2025-09-09 13:32::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_2000-2002.json
+2025-09-09 13:32:58,066 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_2000-2002.json
+2025-09-09 13:32:58,066 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_2000-2002.json
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Done
+ -----  GISS-E2-H  ---------------------
+debug: model_path_list:  [&#39;demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc&#39;]
+ ---  r6i1p1  ---
+demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+ --  NDJFMA  --
+debug: open file: demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+debug: check time
+debug: startYear, endYear: 2000 2002
+debug: NL, NT: 144 180
+debug: before year loop: daSeaCyc.shape: (180, 90, 144)
+2000
+Converting units by  multiply 86400.0
+debug: year, segment[year][data_var].shape: 2000 (180, 90, 144)
+2001
+Converting units by  multiply 86400.0
+debug: year, segment[year][data_var].shape: 2001 (180, 90, 144)
+debug: after year loop: daSeaCyc.shape: (180, 90, 144)
+debug: year loop start
+chk: year: 2000
+debug: ds_regrid_subset[data_var] shape: (180, 8, 144)
+debug: compute space-time spectrum
+chk: year: 2001
+debug: ds_regrid_subset[data_var] shape: (180, 8, 144)
+debug: compute space-time spectrum
+OEE: &lt;xarray.DataArray &#39;power&#39; (zonalwavenumber: 11, frequency: 21)&gt; Size: 2kB
+array([[3.64319816e-05, 3.37420858e-04, 2.95078675e-04, 9.16697570e-04,
+        1.07091689e-03, 1.23164482e-03, 1.38142241e-03, 5.14193957e-04,
+        1.72918485e-03, 7.65733145e-03, 1.54544576e-04, 7.65733145e-03,
+        1.72918485e-03, 5.14193957e-04, 1.38142241e-03, 1.23164482e-03,
+        1.07091689e-03, 9.16697570e-04, 2.95078675e-04, 3.37420858e-04,
+        3.64319816e-05],
+       [1.39043127e-04, 1.85152594e-03, 3.16411192e-03, 1.73217210e-03,
+        4.21113344e-04, 2.74805560e-04, 1.06323409e-03, 1.22496443e-04,
+        1.48164150e-03, 1.09625193e-02, 2.97348555e-05, 5.54382260e-03,
+        2.71550780e-03, 2.83996453e-03, 4.11519437e-03, 2.65601893e-04,
+        4.38389459e-03, 4.11908474e-04, 2.09992722e-03, 7.16762947e-04,
+        1.14205061e-03],
+       [2.20180618e-03, 2.73511219e-03, 8.86673350e-03, 8.37812243e-03,
+        3.63450908e-04, 6.09409997e-04, 9.64793794e-04, 3.37225106e-04,
+        1.02106816e-04, 5.87319414e-04, 1.20764384e-04, 3.16798147e-03,
+        8.04084997e-03, 1.04334949e-03, 7.55838016e-03, 4.34397875e-03,
+        2.16041922e-03, 6.58014443e-03, 1.29324356e-05, 8.99754470e-05,
+        5.52778369e-04],
+       [1.03445823e-03, 1.92229054e-03, 1.40507658e-03, 9.80597348e-04,
+        1.51172005e-03, 8.07226062e-04, 8.86107293e-04, 1.03368275e-03,
+...
+        5.94729882e-04, 4.24889269e-04, 7.61994589e-05, 7.02075484e-04,
+        1.72408312e-04],
+       [3.88845384e-03, 3.17809832e-04, 1.72152570e-04, 5.28006673e-05,
+        7.05270989e-05, 7.09540836e-04, 1.16077505e-03, 4.45690878e-04,
+        1.17614581e-05, 3.64360709e-04, 5.52244285e-05, 9.42342347e-05,
+        3.09261901e-04, 2.64440365e-04, 1.03507038e-03, 1.51162575e-03,
+        2.07837991e-04, 6.07337165e-04, 6.47632070e-04, 7.06055792e-04,
+        3.62166302e-04],
+       [1.54161366e-03, 1.49388989e-04, 6.38178028e-04, 9.16953268e-05,
+        1.67332478e-03, 2.24154272e-04, 3.78731459e-05, 1.03007787e-03,
+        7.03852990e-04, 1.39480659e-03, 4.70956771e-05, 1.41611172e-03,
+        2.32190302e-04, 1.44765976e-04, 2.19475692e-04, 1.30925958e-04,
+        3.64281568e-04, 3.50338376e-04, 8.27878094e-04, 1.03035586e-04,
+        3.72160810e-04],
+       [4.59968743e-04, 5.84846707e-04, 2.13454322e-04, 8.07870559e-04,
+        7.98661357e-06, 1.04922107e-04, 6.20139107e-04, 2.66727915e-04,
+        9.63400103e-04, 2.53817857e-04, 1.54311969e-04, 1.43822174e-04,
+        3.87749099e-04, 3.93962551e-04, 3.58110958e-04, 5.82846355e-04,
+        4.64778496e-05, 8.70967853e-04, 1.12639831e-03, 6.44800222e-04,
+        3.66262179e-04]])
+Coordinates:
+  * frequency        (frequency) float64 168B -0.05556 -0.05 ... 0.05 0.05556
+  * zonalwavenumber  (zonalwavenumber) float64 88B 0.0 1.0 2.0 ... 8.0 9.0 10.0
+OEE.shape: (11, 21)
+ewr:  4.272833489068223
+east power:  0.002989297593212185
+west power:  0.000699605449372206
+type(segment_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_year.shape: (180, 90, 144)
+type(daSeaCyc) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+daSeaCyc.shape: (180, 90, 144)
+type(segment_ano_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_ano_year.shape: (180, 90, 144)
+ --  MJJASO  --
+debug: open file: demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+debug: check time
+debug: startYear, endYear: 2000 2002
+debug: NL, NT: 144 180
+debug: before year loop: daSeaCyc.shape: (180, 90, 144)
+2000
+Converting units by  multiply 86400.0
+debug: year, segment[year][data_var].shape: 2000 (180, 90, 144)
+2001
+Converting units by  multiply 86400.0
+debug: year, segment[year][data_var].shape: 2001 (180, 90, 144)
+debug: after year loop: daSeaCyc.shape: (180, 90, 144)
+debug: year loop start
+chk: year: 2000
+debug: ds_regrid_subset[data_var] shape: (180, 8, 144)
+debug: compute space-time spectrum
+chk: year: 2001
+debug: ds_regrid_subset[data_var] shape: (180, 8, 144)
+debug: compute space-time spectrum
+OEE: &lt;xarray.DataArray &#39;power&#39; (zonalwavenumber: 11, frequency: 21)&gt; Size: 2kB
+array([[1.22640244e-03, 1.36440626e-04, 1.83917376e-03, 1.41693460e-04,
+        1.21516787e-03, 1.58272356e-04, 3.29276909e-04, 6.77696659e-04,
+        1.43036505e-03, 9.80366539e-04, 2.97552551e-04, 9.80366539e-04,
+        1.43036505e-03, 6.77696659e-04, 3.29276909e-04, 1.58272356e-04,
+        1.21516787e-03, 1.41693460e-04, 1.83917376e-03, 1.36440626e-04,
+        1.22640244e-03],
+       [1.08054483e-03, 6.04058970e-04, 9.29363005e-04, 5.38312172e-04,
+        9.94162673e-04, 2.74341850e-04, 2.76644234e-04, 6.16349299e-04,
+        3.65336174e-03, 3.00137726e-03, 1.89628283e-04, 3.24095767e-03,
+        4.15661697e-04, 7.38447679e-04, 2.59395073e-03, 6.67446066e-04,
+        2.11581802e-03, 1.24140724e-03, 1.69108595e-03, 7.02481255e-04,
+        8.23921596e-04],
+       [1.48224635e-03, 1.88550313e-03, 1.88201404e-03, 5.57021969e-04,
+        1.31236599e-03, 2.26937122e-03, 5.52140729e-04, 1.45341395e-03,
+        1.94052678e-03, 1.76710888e-03, 4.57354481e-04, 2.96689296e-03,
+        7.34087523e-04, 2.40529334e-04, 3.27150097e-03, 7.35859194e-04,
+        3.52796940e-04, 2.39352860e-03, 1.72135137e-03, 5.42214895e-03,
+        7.09735869e-04],
+       [1.15653301e-03, 1.59530805e-03, 9.67533819e-05, 3.28244796e-04,
+        6.37742065e-04, 2.01330001e-03, 3.54949947e-04, 2.89426214e-04,
+...
+        5.54584120e-04, 3.42874172e-05, 2.34191861e-04, 1.81999081e-04,
+        2.76017993e-04],
+       [6.00773942e-04, 5.13749212e-04, 1.06707085e-03, 1.66886553e-04,
+        2.88576238e-04, 1.62376844e-03, 8.81216219e-05, 1.54710887e-04,
+        1.79179240e-04, 4.35810069e-04, 1.60188307e-04, 6.69949147e-04,
+        6.35032440e-04, 1.01837757e-04, 5.70299207e-04, 7.61163470e-04,
+        5.33192525e-04, 3.67408549e-04, 2.61489836e-04, 5.80986160e-05,
+        1.74714176e-04],
+       [1.48155112e-03, 4.77845977e-04, 7.06030168e-04, 1.68242782e-03,
+        9.37803709e-04, 2.42044051e-04, 2.47907249e-03, 9.11978902e-04,
+        8.79143373e-04, 1.33717449e-03, 1.01696568e-04, 1.82385011e-04,
+        7.73383761e-04, 7.15724453e-04, 8.00130815e-04, 2.08954754e-03,
+        9.03664676e-04, 3.88019755e-04, 2.15494074e-04, 7.04628316e-05,
+        3.69811070e-04],
+       [7.00625886e-05, 1.44776886e-03, 4.77283929e-04, 5.26383910e-04,
+        6.48947054e-04, 1.61412028e-04, 7.98014063e-04, 3.05455169e-04,
+        1.59852861e-04, 5.66278867e-04, 8.40366355e-05, 1.15848255e-03,
+        2.44524965e-03, 3.45062443e-04, 1.75681895e-04, 6.81208605e-05,
+        1.96062830e-04, 3.74304730e-04, 8.27316567e-04, 9.76322102e-05,
+        6.81309693e-04]])
+Coordinates:
+  * frequency        (frequency) float64 168B -0.05556 -0.05 ... 0.05 0.05556
+  * zonalwavenumber  (zonalwavenumber) float64 88B 0.0 1.0 2.0 ... 8.0 9.0 10.0
+OEE.shape: (11, 21)
+ewr:  1.1738950081572068
+east power:  0.0010803950724325416
+west power:  0.0009203506829188733
+type(segment_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_year.shape: (180, 90, 144)
+type(daSeaCyc) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+daSeaCyc.shape: (180, 90, 144)
+type(segment_ano_year) &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+segment_ano_year.shape: (180, 90, 144)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:33::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_GISS-E2-H_r6i1p1_2000-2002.json
+2025-09-09 13:33:29,097 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_GISS-E2-H_r6i1p1_2000-2002.json
+2025-09-09 13:33:29,097 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_GISS-E2-H_r6i1p1_2000-2002.json
+INFO::2025-09-09 13:33::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_2000-2002.json
+2025-09-09 13:33:43,492 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_2000-2002.json
+2025-09-09 13:33:43,492 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex1/mjo_stat_cmip5_historical_da_atm_2000-2002.json
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Done
+</pre></div></div>
+</div>
+</section>
+<section id="Command-line-arguments">
+<h2>Command line arguments<a class="headerlink" href="#Command-line-arguments" title="Link to this heading"></a></h2>
+<p>It is also possible to use the command line to pass other arguments to the MJO driver. The command line arguments will override the settings in the parameter file.</p>
+<p>In these example, we change a few different things. The new <code class="docutils literal notranslate"><span class="pre">case_id</span></code> will show up as a new folder in the result directory because of how the <code class="docutils literal notranslate"><span class="pre">result_dir</span></code> variable is set in the parameter file. NetCDF output and plots will be saved. The analysis start and end years for the models are changed to match the observations.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">includeOBS</span></code> flag means that results will also be generated for observations, while the <code class="docutils literal notranslate"><span class="pre">no_OBS</span></code> flag excludes observations.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+mjo_metrics_driver.py<span class="w"> </span>-p<span class="w"> </span>basic_mjo_param.py<span class="w"> </span><span class="se">\</span>
+--case_id<span class="w"> </span><span class="s1">&#39;Ex2&#39;</span><span class="w"> </span><span class="se">\</span>
+--no_OBS<span class="w"> </span><span class="se">\</span>
+--nc_out<span class="w"> </span>True<span class="w"> </span><span class="se">\</span>
+--plot<span class="w"> </span>True<span class="w"> </span><span class="se">\</span>
+--msyear<span class="w"> </span><span class="m">2000</span><span class="w"> </span><span class="se">\</span>
+--meyear<span class="w"> </span><span class="m">2005</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+includeOBS: False
+models: [&#39;GISS-E2-H&#39;]
+realization:  r6i1p1
+output directories:
+graphics : demo_output_tmp/mjo/Ex2
+diagnostic_results : demo_output_tmp/mjo/Ex2
+metrics_results : demo_output_tmp/mjo/Ex2
+CMEC: False
+debug:  False
+parallel: False
+ -----  GISS-E2-H  ---------------------
+ ---  r6i1p1  ---
+demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+ --  NDJFMA  --
+2000
+Converting units by  multiply 86400.0
+2001
+Converting units by  multiply 86400.0
+2002
+Converting units by  multiply 86400.0
+2003
+Converting units by  multiply 86400.0
+2004
+Converting units by  multiply 86400.0
+chk: year: 2000
+chk: year: 2001
+chk: year: 2002
+chk: year: 2003
+chk: year: 2004
+ewr:  1.549148912834605
+east power:  0.005931412302887387
+west power:  0.0038288199757595897
+ --  MJJASO  --
+2000
+Converting units by  multiply 86400.0
+2001
+Converting units by  multiply 86400.0
+2002
+Converting units by  multiply 86400.0
+2003
+Converting units by  multiply 86400.0
+2004
+Converting units by  multiply 86400.0
+chk: year: 2000
+chk: year: 2001
+chk: year: 2002
+chk: year: 2003
+chk: year: 2004
+ewr:  0.9988487228662595
+east power:  0.0024578884945468
+west power:  0.002460721466904151
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:35::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex2/mjo_stat_cmip5_historical_da_atm_GISS-E2-H_r6i1p1_2000-2005.json
+2025-09-09 13:35:13,570 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex2/mjo_stat_cmip5_historical_da_atm_GISS-E2-H_r6i1p1_2000-2005.json
+2025-09-09 13:35:13,570 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex2/mjo_stat_cmip5_historical_da_atm_GISS-E2-H_r6i1p1_2000-2005.json
+INFO::2025-09-09 13:35::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex2/mjo_stat_cmip5_historical_da_atm_2000-2005.json
+2025-09-09 13:35:30,440 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex2/mjo_stat_cmip5_historical_da_atm_2000-2005.json
+2025-09-09 13:35:30,440 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/mjo/Ex2/mjo_stat_cmip5_historical_da_atm_2000-2005.json
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Done
+</pre></div></div>
+</div>
+<p>A png image is created showing the wavenumber-frequency power spectra.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="n">Image</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">demo_output_directory</span><span class="o">+</span><span class="s2">&quot;/mjo/Ex2/cmip5_GISS-E2-H_historical_r6i1p1_mjo_2000-2005_NDJFMA_cmmGrid.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_5_mjo_metrics_12_0.png" src="../_images/examples_Demo_5_mjo_metrics_12_0.png" />
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Demo_6_ENSO.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">6. ENSO</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Demo_4_modes_of_variability.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">4. Modes of Variability</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">5. MJO</a><ul>
+<li><a class="reference internal" href="#Basic-Use">Basic Use</a></li>
+<li><a class="reference internal" href="#Command-line-arguments">Command line arguments</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

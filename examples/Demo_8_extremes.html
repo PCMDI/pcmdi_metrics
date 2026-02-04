@@ -1,0 +1,2058 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="9A. Sea Ice" href="Demo_9_seaIceExtent_ivanova.html" /><link rel="prev" title="7B. Precipitation Distribution" href="Demo_7b_precip_distribution.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>8. Extremes Metrics - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/Demo_8_extremes.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/Demo_8_extremes.ipynb" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="8.-Extremes-Metrics">
+<h1>8. Extremes Metrics<a class="headerlink" href="#8.-Extremes-Metrics" title="Link to this heading"></a></h1>
+<p>This notebook shows users how to run the PMP Extremes metrics driver. This driver can produce annual and seasonal block extremes and return values for temperature or precipitation data.</p>
+<p>This notebook should be run in an environment with python, jupyterlab, pcmdi metrics package, and cdat installed. It is expected that you have downloaded the sample data as demonstrated in the download notebook.</p>
+<p><strong>Reference</strong></p>
+<ul class="simple">
+<li><p>Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, <a class="reference external" href="https://doi.org/10.5194/gmd-17-3919-2024">doi:
+10.5194/gmd-17-3919-2024</a></p></li>
+</ul>
+<p>The following cell reads in the choices you made during the download data step:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">user_choices</span><span class="w"> </span><span class="kn">import</span> <span class="n">demo_data_directory</span><span class="p">,</span> <span class="n">demo_output_directory</span>
+</pre></div>
+</div>
+</div>
+<section id="Create-low-resolution-datasets">
+<h2>Create low resolution datasets<a class="headerlink" href="#Create-low-resolution-datasets" title="Link to this heading"></a></h2>
+<p>This next cell creates very low resolution versions of the input datasets to speed up the demo.</p>
+<p>This step is for the purposes of this demo only. Do not follow this step when working with your own data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xcdat</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xc</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up sample data for demo</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span> <span class="s2">&quot;extremes_tmp&quot;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_lower_resolution_model_data_for_demo</span><span class="p">(</span><span class="n">inpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">outpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span> <span class="ow">or</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">inpath</span><span class="p">)</span>
+        <span class="n">out_grid</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">create_uniform_grid</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="mf">10.</span><span class="p">)</span>
+        <span class="n">output_data</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">regridder</span><span class="o">.</span><span class="n">horizontal</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span> <span class="n">out_grid</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="s2">&quot;regrid2&quot;</span><span class="p">)</span>
+        <span class="n">output_data</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">outpath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+<span class="c1"># Make low resolution model data</span>
+<span class="n">inpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_data_directory</span><span class="p">,</span> <span class="s2">&quot;CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc&quot;</span><span class="p">)</span>
+<span class="n">outpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span> <span class="s2">&quot;extremes_tmp/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc&quot;</span><span class="p">)</span>
+<span class="n">make_lower_resolution_model_data_for_demo</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="n">outpath</span><span class="p">)</span>
+
+<span class="c1"># Make low resolution obs data</span>
+<span class="n">inpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_data_directory</span><span class="p">,</span> <span class="s2">&quot;obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc&quot;</span><span class="p">)</span>
+<span class="n">outpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span> <span class="s2">&quot;extremes_tmp/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc&quot;</span><span class="p">)</span>
+<span class="n">make_lower_resolution_model_data_for_demo</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="n">outpath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Basic-Use">
+<h2>Basic Use<a class="headerlink" href="#Basic-Use" title="Link to this heading"></a></h2>
+<p>The PMP Extremes driver is controlled via a parameter file. The parameter file for this demo is shown here:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_extremes_param.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+# Settings for extremes driver
+
+# These settings are required
+vars = [&#39;pr&#39;] # Choices are &#39;pr&#39;,&#39;tasmax&#39;, &#39;tasmin&#39;
+test_data_set = [&#39;GISS-E2-H&#39;]
+realization = [&#39;r6i1p1&#39;]
+test_data_path = &#39;demo_output_tmp/extremes_tmp/&#39;
+filename_template = &#39;%(variable)_day_%(model)_historical_%(realization)_20000101-20051231.nc&#39;
+metrics_output_path = &#39;demo_output_tmp/%(case_id)&#39;
+
+# Note: You can use the following placeholders in file templates:
+# %(variable) to substitute variable name from &#34;vars&#34; (except in sftlf filenames)
+# %(model) to substitute model name from &#34;test_data_set&#34;
+# %(realization) to substitute realization from &#34;realization&#34;
+
+# Optional settings
+# See the README for more information about these settings
+case_id = &#39;extremes_ex1&#39;
+#sftlf_filename_template = &#39;demo_data/CMIP5_demo_data/cmip5.historical.%(model).sftlf.nc&#39;
+
+ModUnitsAdjust = (True,&#39;multiply&#39;,86400.,&#39;mm/day&#39;) # Convert model units from kg/m2/s to mm/day
+ObsUnitsAdjust = (True,&#39;multiply&#39;,86400.,&#39;mm/day&#39;) # Convert obs units
+dec_mode=&#39;JFD&#39;
+annual_strict = True
+drop_incomplete_djf = True
+regrid=False
+plots=False
+generate_sftlf = True
+return_period = 2
+
+</pre></div></div>
+</div>
+<section id="How-to-run">
+<h3>How to run<a class="headerlink" href="#How-to-run" title="Link to this heading"></a></h3>
+<p>To run the extremes driver, use the following command in the terminal. This will generate a metrics file based on the models, observations, and other criteria in <code class="docutils literal notranslate"><span class="pre">basic_param.py</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>extremes_driver.py -p basic_extremes_param.py
+</pre></div>
+</div>
+<p>This driver takes daily data on a regular lat/lon grid. The input variables can be precipitation (pr), maximum daily temperature (tasmax), or minimum daily temperature (tasmin).</p>
+<p>In the next cell, bash cell magic is used to run the driver as a subprocess (this may take several minutes):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+extremes_driver.py<span class="w">  </span>-p<span class="w"> </span>basic_extremes_param.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+No sftlf file found for GISS-E2-H r6i1p1
+
+-----------------------
+model, run, variable: GISS-E2-H r6i1p1 pr
+test_data (model in this case) full_path:
+   demo_output_tmp/extremes_tmp/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+Generating land sea mask.
+Generating precipitation block extrema.
+Writing results to netCDF.
+Generating metrics.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 14:19::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:19:28,986 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:19:28,986 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/GISS-E2-H_block_extremes_metrics.json
+INFO::2025-09-09 14:19::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/block_extremes_metrics.json
+2025-09-09 14:19:42,463 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/block_extremes_metrics.json
+2025-09-09 14:19:42,463 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/block_extremes_metrics.json
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Generating return values.
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx5day_2000-2005.nc
+Return value for single realization
+Stationary case
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx1day_2000-2005.nc
+Return value for single realization
+Stationary case
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+2025-09-09 14:23:30,125 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:23:30,125 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:23:31,483 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:23:31,483 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+INFO::2025-09-09 14:23::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/return_value_metrics.json
+2025-09-09 14:23:49,487 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/return_value_metrics.json
+2025-09-09 14:23:49,487 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex1/return_value_metrics.json
+</pre></div></div>
+</div>
+<p>Running the mean climate driver produces an output json file in the demo output directory. The metrics are stored in the “RESULTS” object of the json. Since only one model was provided as input, the only metrics generated are the overall mean and spatial standard deviation of the time mean.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span> <span class="s2">&quot;extremes_ex1/GISS-E2-H_block_extremes_metrics.json&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;RESULTS&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  &#34;GISS-E2-H&#34;: {
+    &#34;r6i1p1&#34;: {
+      &#34;Rx1day&#34;: {
+        &#34;land&#34;: {
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 13.893658449615378,
+            &#34;DJF&#34;: 9.315029577807213,
+            &#34;JJA&#34;: 9.874547811042412,
+            &#34;MAM&#34;: 9.673421316153828,
+            &#34;SON&#34;: 10.265574408960576
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 5.945030682648797,
+            &#34;DJF&#34;: 6.146236839636972,
+            &#34;JJA&#34;: 5.561644664951386,
+            &#34;MAM&#34;: 5.69125340658091,
+            &#34;SON&#34;: 4.70666670524521
+          }
+        }
+      },
+      &#34;Rx5day&#34;: {
+        &#34;land&#34;: {
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 8.67124307175919,
+            &#34;DJF&#34;: 5.676891346229301,
+            &#34;JJA&#34;: 6.337763456507976,
+            &#34;MAM&#34;: 5.979513789131295,
+            &#34;SON&#34;: 6.398284859200687
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 4.360349623131227,
+            &#34;DJF&#34;: 4.075257782382831,
+            &#34;JJA&#34;: 4.252590085623513,
+            &#34;MAM&#34;: 3.9340935559021943,
+            &#34;SON&#34;: 3.524180960908983
+          }
+        }
+      }
+    }
+  }
+}
+</pre></div></div>
+</div>
+<p>There is a also a JSON file containing metrics for the return values in the output directory. All of the model results are found in this file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span> <span class="s2">&quot;extremes_ex1/return_value_metrics.json&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;RESULTS&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  &#34;GISS-E2-H&#34;: {
+    &#34;r6i1p1&#34;: {
+      &#34;Rx1day&#34;: {
+        &#34;land&#34;: {
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 13.705812719286781,
+            &#34;DJF&#34;: 9.158656925501115,
+            &#34;JJA&#34;: 9.844244865839517,
+            &#34;MAM&#34;: 9.398656337085313,
+            &#34;SON&#34;: 10.098202399321066
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 5.904530165430235,
+            &#34;DJF&#34;: 6.044313454602255,
+            &#34;JJA&#34;: 5.88016980703713,
+            &#34;MAM&#34;: 5.706027657754201,
+            &#34;SON&#34;: 4.879659778830219
+          }
+        }
+      },
+      &#34;Rx5day&#34;: {
+        &#34;land&#34;: {
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 8.647020181115533,
+            &#34;DJF&#34;: 5.658325958819331,
+            &#34;JJA&#34;: 6.325296377831775,
+            &#34;MAM&#34;: 5.920588761266056,
+            &#34;SON&#34;: 6.440113320381993
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 4.341242371476114,
+            &#34;DJF&#34;: 4.147452005240656,
+            &#34;JJA&#34;: 4.298767534250355,
+            &#34;MAM&#34;: 3.9800730040134003,
+            &#34;SON&#34;: 3.6881552046094854
+          }
+        }
+      }
+    }
+  }
+}
+</pre></div></div>
+</div>
+<p>In addition, the Extremes Driver saves netcdf files containing the block extremes, the return values, and the standard error for the return values. The standard error can be used to calculate confidence intervals. These files can be found in a “netcdf” subfolder of the output directory, as demonstrated here:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>ls<span class="w"> </span><span class="o">{</span>demo_output_directory<span class="w"> </span>+<span class="w"> </span><span class="s2">&quot;/extremes_ex1/netcdf/*.nc&quot;</span><span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx1day_2000-2005.nc
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx1day_2000-2005_return_value.nc
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx1day_2000-2005_standard_error.nc
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx5day_2000-2005.nc
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx5day_2000-2005_return_value.nc
+demo_output_tmp/extremes_ex1/netcdf/GISS-E2-H_r6i1p1_land_Rx5day_2000-2005_standard_error.nc
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Customizing-parameters-in-the-extremes-driver">
+<h2>Customizing parameters in the extremes driver<a class="headerlink" href="#Customizing-parameters-in-the-extremes-driver" title="Link to this heading"></a></h2>
+<p>It is possible to override the parameter file from the command line. Use <code class="docutils literal notranslate"><span class="pre">pmp_extremes_driver.py</span> <span class="pre">--help</span></code> to see all the flag options.</p>
+<section id="Reference-data">
+<h3>Reference data<a class="headerlink" href="#Reference-data" title="Link to this heading"></a></h3>
+<p>A reference data set (e.g. observations or a control run) can be provided to generate additional metrics. Each test data set will be compared to this reference.</p>
+<p>These are the parameters that control the reference data settings:</p>
+<div class="line-block">
+<div class="line">–reference_data_path: The file path for the reference data set.</div>
+<div class="line">–reference_data_set: A short name for the reference data set.</div>
+<div class="line">–reference_sftlf_template: The file path for the reference land/sea mask (optional if –generate_sftlf = True).</div>
+<div class="line">–ObsUnitsAdjust: Tuple that controls obs units conversion (in this example, to mm/day).</div>
+</div>
+<p>An example of using reference data is shown next:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>extremes_driver.py<span class="w">  </span>-p<span class="w"> </span>basic_extremes_param.py<span class="w"> </span><span class="err">\</span>
+<span class="o">--</span><span class="n">case_id</span> <span class="n">extremes_ex2</span> \
+<span class="o">--</span><span class="n">reference_data_path</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="o">/</span><span class="n">extremes_tmp</span><span class="o">/</span><span class="n">pr_day_GPCP</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mi">3</span><span class="n">_PCMDI_gn_19961002</span><span class="o">-</span><span class="mf">20170101.</span><span class="n">nc</span>  \
+<span class="o">--</span><span class="n">reference_data_set</span> <span class="n">GPCP</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mi">3</span> \
+<span class="o">--</span><span class="n">generate_sftlf</span> \
+<span class="o">--</span><span class="n">regrid</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+No reference sftlf file template provided.
+
+-----------------------
+model, run, variable: Reference GPCP-1-3 pr
+test_data (model in this case) full_path:
+   demo_output_tmp/extremes_tmp/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc
+Generating land sea mask.
+Generating precipitation block extrema.
+Writing results to netCDF.
+No sftlf file found for GISS-E2-H r6i1p1
+
+-----------------------
+model, run, variable: GISS-E2-H r6i1p1 pr
+test_data (model in this case) full_path:
+   demo_output_tmp/extremes_tmp/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+Generating land sea mask.
+Generating precipitation block extrema.
+Writing results to netCDF.
+Generating metrics.
+INFO::2025-09-09 14:24::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:24:55,292 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:24:55,292 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/GISS-E2-H_block_extremes_metrics.json
+INFO::2025-09-09 14:25::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/block_extremes_metrics.json
+2025-09-09 14:25:08,771 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/block_extremes_metrics.json
+2025-09-09 14:25:08,771 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/block_extremes_metrics.json
+Generating return values.
+demo_output_tmp/extremes_ex2/netcdf/Reference_GPCP-1-3_land_Rx5day_1996-2017.nc
+Return value for single realization
+Stationary case
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+demo_output_tmp/extremes_ex2/netcdf/Reference_GPCP-1-3_land_Rx1day_1996-2017.nc
+Return value for single realization
+Stationary case
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+demo_output_tmp/extremes_ex2/netcdf/GISS-E2-H_r6i1p1_land_Rx5day_2000-2005.nc
+Return value for single realization
+Stationary case
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+demo_output_tmp/extremes_ex2/netcdf/GISS-E2-H_r6i1p1_land_Rx1day_2000-2005.nc
+Return value for single realization
+Stationary case
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+2025-09-09 14:31:06,856 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:06,856 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:07,033 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:07,033 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:14,754 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:14,754 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:14,964 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:14,964 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:24,393 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:24,393 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:24,574 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:24,574 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:31,822 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:31,822 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:32,047 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:31:32,047 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+INFO::2025-09-09 14:31::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/return_value_metrics.json
+2025-09-09 14:31:51,396 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/return_value_metrics.json
+2025-09-09 14:31:51,396 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex2/return_value_metrics.json
+
+</pre></div></div>
+</div>
+<p>In this case, the results JSON contains more statistics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span> <span class="s2">&quot;extremes_ex2/GISS-E2-H_block_extremes_metrics.json&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;RESULTS&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  &#34;GISS-E2-H&#34;: {
+    &#34;r6i1p1&#34;: {
+      &#34;Rx1day&#34;: {
+        &#34;land&#34;: {
+          &#34;bias_xy&#34;: {
+            &#34;ANN&#34;: -2.608485837443405,
+            &#34;DJF&#34;: -2.272325068942915,
+            &#34;JJA&#34;: -0.16397618827630583,
+            &#34;MAM&#34;: -1.3919346056716837,
+            &#34;SON&#34;: -1.5118238194123632
+          },
+          &#34;cor_xy&#34;: {
+            &#34;ANN&#34;: 0.7268240141816134,
+            &#34;DJF&#34;: 0.7943152160521093,
+            &#34;JJA&#34;: 0.7374539504059411,
+            &#34;MAM&#34;: 0.7298380566833779,
+            &#34;SON&#34;: 0.8288651259163591
+          },
+          &#34;mae_xy&#34;: {
+            &#34;ANN&#34;: 4.476828559371899,
+            &#34;DJF&#34;: 3.985048020663212,
+            &#34;JJA&#34;: 3.1225571527180995,
+            &#34;MAM&#34;: 3.4802994229801514,
+            &#34;SON&#34;: 2.9084751391692913
+          },
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 13.893658449615378,
+            &#34;DJF&#34;: 9.315029577807213,
+            &#34;JJA&#34;: 9.874547811042412,
+            &#34;MAM&#34;: 9.673421316153828,
+            &#34;SON&#34;: 10.265574408960576
+          },
+          &#34;pct_dif&#34;: {
+            &#34;ANN&#34;: -15.806950854799007,
+            &#34;DJF&#34;: -19.610386824401086,
+            &#34;JJA&#34;: -1.6334691064885076,
+            &#34;MAM&#34;: -12.579212232353106,
+            &#34;SON&#34;: -12.836653648767914
+          },
+          &#34;rms_xy&#34;: {
+            &#34;ANN&#34;: 5.801589703577267,
+            &#34;DJF&#34;: 5.253315797139825,
+            &#34;JJA&#34;: 4.322276039840264,
+            &#34;MAM&#34;: 4.724954359726947,
+            &#34;SON&#34;: 3.9189664060478355
+          },
+          &#34;rmsc_xy&#34;: {
+            &#34;ANN&#34;: 5.182108135161879,
+            &#34;DJF&#34;: 4.736440187053185,
+            &#34;JJA&#34;: 4.319164499559562,
+            &#34;MAM&#34;: 4.515275379756621,
+            &#34;SON&#34;: 3.6156170193742727
+          },
+          &#34;std-obs_xy&#34;: {
+            &#34;ANN&#34;: 7.51188728606778,
+            &#34;DJF&#34;: 7.796160820998831,
+            &#34;JJA&#34;: 6.23341337505301,
+            &#34;MAM&#34;: 6.4450934805141475,
+            &#34;SON&#34;: 6.378947555027728
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 5.945030682648797,
+            &#34;DJF&#34;: 6.146236839636972,
+            &#34;JJA&#34;: 5.561644664951386,
+            &#34;MAM&#34;: 5.69125340658091,
+            &#34;SON&#34;: 4.70666670524521
+          }
+        }
+      },
+      &#34;Rx5day&#34;: {
+        &#34;land&#34;: {
+          &#34;bias_xy&#34;: {
+            &#34;ANN&#34;: -0.06057400476572096,
+            &#34;DJF&#34;: -0.21916150609224158,
+            &#34;JJA&#34;: 0.5684123655220411,
+            &#34;MAM&#34;: -0.08376779896227664,
+            &#34;SON&#34;: 0.10511010521182819
+          },
+          &#34;cor_xy&#34;: {
+            &#34;ANN&#34;: 0.7765514487096937,
+            &#34;DJF&#34;: 0.8186342011280295,
+            &#34;JJA&#34;: 0.7580148024390895,
+            &#34;MAM&#34;: 0.7936194115906007,
+            &#34;SON&#34;: 0.8227617186788848
+          },
+          &#34;mae_xy&#34;: {
+            &#34;ANN&#34;: 2.1266909669887024,
+            &#34;DJF&#34;: 1.8254676313824065,
+            &#34;JJA&#34;: 2.0839723032343875,
+            &#34;MAM&#34;: 1.8598465549631014,
+            &#34;SON&#34;: 1.5728030264865376
+          },
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 8.67124307175919,
+            &#34;DJF&#34;: 5.676891346229301,
+            &#34;JJA&#34;: 6.337763456507976,
+            &#34;MAM&#34;: 5.979513789131295,
+            &#34;SON&#34;: 6.398284859200687
+          },
+          &#34;pct_dif&#34;: {
+            &#34;ANN&#34;: -0.6937159154257981,
+            &#34;DJF&#34;: -3.7170885604586767,
+            &#34;JJA&#34;: 9.852275525580888,
+            &#34;MAM&#34;: -1.3815587771277344,
+            &#34;SON&#34;: 1.6702238428259966
+          },
+          &#34;rms_xy&#34;: {
+            &#34;ANN&#34;: 2.9808331968050235,
+            &#34;DJF&#34;: 2.6462593832951726,
+            &#34;JJA&#34;: 2.939689701922078,
+            &#34;MAM&#34;: 2.5548900790140427,
+            &#34;SON&#34;: 2.1676612296854065
+          },
+          &#34;rmsc_xy&#34;: {
+            &#34;ANN&#34;: 2.980217666064259,
+            &#34;DJF&#34;: 2.637168359799034,
+            &#34;JJA&#34;: 2.884212704761622,
+            &#34;MAM&#34;: 2.553516452208875,
+            &#34;SON&#34;: 2.1651113302700185
+          },
+          &#34;std-obs_xy&#34;: {
+            &#34;ANN&#34;: 4.541149254145827,
+            &#34;DJF&#34;: 4.551380803757173,
+            &#34;JJA&#34;: 4.014273897990664,
+            &#34;MAM&#34;: 4.01173385298509,
+            &#34;SON&#34;: 3.7213340780937547
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 4.360349623131227,
+            &#34;DJF&#34;: 4.075257782382831,
+            &#34;JJA&#34;: 4.252590085623513,
+            &#34;MAM&#34;: 3.9340935559021943,
+            &#34;SON&#34;: 3.524180960908983
+          }
+        }
+      }
+    }
+  }
+}
+</pre></div></div>
+</div>
+<p>Similarly, the return value metrics JSON shows more metrics comparing the model and observed return values.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span> <span class="s2">&quot;extremes_ex2/return_value_metrics.json&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;RESULTS&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  &#34;GISS-E2-H&#34;: {
+    &#34;r6i1p1&#34;: {
+      &#34;Rx1day&#34;: {
+        &#34;land&#34;: {
+          &#34;bias_xy&#34;: {
+            &#34;ANN&#34;: -3.3033740713383795,
+            &#34;DJF&#34;: -2.5609560151489923,
+            &#34;JJA&#34;: -0.41895878736807785,
+            &#34;MAM&#34;: -1.8917528142764932,
+            &#34;SON&#34;: -1.715938999322513
+          },
+          &#34;cor_xy&#34;: {
+            &#34;ANN&#34;: 0.7273676617949909,
+            &#34;DJF&#34;: 0.80961646187547,
+            &#34;JJA&#34;: 0.7190734122147966,
+            &#34;MAM&#34;: 0.7309432049214488,
+            &#34;SON&#34;: 0.7773252110368432
+          },
+          &#34;mae_xy&#34;: {
+            &#34;ANN&#34;: 4.921351101383258,
+            &#34;DJF&#34;: 4.056622735278137,
+            &#34;JJA&#34;: 3.5204575962004983,
+            &#34;MAM&#34;: 3.641773076122932,
+            &#34;SON&#34;: 3.2698071791361096
+          },
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 13.705812719286781,
+            &#34;DJF&#34;: 9.158656925501115,
+            &#34;JJA&#34;: 9.844244865839517,
+            &#34;MAM&#34;: 9.398656337085313,
+            &#34;SON&#34;: 10.098202399321066
+          },
+          &#34;pct_dif&#34;: {
+            &#34;ANN&#34;: -19.439934493330885,
+            &#34;DJF&#34;: -21.85188220906322,
+            &#34;JJA&#34;: -4.082144343273743,
+            &#34;MAM&#34;: -16.608724913046515,
+            &#34;SON&#34;: -14.524449483222927
+          },
+          &#34;rms_xy&#34;: {
+            &#34;ANN&#34;: 6.370340619192852,
+            &#34;DJF&#34;: 5.460824309505457,
+            &#34;JJA&#34;: 4.811494772683261,
+            &#34;MAM&#34;: 5.051482287121616,
+            &#34;SON&#34;: 4.556613157289395
+          },
+          &#34;rmsc_xy&#34;: {
+            &#34;ANN&#34;: 5.446946883888247,
+            &#34;DJF&#34;: 4.823080642559687,
+            &#34;JJA&#34;: 4.793219724108615,
+            &#34;MAM&#34;: 4.684942452963679,
+            &#34;SON&#34;: 4.221170072550957
+          },
+          &#34;std-obs_xy&#34;: {
+            &#34;ANN&#34;: 5.904530165430235,
+            &#34;DJF&#34;: 6.044313454602255,
+            &#34;JJA&#34;: 5.88016980703713,
+            &#34;MAM&#34;: 5.706027657754201,
+            &#34;SON&#34;: 4.879659778830219
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 5.904530165430235,
+            &#34;DJF&#34;: 6.044313454602255,
+            &#34;JJA&#34;: 5.88016980703713,
+            &#34;MAM&#34;: 5.706027657754201,
+            &#34;SON&#34;: 4.879659778830219
+          }
+        }
+      },
+      &#34;Rx5day&#34;: {
+        &#34;land&#34;: {
+          &#34;bias_xy&#34;: {
+            &#34;ANN&#34;: -0.34327206327924314,
+            &#34;DJF&#34;: -0.2537196777544876,
+            &#34;JJA&#34;: 0.6148310573117339,
+            &#34;MAM&#34;: -0.11088627302714162,
+            &#34;SON&#34;: 0.10452039860260783
+          },
+          &#34;cor_xy&#34;: {
+            &#34;ANN&#34;: 0.7747220329222816,
+            &#34;DJF&#34;: 0.7970432499789452,
+            &#34;JJA&#34;: 0.7440932993829983,
+            &#34;MAM&#34;: 0.8083397750791976,
+            &#34;SON&#34;: 0.7987667066035591
+          },
+          &#34;mae_xy&#34;: {
+            &#34;ANN&#34;: 2.2329195374604183,
+            &#34;DJF&#34;: 1.9877356294908752,
+            &#34;JJA&#34;: 2.2097485470347005,
+            &#34;MAM&#34;: 1.8689742177114965,
+            &#34;SON&#34;: 1.7558083860855453
+          },
+          &#34;mean&#34;: {
+            &#34;ANN&#34;: 8.647020181115533,
+            &#34;DJF&#34;: 5.658325958819331,
+            &#34;JJA&#34;: 6.325296377831775,
+            &#34;MAM&#34;: 5.920588761266056,
+            &#34;SON&#34;: 6.440113320381993
+          },
+          &#34;pct_dif&#34;: {
+            &#34;ANN&#34;: -3.8182525545069446,
+            &#34;DJF&#34;: -4.292396317805857,
+            &#34;JJA&#34;: 10.683945485469387,
+            &#34;MAM&#34;: -1.8471608330015068,
+            &#34;SON&#34;: 1.6497334960285408
+          },
+          &#34;rms_xy&#34;: {
+            &#34;ANN&#34;: 3.0692449000029662,
+            &#34;DJF&#34;: 2.89574874135539,
+            &#34;JJA&#34;: 3.0920104867498184,
+            &#34;MAM&#34;: 2.503649387505911,
+            &#34;SON&#34;: 2.4090762878039746
+          },
+          &#34;rmsc_xy&#34;: {
+            &#34;ANN&#34;: 3.049988291210998,
+            &#34;DJF&#34;: 2.8846123446197844,
+            &#34;JJA&#34;: 3.0305890685284544,
+            &#34;MAM&#34;: 2.5013539723713487,
+            &#34;SON&#34;: 2.4068078458989492
+          },
+          &#34;std-obs_xy&#34;: {
+            &#34;ANN&#34;: 4.341242371476114,
+            &#34;DJF&#34;: 4.147452005240656,
+            &#34;JJA&#34;: 4.298767534250355,
+            &#34;MAM&#34;: 3.9800730040134003,
+            &#34;SON&#34;: 3.6881552046094854
+          },
+          &#34;std_xy&#34;: {
+            &#34;ANN&#34;: 4.341242371476114,
+            &#34;DJF&#34;: 4.147452005240656,
+            &#34;JJA&#34;: 4.298767534250355,
+            &#34;MAM&#34;: 3.9800730040134003,
+            &#34;SON&#34;: 3.6881552046094854
+          }
+        }
+      }
+    }
+  }
+}
+</pre></div></div>
+</div>
+</section>
+<section id="Saving-additional-output">
+<h3>Saving additional output<a class="headerlink" href="#Saving-additional-output" title="Link to this heading"></a></h3>
+<p>Along with the JSON file of metrics, this driver can also produce a set of diagnostic plots and save the block extrema data as netcdf files.</p>
+<div class="line-block">
+<div class="line">To save the netcdf files, use the flag “–nc_out” on the command line or nc_out = True in the parameter file.</div>
+<div class="line">To generate plots, use the flag “–plots” on the command line or plots = True in the parameter file.</div>
+</div>
+<p>The diagnostics plots will always display a world map. If a reference data set is included, Taylor Diagrams will be produced for each model. Users can access the same underlying data in the output netcdf files and metrics JSONs to generate their own visualizations.</p>
+<p>The next cell demonstrates these flags.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+extremes_driver.py<span class="w">  </span>-p<span class="w"> </span>basic_extremes_param.py<span class="w"> </span>--case_id<span class="w"> </span><span class="s2">&quot;extremes_ex3&quot;</span><span class="w"> </span>--plots
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+No sftlf file found for GISS-E2-H r6i1p1
+
+-----------------------
+model, run, variable: GISS-E2-H r6i1p1 pr
+test_data (model in this case) full_path:
+   demo_output_tmp/extremes_tmp/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+Generating land sea mask.
+Generating precipitation block extrema.
+Writing results to netCDF.
+Creating maps
+Generating metrics.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 14:32::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:32:35,346 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:32:35,346 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/GISS-E2-H_block_extremes_metrics.json
+INFO::2025-09-09 14:32::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/block_extremes_metrics.json
+2025-09-09 14:32:48,492 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/block_extremes_metrics.json
+2025-09-09 14:32:48,492 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/block_extremes_metrics.json
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Generating return values.
+demo_output_tmp/extremes_ex3/netcdf/GISS-E2-H_r6i1p1_land_Rx5day_2000-2005.nc
+Return value for single realization
+Stationary case
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+demo_output_tmp/extremes_ex3/netcdf/GISS-E2-H_r6i1p1_land_Rx1day_2000-2005.nc
+Return value for single realization
+Stationary case
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+2025-09-09 14:36:56,494 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:36:56,494 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:36:57,666 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:36:57,666 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+INFO::2025-09-09 14:37::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/return_value_metrics.json
+2025-09-09 14:37:13,855 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/return_value_metrics.json
+2025-09-09 14:37:13,855 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex3/return_value_metrics.json
+</pre></div></div>
+</div>
+<p>The plots and netcdf files can be found in the output directory. The next cell will display the map. The contours are rough on this map because this demo uses data with very low spatial resolution.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.core.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.core.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="n">Image</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="n">demo_output_directory</span> <span class="o">+</span> <span class="s2">&quot;/extremes_ex3/plots/maps/GISS-E2-H_r6i1p1_land_Rx1day_ANN.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_8_extremes_29_0.png" src="../_images/examples_Demo_8_extremes_29_0.png" />
+</div>
+</div>
+</section>
+<section id="Nonstationary-Return-Values">
+<h3>Nonstationary Return Values<a class="headerlink" href="#Nonstationary-Return-Values" title="Link to this heading"></a></h3>
+<p>The examples in this notebook produce return values assuming that the data is stationary in time. The Extremes Driver also has an option to produce nonstationary return values for model data only.</p>
+<p>To generate nonstationary return values, the user must provide two variables:</p>
+<div class="line-block">
+<div class="line">–covariate_path: Path to covariate time series netcdf file. The only dimension should be time, in years (with time bounds).</div>
+<div class="line">–covariate: Name of covariate variable in file given by –covariate_path.</div>
+</div>
+<p>This static example would run the driver with a covariate file “covariate_file.nc” that contains the variable “mole_fraction_or_carbon_dioxide_in_air”:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>extremes_driver.py -p basic_extremes_param.py --covariate_path ./covariate_file.nc --covariate &quot;mole_fraction_of_carbon_dioxide_in_air&quot;
+</pre></div>
+</div>
+</section>
+<section id="Regional-metrics">
+<h3>Regional metrics<a class="headerlink" href="#Regional-metrics" title="Link to this heading"></a></h3>
+<p>Users can define a custom region over which to calculate the extremes metrics. There are two way to do this.</p>
+<section id="Coordinate-method">
+<h4>Coordinate method<a class="headerlink" href="#Coordinate-method" title="Link to this heading"></a></h4>
+<p>The first method is to provide coordinate pairs that define a contiguous region. This region does not have to be rectangular, but it cannot have holes.</p>
+<p>The following example provides lon/lat pairs that define the western hemisphere. The region name flag “–region_name” is optional in this case.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+extremes_driver.py<span class="w">  </span>-p<span class="w"> </span>basic_extremes_param.py<span class="w"> </span><span class="se">\</span>
+--case_id<span class="w"> </span><span class="s2">&quot;extremes_ex4&quot;</span><span class="w"> </span><span class="se">\</span>
+--plots<span class="w"> </span><span class="se">\</span>
+--region_name<span class="w"> </span><span class="s2">&quot;WestHemi&quot;</span><span class="w"> </span><span class="se">\</span>
+--coords<span class="w"> </span><span class="o">[[</span><span class="m">180</span>,-90<span class="o">]</span>,<span class="o">[</span><span class="m">360</span>,-90<span class="o">]</span>,<span class="o">[</span><span class="m">360</span>,90<span class="o">]</span>,<span class="o">[</span><span class="m">180</span>,90<span class="o">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Region settings are:
+  Coordinates: [[180.0, -90.0], [360.0, -90.0], [360.0, 90.0], [180.0, 90.0]]
+  Region name: WestHemi
+No sftlf file found for GISS-E2-H r6i1p1
+
+-----------------------
+model, run, variable: GISS-E2-H r6i1p1 pr
+test_data (model in this case) full_path:
+   demo_output_tmp/extremes_tmp/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc
+Generating land sea mask.
+
+Creating sftlf region mask.
+Creating dataset mask.
+Generating precipitation block extrema.
+Writing results to netCDF.
+Creating maps
+Generating metrics.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 14:37::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:37:56,547 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/GISS-E2-H_block_extremes_metrics.json
+2025-09-09 14:37:56,547 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/GISS-E2-H_block_extremes_metrics.json
+INFO::2025-09-09 14:38::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/block_extremes_metrics.json
+2025-09-09 14:38:09,103 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/block_extremes_metrics.json
+2025-09-09 14:38:09,103 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/block_extremes_metrics.json
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Generating return values.
+demo_output_tmp/extremes_ex4/netcdf/GISS-E2-H_r6i1p1_WestHemi_Rx5day_2000-2005.nc
+Return value for single realization
+Stationary case
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+demo_output_tmp/extremes_ex4/netcdf/GISS-E2-H_r6i1p1_WestHemi_Rx1day_2000-2005.nc
+Return value for single realization
+Stationary case
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numpy/lib/_nanfunctions_impl.py:1634: RuntimeWarning: All-NaN slice encountered
+  return fnb._ureduce(a,
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/numdifftools/limits.py:150: UserWarning: All-NaN slice encountered
+  warnings.warn(str(msg))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:401: RuntimeWarning: overflow encountered in exp
+  result = np.sum(n * np.log(scale) + y + np.exp(-y))
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/extremes/lib/return_value.py:484: RuntimeWarning: invalid value encountered in sqrt
+  se = np.sqrt(np.diag(B))
+2025-09-09 14:39:31,584 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:39:31,584 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:39:32,691 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 14:39:32,691 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+INFO::2025-09-09 14:39::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/return_value_metrics.json
+2025-09-09 14:39:49,347 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/return_value_metrics.json
+2025-09-09 14:39:49,347 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/extremes_ex4/return_value_metrics.json
+</pre></div></div>
+</div>
+<p>Viewing the automatic plots verifies that the region of interest has been used. Again, the contours will look rough because of the low spatial resolution of the demo data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.core.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="n">Image</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="n">demo_output_directory</span> <span class="o">+</span> <span class="s2">&quot;/extremes_ex4/plots/maps/GISS-E2-H_r6i1p1_WestHemi_Rx1day_ANN.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_8_extremes_36_0.png" src="../_images/examples_Demo_8_extremes_36_0.png" />
+</div>
+</div>
+</section>
+<section id="Shapefile-method">
+<h4>Shapefile method<a class="headerlink" href="#Shapefile-method" title="Link to this heading"></a></h4>
+<p>The second method is to provide a shapefile containing the region of interest. The region of interest must be completely defined by a single, uniquely identifiable feature in the shapefile. For example, if the region of interest is the fifty states of the USA, there must be a single feature in the shapefile that contains all the land areas of all fifty states. The –region_name flag is required in this case.</p>
+<div class="line-block">
+<div class="line">–shp_path is the path of the shapefile containing your region</div>
+<div class="line">–region_name must match the name of your region as recorded under the shapefile attribute “–attribute”</div>
+</div>
+<p>Here is a static example of a command to get metrics for a region called “CANADA” under the “COUNTRY” attribute in a shapefile called “world_countries.shp”:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>extremes_driver.py -p basic_extremes_param.py --shp_path world_countries.shp --attribute &quot;COUNTRY&quot; --region_name &quot;CANADA&quot;
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="Other-options">
+<h2>Other options<a class="headerlink" href="#Other-options" title="Link to this heading"></a></h2>
+<p>Consult the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/extremes/README.md">README file</a> for the extremes metrics to find the full set of user options.</p>
+</section>
+<section id="Clean-up">
+<h2>Clean up<a class="headerlink" href="#Clean-up" title="Link to this heading"></a></h2>
+<p>Run this cell to delete the low resolution datasets we created at the start of this demo.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>rm<span class="w"> </span>-r<span class="w"> </span><span class="o">{</span>demo_output_directory<span class="o">}</span>/extremes_tmp
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Demo_9_seaIceExtent_ivanova.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">9A. Sea Ice</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Demo_7b_precip_distribution.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">7B. Precipitation Distribution</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">8. Extremes Metrics</a><ul>
+<li><a class="reference internal" href="#Create-low-resolution-datasets">Create low resolution datasets</a></li>
+<li><a class="reference internal" href="#Basic-Use">Basic Use</a><ul>
+<li><a class="reference internal" href="#How-to-run">How to run</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Customizing-parameters-in-the-extremes-driver">Customizing parameters in the extremes driver</a><ul>
+<li><a class="reference internal" href="#Reference-data">Reference data</a></li>
+<li><a class="reference internal" href="#Saving-additional-output">Saving additional output</a></li>
+<li><a class="reference internal" href="#Nonstationary-Return-Values">Nonstationary Return Values</a></li>
+<li><a class="reference internal" href="#Regional-metrics">Regional metrics</a><ul>
+<li><a class="reference internal" href="#Coordinate-method">Coordinate method</a></li>
+<li><a class="reference internal" href="#Shapefile-method">Shapefile method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Other-options">Other options</a></li>
+<li><a class="reference internal" href="#Clean-up">Clean up</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

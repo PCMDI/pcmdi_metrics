@@ -1,0 +1,683 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="1B. Mean Climate Driver" href="Demo_1b_mean_climate.html" /><link rel="prev" title="0. Prepare Demos" href="Demo_0_download_data.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>1A. Compute Climatologies - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/Demo_1a_compute_climatologies.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/Demo_1a_compute_climatologies.ipynb" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="1A.-Compute-Climatologies">
+<h1>1A. Compute Climatologies<a class="headerlink" href="#1A.-Compute-Climatologies" title="Link to this heading"></a></h1>
+<p>This notebook introduces PCDMI mean climate driver.</p>
+<p><strong>Reference</strong></p>
+<ul class="simple">
+<li><p>Gleckler, P. J., Taylor, K. E., and Doutriaux, C.: Performance metrics for climate models, J. Geophys. Res., 113, D06104, <a class="reference external" href="https://doi.org/10.1029/2007jd008972">https://doi.org/10.1029/2007jd008972</a>, 2008.</p></li>
+<li><p>Lee, J., Gleckler, P. J., Ahn, M.-S., Ordonez, A., Ullrich, P. A., Sperber, K. R., Taylor, K. E., Planton, Y. Y., Guilyardi, E., Durack, P., Bonfils, C., Zelinka, M. D., Chao, L.-W., Dong, B., Doutriaux, C., Zhang, C., Vo, T., Boutte, J., Wehner, M. F., Pendergrass, A. G., Kim, D., Xue, Z., Wittenberg, A. T., and Krasting, J.: Systematic and objective evaluation of Earth system models: PCMDI Metrics Package (PMP) version 3, Geosci. Model Dev., 17, 3919–3948,
+<a class="reference external" href="https://doi.org/10.5194/gmd-17-3919-2024">https://doi.org/10.5194/gmd-17-3919-2024</a>, 2024.</p></li>
+</ul>
+<p>Model output and observations must be converted into annual climatologies for use with the mean climate driver. This has already been done for the observations provided by PCMDI. PMP provides a script for generating these input climatologies from other data. For more information about using the script, see <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/sample_setups/pcmdi_parameter_files/mean_climate/make_clims">the documentation</a>. The basic use is shown here:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python pcmdi_compute_climatologies.py \
+-p clim_calc_cmip_inparam.py --options
+</pre></div>
+</div>
+<p>Examples of parameter files can be found under <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/sample_setups/pcmdi_parameter_files/mean_climate/make_clims">sample_setups</a>.</p>
+<p>Five netcdf files are produced by this script: an annual climatology (AC) and seasonal climatologies (DJF, MAM, JJA, SON).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># To open and display one of the graphics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display_png</span><span class="p">,</span> <span class="n">Image</span>
+</pre></div>
+</div>
+</div>
+<section id="Passing-parameters-via-parameter-file">
+<h2>Passing parameters via parameter file<a class="headerlink" href="#Passing-parameters-via-parameter-file" title="Link to this heading"></a></h2>
+<p>First, load custom demo directories:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">user_choices</span><span class="w"> </span><span class="kn">import</span> <span class="n">demo_data_directory</span><span class="p">,</span> <span class="n">demo_output_directory</span>
+</pre></div>
+</div>
+</div>
+<p>The parameter file for this demo is shown here:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_annual_cycle_param.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+import os
+
+#
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
+#
+#
+
+# VARIABLES TO USE
+vars = [&#39;rlut&#39;]
+
+# START AND END DATES FOR CLIMATOLOGY
+start = &#39;2003-01&#39;
+end = &#39;2018-12&#39;
+
+# INPUT DATASET - CAN BE MODEL OR OBSERVATIONS
+infile = &#39;demo_data_tmp/obs4MIPs_PCMDI_monthly/NASA-LaRC/CERES-EBAF-4-1/mon/rlut/gn/v20210727/rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc&#39;
+
+# DIRECTORY WHERE TO PUT RESULTS
+outfile = &#39;demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.nc&#39;
+
+</pre></div></div>
+</div>
+<p>In this example, all of the parameters are set in the parameter file shown above. The climatology script is then run from the command line with the parameter file as the sole input.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+pcmdi_compute_climatologies.py<span class="w"> </span>-p<span class="w"> </span>basic_annual_cycle_param.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+start and end are  2003-01   2018-12
+variable list:  [&#39;rlut&#39;]
+ver: v20250909
+var: rlut
+infile: demo_data_tmp/obs4MIPs_PCMDI_monthly/NASA-LaRC/CERES-EBAF-4-1/mon/rlut/gn/v20210727/rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc
+outfile: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.nc
+outfilename: None
+outpath: None
+ver: v20250909
+infilename: rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc
+type(d): &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt;
+atts: {&#39;Conventions&#39;: &#39;CF-1.7 ODS-2.1&#39;, &#39;activity_id&#39;: &#39;obs4MIPs&#39;, &#39;contact&#39;: &#39;PCMDI (pcmdi-metrics@llnl.gov)&#39;, &#39;creation_date&#39;: &#39;2021-07-27T18:20:26Z&#39;, &#39;curation_provenance&#39;: &#39;work-in-progress&#39;, &#39;data_specs_version&#39;: &#39;2.1.0&#39;, &#39;external_variables&#39;: &#39;areacella&#39;, &#39;frequency&#39;: &#39;mon&#39;, &#39;further_info_url&#39;: &#39;https://furtherinfo.es-doc.org/CMIP6.NASA-LaRC.CERES-EBAF-4-1.experiment_idsub_experiment_idPCMDI&#39;, &#39;grid&#39;: &#39;1x1 degree latitude x longitude&#39;, &#39;grid_label&#39;: &#39;gn&#39;, &#39;history&#39;: &#39;2021-07-27T18:20:26Z; CMOR rewrote data to be consistent with obs4MIPs, and CF-1.7 ODS-2.1 standards&#39;, &#39;institution&#39;: &#39;NASA-LaRC (Langley Research Center) Hampton, Va&#39;, &#39;institution_id&#39;: &#39;NASA-LaRC&#39;, &#39;mip_era&#39;: &#39;CMIP6&#39;, &#39;nominal_resolution&#39;: &#39;100 km&#39;, &#39;product&#39;: &#39;observations&#39;, &#39;realm&#39;: &#39;atmos&#39;, &#39;release_year&#39;: &#39;2019&#39;, &#39;source&#39;: &#39;CERES EBAF (Energy Balanced and Filled) TOA Fluxes. Monthly Averages&#39;, &#39;source_description&#39;: &#39;CERES EBAF (Energy Balanced and Filled) TOA Fluxes. Monthly Averages&#39;, &#39;source_id&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;source_label&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;source_name&#39;: &#39;CERES-EBAF4-1&#39;, &#39;source_type&#39;: &#39;satellite_blended&#39;, &#39;source_version_number&#39;: &#39;4.1&#39;, &#39;table_id&#39;: &#39;obs4MIPs_Amon&#39;, &#39;table_info&#39;: &#39;Creation Date:(18 November 2020) MD5:d8a4a72de798e86a999881bdaeb1809e&#39;, &#39;title&#39;: &#39;CERES prepared for obs4MIPs (ODS-v2.1.0)&#39;, &#39;tracking_id&#39;: &#39;hdl:21.14102/d1afa116-4801-4801-b302-43c49b5bb7dc&#39;, &#39;variable_id&#39;: &#39;rlut&#39;, &#39;variant_info&#39;: &#39;Best Estimate&#39;, &#39;variant_label&#39;: &#39;PCMDI&#39;, &#39;license&#39;: &#39;Data in this file processed for obs4MIPs by PCMDI and is for research purposes only.&#39;, &#39;cmor_version&#39;: &#39;3.6.1&#39;}
+outdir: demo_output_tmp/climo
+start_yr_str is  2003
+start_mo_str is  01
+end_yr_str is  2018
+end_mo_str is  12
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.AC.v20250909.nc
+data_var, da.shape: rlut (12, 180, 360)
+output figure: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.AC.v20250909.png
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.DJF.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.MAM.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.JJA.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.SON.v20250909.nc
+</pre></div></div>
+</div>
+</section>
+<section id="Passing-parameters-via-command-line">
+<h2>Passing parameters via command line<a class="headerlink" href="#Passing-parameters-via-command-line" title="Link to this heading"></a></h2>
+<p>The following example uses the command line to pass arguments rather than a parameter file. Bash cell magic is used to pass the directory names (referenced as <code class="docutils literal notranslate"><span class="pre">$1</span></code> and <code class="docutils literal notranslate"><span class="pre">$2</span></code>) and run the command as a subprocess.</p>
+<p>Similar to the mean climate metrics, filenames can use chain notation to substitute variables into the file name. In this case, the <code class="docutils literal notranslate"><span class="pre">%(variable)</span></code> placeholder shows the climatology script where to substitute the variable name into the file name. This functionality is useful for model data where there are separate timeseries files to read in for each variable.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pcmdi_compute_climatologies.py<span class="w"> </span><span class="err">\</span>
+<span class="o">--</span><span class="n">var</span> <span class="n">rlut</span> \
+<span class="o">--</span><span class="n">start</span> <span class="mi">2003</span><span class="o">-</span><span class="mi">01</span> <span class="o">--</span><span class="n">end</span> <span class="mi">2018</span><span class="o">-</span><span class="mi">12</span> \
+<span class="o">--</span><span class="n">outfile</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="s1">&#39;/climo/%(variable)_mon_CERES-EBAF-4-1_BE_gn.nc&#39;</span> \
+<span class="o">--</span><span class="n">infile</span> <span class="p">{</span><span class="n">demo_data_directory</span><span class="p">}</span><span class="s1">&#39;/obs4MIPs_PCMDI_monthly/NASA-LaRC/CERES-EBAF-4-1/mon/rlut/gn/v20210727/rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+start and end are  2003-01   2018-12
+variable list:  [&#39;rlut&#39;]
+ver: v20250909
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/io/string_constructor.py:43: UserWarning: Keyword &#39;variable&#39; not provided for filling the template.
+  warnings.warn(f&#34;Keyword &#39;{k}&#39; not provided for filling the template.&#34;)
+var: rlut
+infile: demo_data_tmp/obs4MIPs_PCMDI_monthly/NASA-LaRC/CERES-EBAF-4-1/mon/rlut/gn/v20210727/rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc
+outfile: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.nc
+outfilename: None
+outpath: None
+ver: v20250909
+infilename: rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc
+type(d): &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt;
+atts: {&#39;Conventions&#39;: &#39;CF-1.7 ODS-2.1&#39;, &#39;activity_id&#39;: &#39;obs4MIPs&#39;, &#39;contact&#39;: &#39;PCMDI (pcmdi-metrics@llnl.gov)&#39;, &#39;creation_date&#39;: &#39;2021-07-27T18:20:26Z&#39;, &#39;curation_provenance&#39;: &#39;work-in-progress&#39;, &#39;data_specs_version&#39;: &#39;2.1.0&#39;, &#39;external_variables&#39;: &#39;areacella&#39;, &#39;frequency&#39;: &#39;mon&#39;, &#39;further_info_url&#39;: &#39;https://furtherinfo.es-doc.org/CMIP6.NASA-LaRC.CERES-EBAF-4-1.experiment_idsub_experiment_idPCMDI&#39;, &#39;grid&#39;: &#39;1x1 degree latitude x longitude&#39;, &#39;grid_label&#39;: &#39;gn&#39;, &#39;history&#39;: &#39;2021-07-27T18:20:26Z; CMOR rewrote data to be consistent with obs4MIPs, and CF-1.7 ODS-2.1 standards&#39;, &#39;institution&#39;: &#39;NASA-LaRC (Langley Research Center) Hampton, Va&#39;, &#39;institution_id&#39;: &#39;NASA-LaRC&#39;, &#39;mip_era&#39;: &#39;CMIP6&#39;, &#39;nominal_resolution&#39;: &#39;100 km&#39;, &#39;product&#39;: &#39;observations&#39;, &#39;realm&#39;: &#39;atmos&#39;, &#39;release_year&#39;: &#39;2019&#39;, &#39;source&#39;: &#39;CERES EBAF (Energy Balanced and Filled) TOA Fluxes. Monthly Averages&#39;, &#39;source_description&#39;: &#39;CERES EBAF (Energy Balanced and Filled) TOA Fluxes. Monthly Averages&#39;, &#39;source_id&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;source_label&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;source_name&#39;: &#39;CERES-EBAF4-1&#39;, &#39;source_type&#39;: &#39;satellite_blended&#39;, &#39;source_version_number&#39;: &#39;4.1&#39;, &#39;table_id&#39;: &#39;obs4MIPs_Amon&#39;, &#39;table_info&#39;: &#39;Creation Date:(18 November 2020) MD5:d8a4a72de798e86a999881bdaeb1809e&#39;, &#39;title&#39;: &#39;CERES prepared for obs4MIPs (ODS-v2.1.0)&#39;, &#39;tracking_id&#39;: &#39;hdl:21.14102/d1afa116-4801-4801-b302-43c49b5bb7dc&#39;, &#39;variable_id&#39;: &#39;rlut&#39;, &#39;variant_info&#39;: &#39;Best Estimate&#39;, &#39;variant_label&#39;: &#39;PCMDI&#39;, &#39;license&#39;: &#39;Data in this file processed for obs4MIPs by PCMDI and is for research purposes only.&#39;, &#39;cmor_version&#39;: &#39;3.6.1&#39;}
+outdir: demo_output_tmp/climo
+start_yr_str is  2003
+start_mo_str is  01
+end_yr_str is  2018
+end_mo_str is  12
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.AC.v20250909.nc
+data_var, da.shape: rlut (12, 180, 360)
+output figure: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.AC.v20250909.png
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.DJF.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.MAM.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.JJA.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.SON.v20250909.nc
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">today_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">image_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">demo_output_directory</span><span class="si">}</span><span class="s2">/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.AC.v</span><span class="si">{</span><span class="n">today_date</span><span class="si">}</span><span class="s2">.png&quot;</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+<span class="n">display_png</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_1a_compute_climatologies_13_0.png" src="../_images/examples_Demo_1a_compute_climatologies_13_0.png" />
+</div>
+</div>
+</section>
+<section id="Mixing-inputs-and-specifying-the-output-directory">
+<h2>Mixing inputs and specifying the output directory<a class="headerlink" href="#Mixing-inputs-and-specifying-the-output-directory" title="Link to this heading"></a></h2>
+<p>Parameters that are specified on the command line override those in the parameter file when both are provided. In this case the output directory and file name are specified separately on the command line using the variables <code class="docutils literal notranslate"><span class="pre">outpath</span></code> and <code class="docutils literal notranslate"><span class="pre">outfilename</span></code>. This functionality is usefuly for creating batch climatologies scripts.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pcmdi_compute_climatologies.py<span class="w"> </span><span class="err">\</span>
+<span class="o">-</span><span class="n">p</span> <span class="n">basic_annual_cycle_param</span><span class="o">.</span><span class="n">py</span> \
+<span class="o">--</span><span class="n">outpath</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="o">/</span><span class="n">climo</span><span class="o">/</span> \
+<span class="o">--</span><span class="n">outfilename</span> <span class="n">rlut_mon_CERES</span><span class="o">-</span><span class="n">EBAF</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">1</span><span class="n">_BE_gn</span><span class="o">.</span><span class="n">nc</span> \
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+start and end are  2003-01   2018-12
+variable list:  [&#39;rlut&#39;]
+ver: v20250909
+var: rlut
+infile: demo_data_tmp/obs4MIPs_PCMDI_monthly/NASA-LaRC/CERES-EBAF-4-1/mon/rlut/gn/v20210727/rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc
+outfile: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.nc
+outfilename: rlut_mon_CERES-EBAF-4-1_BE_gn.nc
+outpath: demo_output_tmp/climo/
+ver: v20250909
+infilename: rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc
+type(d): &lt;class &#39;xarray.core.dataset.Dataset&#39;&gt;
+atts: {&#39;Conventions&#39;: &#39;CF-1.7 ODS-2.1&#39;, &#39;activity_id&#39;: &#39;obs4MIPs&#39;, &#39;contact&#39;: &#39;PCMDI (pcmdi-metrics@llnl.gov)&#39;, &#39;creation_date&#39;: &#39;2021-07-27T18:20:26Z&#39;, &#39;curation_provenance&#39;: &#39;work-in-progress&#39;, &#39;data_specs_version&#39;: &#39;2.1.0&#39;, &#39;external_variables&#39;: &#39;areacella&#39;, &#39;frequency&#39;: &#39;mon&#39;, &#39;further_info_url&#39;: &#39;https://furtherinfo.es-doc.org/CMIP6.NASA-LaRC.CERES-EBAF-4-1.experiment_idsub_experiment_idPCMDI&#39;, &#39;grid&#39;: &#39;1x1 degree latitude x longitude&#39;, &#39;grid_label&#39;: &#39;gn&#39;, &#39;history&#39;: &#39;2021-07-27T18:20:26Z; CMOR rewrote data to be consistent with obs4MIPs, and CF-1.7 ODS-2.1 standards&#39;, &#39;institution&#39;: &#39;NASA-LaRC (Langley Research Center) Hampton, Va&#39;, &#39;institution_id&#39;: &#39;NASA-LaRC&#39;, &#39;mip_era&#39;: &#39;CMIP6&#39;, &#39;nominal_resolution&#39;: &#39;100 km&#39;, &#39;product&#39;: &#39;observations&#39;, &#39;realm&#39;: &#39;atmos&#39;, &#39;release_year&#39;: &#39;2019&#39;, &#39;source&#39;: &#39;CERES EBAF (Energy Balanced and Filled) TOA Fluxes. Monthly Averages&#39;, &#39;source_description&#39;: &#39;CERES EBAF (Energy Balanced and Filled) TOA Fluxes. Monthly Averages&#39;, &#39;source_id&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;source_label&#39;: &#39;CERES-EBAF-4-1&#39;, &#39;source_name&#39;: &#39;CERES-EBAF4-1&#39;, &#39;source_type&#39;: &#39;satellite_blended&#39;, &#39;source_version_number&#39;: &#39;4.1&#39;, &#39;table_id&#39;: &#39;obs4MIPs_Amon&#39;, &#39;table_info&#39;: &#39;Creation Date:(18 November 2020) MD5:d8a4a72de798e86a999881bdaeb1809e&#39;, &#39;title&#39;: &#39;CERES prepared for obs4MIPs (ODS-v2.1.0)&#39;, &#39;tracking_id&#39;: &#39;hdl:21.14102/d1afa116-4801-4801-b302-43c49b5bb7dc&#39;, &#39;variable_id&#39;: &#39;rlut&#39;, &#39;variant_info&#39;: &#39;Best Estimate&#39;, &#39;variant_label&#39;: &#39;PCMDI&#39;, &#39;license&#39;: &#39;Data in this file processed for obs4MIPs by PCMDI and is for research purposes only.&#39;, &#39;cmor_version&#39;: &#39;3.6.1&#39;}
+outdir: demo_output_tmp/climo/
+start_yr_str is  2003
+start_mo_str is  01
+end_yr_str is  2018
+end_mo_str is  12
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.AC.v20250909.nc
+data_var, da.shape: rlut (12, 180, 360)
+output figure: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.AC.v20250909.png
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.DJF.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.MAM.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.JJA.v20250909.nc
+output file: demo_output_tmp/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.200301-201812.SON.v20250909.nc
+
+</pre></div></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Demo_1b_mean_climate.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">1B. Mean Climate Driver</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Demo_0_download_data.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">0. Prepare Demos</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">1A. Compute Climatologies</a><ul>
+<li><a class="reference internal" href="#Passing-parameters-via-parameter-file">Passing parameters via parameter file</a></li>
+<li><a class="reference internal" href="#Passing-parameters-via-command-line">Passing parameters via command line</a></li>
+<li><a class="reference internal" href="#Mixing-inputs-and-specifying-the-output-directory">Mixing inputs and specifying the output directory</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

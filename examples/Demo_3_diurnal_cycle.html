@@ -1,0 +1,1475 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="4. Modes of Variability" href="Demo_4_modes_of_variability.html" /><link rel="prev" title="2B. Monsoon (Sperber)" href="Demo_2b_monsoon_sperber.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>3. Diurnal Cycle - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/Demo_3_diurnal_cycle.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/Demo_3_diurnal_cycle.ipynb" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="3.-Diurnal-Cycle">
+<h1>3. Diurnal Cycle<a class="headerlink" href="#3.-Diurnal-Cycle" title="Link to this heading"></a></h1>
+<p>This notebook aims at inroducing new users on how to use the PCDMI diurnal cycle drivers.</p>
+<p><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/misc/diurnal/Diurnal%20Cycle%20Diagram.pdf">This diagram</a> shows how various drivers are linked together.</p>
+<p>To run the following demo, it is expected that you have downloaded the sample data as demonstrated in <a class="reference internal" href="Demo_0_download_data.html"><span class="doc">the download notebook</span></a>. For this tutorial we will be using 3 years worth of 3-hourly data resampled to a 5x5 grid.</p>
+<p>The following cell loads the demo input and output directories set in the download notebook.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">user_choices</span><span class="w"> </span><span class="kn">import</span> <span class="n">demo_data_directory</span><span class="p">,</span> <span class="n">demo_output_directory</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">demo_output_directory</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;demo_output_tmp&#39;
+</pre></div></div>
+</div>
+<section id="Daily-Means">
+<h2>Daily Means<a class="headerlink" href="#Daily-Means" title="Link to this heading"></a></h2>
+<p>Like all other drivers in the PCMDI Metrics Package, Diurnal Cycle relies on parameter input files.</p>
+<p>Our first driver starts from CMIP5 data and computes the daily means.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_diurnal_compute_daily_mean.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+# output directory
+results_dir = &#39;demo_output_tmp/diurnal/nc&#39;
+
+# input directory
+modpath = &#39;demo_data_tmp/misc_demo_data/atm/3hr/pr/&#39;
+
+# filenames template
+filename_template = &#39;pr_3hr_%(model)_%(experiment)_%(realization)_5x5_1997-1999.nc&#39;
+
+# model to use
+model = &#39;IPSL-CM5A-LR&#39;
+experiment = &#39;historical&#39;
+realization = &#39;r1i1p1&#39;
+
+# Month to use
+month = 7
+
+# Period
+firstyear = 1997 # included
+lastyear = 1999  # included
+
+# Number of workers
+num_workers = 4
+
+</pre></div></div>
+</div>
+<p>Now to run this simply call the driver:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>computeStdOfDailyMeans.py -p basic_diurnal_compute_daily_mean.py
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+computeStdOfDailyMeans.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_compute_daily_mean.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+SKIPPING: []
+FILES: [&#39;demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc&#39;]
+PARAMS: [&lt;pcmdi_metrics.diurnal.common.INPUT object at 0x10b70e800&gt;]
+Data source: IPSL-CM5A-LR
+Opening demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc
+Data source: IPSL-CM5A-LR
+Opening demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc
+Calendar type: noleap
+Year 1997:
+Start time: 1997-07-01 00:00:00
+Finish time: 1997-08-01 00:00:00
+Reading pr from demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc for time interval 1997-07-01 00:00:00 to 1997-08-01 00:00:00
+Year 1998:
+Start time: 1998-07-01 00:00:00
+Finish time: 1998-08-01 00:00:00
+Reading pr from demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc for time interval 1998-07-01 00:00:00 to 1998-08-01 00:00:00
+Year 1999:
+Start time: 1999-07-01 00:00:00
+Finish time: 1999-08-01 00:00:00
+Reading pr from demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc for time interval 1999-07-01 00:00:00 to 1999-08-01 00:00:00
+type(dmean): &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+dmean.shape: (93, 36, 72)
+Output written to demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc
+</pre></div></div>
+</div>
+<p>This generates a netcdf file <code class="docutils literal notranslate"><span class="pre">pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc</span></code> which contains the daily standard deviation at each cell.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">demo_output_directory</span> <span class="o">+</span> <span class="s2">&quot;/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc&quot;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">dailySD</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_3_diurnal_cycle_10_0.png" src="../_images/examples_Demo_3_diurnal_cycle_10_0.png" />
+</div>
+</div>
+<p>Looking at our diagram, the next driver to run is the one computing the mean of the standard deviation from daily means over a region of interest. First we open the parameter file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_diurnal_std_daily_mean.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+# output directory
+results_dir = &#39;demo_output_tmp/diurnal/json&#39;
+
+# input directory which is actually the output of previous driver
+modpath = &#39;demo_output_tmp/diurnal/nc&#39;
+
+# filenames template
+filename_template = &#39;pr_%(model)_Jul_%(firstyear)-%(lastyear)_std_of_dailymeans.nc&#39;
+
+# model to use
+model = &#39;IPSL-CM5A-LR&#39;
+experiment = &#39;historical&#39;
+realization = &#39;r1i1p1&#39;
+
+# Month to use
+month = 7
+
+# Period
+firstyear = 1997 # included
+lastyear = 1999  # included
+
+# Latitudes/longitudes to use
+lat1 = -50.
+lat2 = 50.
+lon1 = 0.
+lon2 = 360.
+
+# Name
+region_name = &#34;TRMM&#34;
+
+# Number of workers
+num_workers = 4
+
+</pre></div></div>
+</div>
+<p>Now to run this simply call the driver</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>std_of_dailymeans.py -p basic_diurnal_std_daily_mean.py
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+std_of_dailymeans.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_std_daily_mean.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+TEMPLATE NAME: pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc
+Preparing to write output to JSON file ...
+Initializing dictionary of statistical results ...
+[&#39;demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc&#39;]
+PARAMS: [&lt;pcmdi_metrics.diurnal.common.INPUT object at 0x17cd7df00&gt;]
+Specifying latitude / longitude domain of interest ...
+Reading demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2025-09-09 13:20:04,429 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 13:20:04,429 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Shape = (20, 72)
+units = mm/d
+Finding RMS area-average ...
+For IPSL-CM5A-LR in Jul, average variance of daily values = ( 3.92 mm/d)^2
+Writing output to JSON file ... {&#39;IPSL-CM5A-LR&#39;: {&#39;TRMM&#39;: 3.916317765685017}}
+REG MASK: {}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:20::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997_1999_std_of_dailymeans.json
+2025-09-09 13:20:16,838 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997_1999_std_of_dailymeans.json
+2025-09-09 13:20:16,838 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997_1999_std_of_dailymeans.json
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+done
+</pre></div></div>
+</div>
+<p>This generates a json file: <code class="docutils literal notranslate"><span class="pre">pr_Jul_1997_1999_std_of_dailymeans.json</span></code></p>
+<p>OPTIONAL: You could also append a new region to this json file by overwritting some of our parameters from the command line. This example creates results for the tropics instead of the whole globe.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+std_of_dailymeans.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_std_daily_mean.py<span class="w"> </span><span class="se">\</span>
+--region_name<span class="o">=</span>TROPICS<span class="w"> </span><span class="se">\</span>
+--lat1<span class="o">=</span>-30.<span class="w"> </span><span class="se">\</span>
+--lat2<span class="o">=</span><span class="m">30</span>.<span class="w"> </span><span class="se">\</span>
+--lon1<span class="o">=</span><span class="m">0</span>.<span class="w"> </span><span class="se">\</span>
+--lon2<span class="o">=</span><span class="m">360</span><span class="w"> </span><span class="se">\</span>
+--append
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+TEMPLATE NAME: pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc
+Preparing to write output to JSON file ...
+[&#39;demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc&#39;]
+PARAMS: [&lt;pcmdi_metrics.diurnal.common.INPUT object at 0x175f7dde0&gt;]
+Specifying latitude / longitude domain of interest ...
+Reading demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_std_of_dailymeans.nc
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2025-09-09 13:20:47,149 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 13:20:47,149 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Shape = (12, 72)
+units = mm/d
+Finding RMS area-average ...
+For IPSL-CM5A-LR in Jul, average variance of daily values = ( 3.89 mm/d)^2
+Writing output to JSON file ... {&#39;IPSL-CM5A-LR&#39;: {&#39;TRMM&#39;: 3.916317765685017, &#39;TROPICS&#39;: 3.890735448100127}}
+REG MASK: {&#39;TRMM&#39;: {&#39;id&#39;: &#39;TRMM&#39;, &#39;domain&#39;: &#39;lat -50 to 50 and lon 0 to 360&#39;}}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:21::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997_1999_std_of_dailymeans.json
+2025-09-09 13:21:00,177 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997_1999_std_of_dailymeans.json
+2025-09-09 13:21:00,177 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997_1999_std_of_dailymeans.json
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+done
+</pre></div></div>
+</div>
+</section>
+<section id="Diurnal-Composite">
+<h2>Diurnal Composite<a class="headerlink" href="#Diurnal-Composite" title="Link to this heading"></a></h2>
+<p>Looking again at our diagram we can now start again from the original 3 hourly data, and run the <em>composite</em> script</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_diurnal_composite.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+# output directory
+results_dir = &#39;demo_output_tmp/diurnal/nc&#39;
+
+# input directory
+modpath = &#39;demo_data_tmp/misc_demo_data/atm/3hr/pr/&#39;
+
+# filenames template
+filename_template = &#39;pr_3hr_%(model)_%(experiment)_%(realization)_5x5_1997-1999.nc&#39;
+
+# model to use
+model = &#39;IPSL-CM5A-LR&#39;
+experiment = &#39;historical&#39;
+realization = &#39;r1i1p1&#39;
+
+# Month to use
+month = 7
+
+# Period
+firstyear = 1997 # included
+lastyear = 1999  # included
+
+# Number of workers
+num_workers = 4
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+compositeDiurnalStatistics.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_composite.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+done
+TEMPLATE: pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc
+FILES: [&#39;demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc&#39;]
+PARAMS: [&lt;pcmdi_metrics.diurnal.common.INPUT object at 0x176389d50&gt;]
+Data source: IPSL-CM5A-LR
+Opening demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc
+Calendar type: noleap
+Year 1997:
+Finish time: 1997-08-01 00:00:00
+Reading pr from demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc for time interval 1997-07-01 00:00:00 to 1997-08-01 00:00:00
+Shape: (248, 36, 72)
+DATA FROM: 1997-07-01 01:30:00 to 1997-07-31 22:30:00
+Shape =  (8, 36, 72)
+  8 timepoints per day, 3.0 hr intervals between timepoints
+  Creating temporary storage and output fields ...
+  Computing Local Standard Times for GMT  1.50 ...
+  Computing Local Standard Times for GMT  4.50 ...
+  Computing Local Standard Times for GMT  7.50 ...
+  Computing Local Standard Times for GMT 10.50 ...
+  Computing Local Standard Times for GMT 13.50 ...
+  Computing Local Standard Times for GMT 16.50 ...
+  Computing Local Standard Times for GMT 19.50 ...
+  Computing Local Standard Times for GMT 22.50 ...
+  Choosing timepoints with GMT  1.50 ...
+days per mo : 31
+  Choosing timepoints with GMT  4.50 ...
+days per mo : 31
+  Choosing timepoints with GMT  7.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 10.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 13.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 16.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 19.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 22.50 ...
+days per mo : 31
+Year 1998:
+Finish time: 1998-08-01 00:00:00
+Reading pr from demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc for time interval 1998-07-01 00:00:00 to 1998-08-01 00:00:00
+Shape: (248, 36, 72)
+  Choosing timepoints with GMT  1.50 ...
+days per mo : 31
+  Choosing timepoints with GMT  4.50 ...
+days per mo : 31
+  Choosing timepoints with GMT  7.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 10.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 13.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 16.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 19.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 22.50 ...
+days per mo : 31
+Year 1999:
+Finish time: 1999-08-01 00:00:00
+Reading pr from demo_data_tmp/misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc for time interval 1999-07-01 00:00:00 to 1999-08-01 00:00:00
+Shape: (248, 36, 72)
+  Choosing timepoints with GMT  1.50 ...
+days per mo : 31
+  Choosing timepoints with GMT  4.50 ...
+days per mo : 31
+  Choosing timepoints with GMT  7.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 10.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 13.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 16.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 19.50 ...
+days per mo : 31
+  Choosing timepoints with GMT 22.50 ...
+days per mo : 31
+Computing mean and standard deviation over all GMT  1.50 timepoints ...
+Computing mean and standard deviation over all GMT  4.50 timepoints ...
+Computing mean and standard deviation over all GMT  7.50 timepoints ...
+Computing mean and standard deviation over all GMT 10.50 timepoints ...
+Computing mean and standard deviation over all GMT 13.50 timepoints ...
+Computing mean and standard deviation over all GMT 16.50 timepoints ...
+Computing mean and standard deviation over all GMT 19.50 timepoints ...
+Computing mean and standard deviation over all GMT 22.50 timepoints ...
+netcdf writing starts
+Saved to NetCDF: demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_avg.nc
+avgvalues written
+Saved to NetCDF: demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_std.nc
+stdvalues written
+Saved to NetCDF: demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_LocalSolarTimes.nc
+LSTs written
+netcdf writing done
+</pre></div></div>
+</div>
+<p>This produces 3 output files:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_avg.nc
+pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_std.nc
+pr_IPSL-CM5A-LR_LocalSolarTimes.nc
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+<span class="n">itime</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Change this to select a different time index</span>
+
+<span class="n">ncfile0</span> <span class="o">=</span> <span class="s2">&quot;pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_avg.nc&quot;</span>
+<span class="n">varname0</span> <span class="o">=</span> <span class="s2">&quot;diurnalmean&quot;</span>
+
+<span class="n">ncfile1</span> <span class="o">=</span> <span class="s2">&quot;pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_std.nc&quot;</span>
+<span class="n">varname1</span> <span class="o">=</span> <span class="s2">&quot;diurnalstd&quot;</span>
+
+<span class="n">ncfile2</span> <span class="o">=</span> <span class="s2">&quot;pr_IPSL-CM5A-LR_LocalSolarTimes.nc&quot;</span>
+<span class="n">varname2</span> <span class="o">=</span> <span class="s2">&quot;LST&quot;</span>
+
+<span class="n">output_dir</span> <span class="o">=</span> <span class="n">demo_output_directory</span> <span class="o">+</span> <span class="s2">&quot;/diurnal/nc/&quot;</span>
+
+<span class="n">ds0</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">ncfile0</span><span class="p">)</span>
+<span class="n">ds1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">ncfile1</span><span class="p">)</span>
+<span class="n">ds2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">ncfile2</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ds0</span><span class="p">[</span><span class="n">varname0</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">itime</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax0</span><span class="p">)</span>
+<span class="n">ax0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">varname0</span><span class="si">}</span><span class="s2"> at time index </span><span class="si">{</span><span class="n">itime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">ds1</span><span class="p">[</span><span class="n">varname1</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">itime</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">varname1</span><span class="si">}</span><span class="s2"> at time index </span><span class="si">{</span><span class="n">itime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">ds2</span><span class="p">[</span><span class="n">varname2</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">itime</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">varname2</span><span class="si">}</span><span class="s2"> at time index </span><span class="si">{</span><span class="n">itime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">ds0</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">ds1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">ds2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_3_diurnal_cycle_21_0.png" src="../_images/examples_Demo_3_diurnal_cycle_21_0.png" />
+</div>
+</div>
+<p>These contain respectively the 1997-1999 mean diurnal cycle for July, the standard deviation of these results across individual years, and the local solar time. Results for each of these are available for the entire domain.</p>
+<p>We can now generate ASCII files for composite diurnal cycle (w/ error bars) at selected grid points using the <code class="docutils literal notranslate"><span class="pre">fourierDiurnalGridpoints.py</span></code> script.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+fourierDiurnalGridpoints.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_fourier.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+LSTFILES: [&#39;demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_LocalSolarTimes.nc&#39;]
+TMPL pr_IPSL-CM5A-LR_LocalSolarTimes.nc
+Results sent to: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/ascii/pr_Jul_1997-1999_fourierDiurnalGridPoints.asc
+</pre></div></div>
+</div>
+<p>This produces an ascii file: <code class="docutils literal notranslate"><span class="pre">pr_Jul_1997-1999_fourierDiurnalGridPoints.asc</span></code></p>
+</section>
+<section id="Standard-Deviation-of-Hourly-Values">
+<h2>Standard Deviation of Hourly Values<a class="headerlink" href="#Standard-Deviation-of-Hourly-Values" title="Link to this heading"></a></h2>
+<p>Starting again from the <em>composite</em> results our diagram suggests we now compute the standard deviation of hourly values.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_diurnal_std_hourly_mean.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+# output directory
+results_dir = &#39;demo_output_tmp/diurnal/json&#39;
+
+# input directory which is actually the output of previous driver
+modpath = &#39;demo_output_tmp/diurnal/nc&#39;
+
+# model to use
+model = &#39;IPSL-CM5A-LR&#39;
+experiment = &#39;historical&#39;
+realization = &#39;r1i1p1&#39;
+
+# Month to use
+month = 7
+
+# Period
+firstyear = 1997 # included
+lastyear = 1999  # included
+
+# Latitudes/longitudes to use
+lat1 = -50.
+lat2 = 50.
+lon1 = 0.
+lon2 = 360.
+
+# Number of workers
+num_workers = 4
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+std_of_hourlyvalues.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_std_hourly_mean.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+TEMPLATE NAME: pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_std.nc
+Specifying latitude / longitude domain of interest ...
+Preparing to write output to JSON file ...
+Initializing dictionary of statistical results ...
+[&#39;demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_std.nc&#39;]
+PARAMS: [&lt;pcmdi_metrics.diurnal.common.INPUT object at 0x1797ad780&gt;]
+Specifying latitude / longitude domain of interest ...
+Reading demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_std.nc
+Shape = (8, 20, 72)
+units = mm/d
+Finding RMS area-average ...
+For IPSL-CM5A-LR in Jul, average variance of hourly values = ( 4.85 mm/d)^2
+Writing output to JSON file ...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:22::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_std_of_hourlymeans.json
+2025-09-09 13:22:30,309 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_std_of_hourlymeans.json
+2025-09-09 13:22:30,309 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_std_of_hourlymeans.json
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+done
+</pre></div></div>
+</div>
+<p>This generated the following file: <code class="docutils literal notranslate"><span class="pre">pr_Jul_1997-1999_std_of_hourlymeans.json</span></code></p>
+<p>These results are used in Trenberth et al. (2017). They are a measure of the intermittancy of hourly values, which puts “error bars” on the mean diurnal cycle.</p>
+<p>Going back to the results of the <em>composite</em> we can now run <code class="docutils literal notranslate"><span class="pre">std_of_meandiurnalcycle.py</span></code> which can use the same input parameter file as the daily mean computation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+std_of_meandiurnalcycle.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_std_hourly_mean.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+TEMPLATE NAME: pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_avg.nc
+Specifying latitude / longitude domain of interest ...
+Preparing to write output to JSON file ...
+Initializing dictionary of statistical results ...
+[&#39;demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_avg.nc&#39;]
+PARAMS: [&lt;pcmdi_metrics.diurnal.common.INPUT object at 0x178f21780&gt;]
+Specifying latitude / longitude domain of interest ...
+Reading demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_diurnal_avg.nc
+Shape = (8, 20, 72)
+units = mm/d
+Finding standard deviation over first dimension (time of day) ...
+  Shape = (20, 72)
+Finding r.m.s. average over 2nd-3rd dimensions (area) ...
+For IPSL-CM5A-LR in Jul, average variance of hourly values = ( 2.15 mm/d)^2
+Writing output to JSON file ...
+KEYS AT END: [&#39;DISCLAIMER&#39;, &#39;REFERENCE&#39;, &#39;RESULTS&#39;]
+REG MASK: {}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:23::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_std_of_meandiurnalcyc.json
+2025-09-09 13:23:12,363 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_std_of_meandiurnalcyc.json
+2025-09-09 13:23:12,363 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_std_of_meandiurnalcyc.json
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+done
+</pre></div></div>
+</div>
+<p>This generates the following file: <code class="docutils literal notranslate"><span class="pre">pr_Jul_1997-1999_std_of_meandiurnalcyc.json</span></code></p>
+</section>
+<section id="Fourier-Analysis">
+<h2>Fourier Analysis<a class="headerlink" href="#Fourier-Analysis" title="Link to this heading"></a></h2>
+<p>Again starting from the <em>composite</em> results let’s do the fourier analysis. This uses a new parameter file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_diurnal_fourierAllGrid.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+# output directory
+results_dir = &#39;demo_output_tmp/diurnal/nc&#39;
+
+# input directory which is actually the output of previous driver
+modpath = &#39;demo_output_tmp/diurnal/nc&#39;
+
+# model to use
+model = &#39;IPSL-CM5A-LR&#39;
+experiment = &#39;historical&#39;
+realization = &#39;r1i1p1&#39;
+
+# Month to use
+month = 7
+
+# Period
+firstyear = 1997 # included
+lastyear = 1999  # included
+
+# Number of workers
+num_workers = 4
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+fourierDiurnalAllGrid.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_fourierAllGrid.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+modpath  demo_output_tmp/diurnal/nc
+filename_template  pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc
+filename_template_LST  pr_%(model)_LocalSolarTimes.nc
+LSTFILES: [&#39;demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_LocalSolarTimes.nc&#39;]
+TMPL pr_IPSL-CM5A-LR_LocalSolarTimes.nc
+Reading demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_LocalSolarTimes.nc ... pr_IPSL-CM5A-LR_LocalSolarTimes.nc
+====================
+IPSL-CM5A-LR
+====================
+Reading time series of mean diurnal cycle ...
+Input shapes:  (8, 36, 72) (8, 36, 72)
+Getting latitude and longitude coordinates.
+Taking fast Fourier transform of the mean diurnal cycle ...
+Creating output arrays ...
+Calling numpy FFT function ...
+(8, 36, 72)
+Converting from complex-valued FFT to real-valued amplitude and phase ...
+  Output:
+    cycmean (36, 72)
+    maxvalue (3, 36, 72)
+    tmax (3, 36, 72)
+    cycmean type: &lt;class &#39;numpy.ndarray&#39;&gt;
+    maxvalue type: &lt;class &#39;numpy.ndarray&#39;&gt;
+    tmax type: &lt;class &#39;numpy.ndarray&#39;&gt;
+&#34;Re-decorating&#34; Fourier harmonics with grid info, etc., ...
+  After decorating:
+    cycmean (36, 72)
+    maxvalue (3, 36, 72)
+    tmax (3, 36, 72)
+    cycmean type: &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+    maxvalue type: &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+    tmax type: &lt;class &#39;xarray.core.dataarray.DataArray&#39;&gt;
+... and writing to netCDF.
+</pre></div></div>
+</div>
+<p>This generates 3 files:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pr_IPSL-CM5A-LR_Jul_1997-1999_tmean.nc
+pr_IPSL-CM5A-LR_Jul_1997-1999_S.nc
+pr_IPSL-CM5A-LR_Jul_1997-1999_tS.nc
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+<span class="n">index</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Change this to select an interested harmonic index</span>
+
+<span class="n">ncfile0</span> <span class="o">=</span> <span class="s2">&quot;pr_IPSL-CM5A-LR_Jul_1997-1999_tmean.nc&quot;</span>
+<span class="n">varname0</span> <span class="o">=</span> <span class="s2">&quot;tmean&quot;</span>
+
+<span class="n">ncfile1</span> <span class="o">=</span> <span class="s2">&quot;pr_IPSL-CM5A-LR_Jul_1997-1999_S.nc&quot;</span>
+<span class="n">varname1</span> <span class="o">=</span> <span class="s2">&quot;S&quot;</span>
+
+<span class="n">ncfile2</span> <span class="o">=</span> <span class="s2">&quot;pr_IPSL-CM5A-LR_Jul_1997-1999_tS.nc&quot;</span>
+<span class="n">varname2</span> <span class="o">=</span> <span class="s2">&quot;tS&quot;</span>
+
+<span class="n">output_dir</span> <span class="o">=</span> <span class="n">demo_output_directory</span> <span class="o">+</span> <span class="s2">&quot;/diurnal/nc/&quot;</span>
+
+<span class="n">ds0</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">ncfile0</span><span class="p">)</span>
+<span class="n">ds1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">ncfile1</span><span class="p">)</span>
+<span class="n">ds2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">+</span> <span class="n">ncfile2</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax0</span><span class="p">,</span> <span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ds0</span><span class="p">[</span><span class="n">varname0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax0</span><span class="p">)</span>
+<span class="n">ax0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">varname0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">ds1</span><span class="p">[</span><span class="n">varname1</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">harmonic</span><span class="o">=</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">varname1</span><span class="si">}</span><span class="s2"> (Harmonic </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">ds2</span><span class="p">[</span><span class="n">varname2</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">harmonic</span><span class="o">=</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">varname2</span><span class="si">}</span><span class="s2"> (Harmonic </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">ds0</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">ds1</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">ds2</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_3_diurnal_cycle_35_0.png" src="../_images/examples_Demo_3_diurnal_cycle_35_0.png" />
+</div>
+</div>
+<p>We can now run the last script: <code class="docutils literal notranslate"><span class="pre">savg_fourierWrappedInOut.py</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+savg_fourier.py<span class="w"> </span>-p<span class="w"> </span>basic_diurnal_std_hourly_mean.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Specifying latitude / longitude domain of interest ...
+Preparing to write output to JSON file ...
+Initializing dictionary of statistical results ...
+TEMPLATE: pr_IPSL-CM5A-LR_Jul_1997-1999_S.nc
+[&#39;demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_S.nc&#39;]
+Reading Amplitude from demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_S.nc ...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2025-09-09 13:23:45,029 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 13:23:45,029 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Reading Phase from demo_output_tmp/diurnal/nc/pr_IPSL-CM5A-LR_Jul_1997-1999_tS.nc ...
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+2025-09-09 13:23:45,181 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+2025-09-09 13:23:45,181 [WARNING]: dataset.py(open_dataset:119) &gt;&gt; &#34;No time coordinates were found in this dataset to decode. If time coordinates were expected to exist, make sure they are detectable by setting the CF &#39;axis&#39; or &#39;standard_name&#39; attribute (e.g., ds[&#39;time&#39;].attrs[&#39;axis&#39;] = &#39;T&#39; or ds[&#39;time&#39;].attrs[&#39;standard_name&#39;] = &#39;time&#39;). Afterwards, try decoding again with `xcdat.decode_time`.&#34;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Reading sftlf from demo_output_tmp/diurnal/nc/cmip5.IPSL-CM5A-LR.historical.r0i0p0.fx.atm.fx.sftlf.*.latestX.xml ...
+Failed reading sftlf from file (error was: list index out of range)
+Creating one for you
+  Global mean land fraction = 0.252
+Area-averaging globally, over land only, and over ocean only ...
+Converting singleton transient variables to plain floating-point numbers ...
+Jul 1-harmonic amplitude, phase =   0.583 mm/d,   9.681 hrsLST averaged globally
+Jul 1-harmonic amplitude, phase =   2.243 mm/d,  11.588 hrsLST averaged over land
+Jul 1-harmonic amplitude, phase =   0.380 mm/d,   4.868 hrsLST averaged over ocean
+Area-averaging globally, over land only, and over ocean only ...
+Converting singleton transient variables to plain floating-point numbers ...
+Jul 2-harmonic amplitude, phase =   0.569 mm/d,   0.159 hrsLST averaged globally
+Jul 2-harmonic amplitude, phase =   1.554 mm/d,  11.905 hrsLST averaged over land
+Jul 2-harmonic amplitude, phase =   0.252 mm/d,   0.694 hrsLST averaged over ocean
+Area-averaging globally, over land only, and over ocean only ...
+Converting singleton transient variables to plain floating-point numbers ...
+Jul 3-harmonic amplitude, phase =   0.223 mm/d,   3.454 hrsLST averaged globally
+Jul 3-harmonic amplitude, phase =   0.797 mm/d,   3.682 hrsLST averaged over land
+Jul 3-harmonic amplitude, phase =   0.059 mm/d,   2.239 hrsLST averaged over ocean
+{&#39;IPSL-CM5A-LR&#39;: {&#39;TRMM&#39;: {&#39;harmonic1&#39;: {&#39;amp_avg_lnd&#39;: 2.2434820570023, &#39;pha_avg_lnd&#39;: 11.58829753511763, &#39;amp_avg_ocn&#39;: 0.379906466155166, &#39;pha_avg_ocn&#39;: 4.868143863998163}, &#39;harmonic2&#39;: {&#39;amp_avg_lnd&#39;: 1.5538483152648368, &#39;pha_avg_lnd&#39;: 11.904791463892565, &#39;amp_avg_ocn&#39;: 0.2520191831855082, &#39;pha_avg_ocn&#39;: 0.6935198497338129}, &#39;harmonic3&#39;: {&#39;amp_avg_lnd&#39;: 0.7967931491855436, &#39;pha_avg_lnd&#39;: 3.6821038142649987, &#39;amp_avg_ocn&#39;: 0.058609214202810477, &#39;pha_avg_ocn&#39;: 2.239311528505178}}}}
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:24::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_savg_DiurnalFourier.json
+2025-09-09 13:24:02,552 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_savg_DiurnalFourier.json
+2025-09-09 13:24:02,552 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/diurnal/json/pr_Jul_1997-1999_savg_DiurnalFourier.json
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+done
+</pre></div></div>
+</div>
+<p>This creates the following file:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pr_Jul_1997-1999_savg_DiurnalFourier.json
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
+<span class="n">output_json</span> <span class="o">=</span> <span class="n">demo_output_directory</span> <span class="o">+</span> <span class="s2">&quot;/diurnal/json/pr_Jul_1997-1999_savg_DiurnalFourier.json&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_json</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># or use below line to print with indentation</span>
+    <span class="c1"># print(json.dumps(data, indent=4))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;DISCLAIMER&#39;: &#39;USER-NOTICE: The results in this file were produced with the &#39;
+               &#39;PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are &#39;
+               &#39;for research purposes only. They are subject to ongoing &#39;
+               &#39;quality control and change as the PMP software advances, &#39;
+               &#39;interpolation methods are modified, observational data sets &#39;
+               &#39;are updated, problems with model data are corrected, etc. Use &#39;
+               &#39;of these results for research (presentation, publications, &#39;
+               &#39;etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. &#39;
+               &#39;Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, &#39;
+               &#39;and J. Servonnat (2016), A more powerful reality test for &#39;
+               &#39;climate models, Eos, 97, doi:10.1029/2016EO051663. If any &#39;
+               &#39;problems are uncovered in using these results please contact &#39;
+               &#39;the PMP development team at pcmdi-metrics@llnl.gov\n&#39;,
+ &#39;REFERENCE&#39;: &#39;The statistics in this file are based on Covey et al., J &#39;
+              &#39;Climate 2016&#39;,
+ &#39;RESULTS&#39;: {&#39;IPSL-CM5A-LR&#39;: {&#39;TRMM&#39;: {&#39;harmonic1&#39;: {&#39;amp_avg_lnd&#39;: 2.2434820570023,
+                                                     &#39;amp_avg_ocn&#39;: 0.379906466155166,
+                                                     &#39;pha_avg_lnd&#39;: 11.58829753511763,
+                                                     &#39;pha_avg_ocn&#39;: 4.868143863998163},
+                                       &#39;harmonic2&#39;: {&#39;amp_avg_lnd&#39;: 1.5538483152648368,
+                                                     &#39;amp_avg_ocn&#39;: 0.2520191831855082,
+                                                     &#39;pha_avg_lnd&#39;: 11.904791463892565,
+                                                     &#39;pha_avg_ocn&#39;: 0.6935198497338129},
+                                       &#39;harmonic3&#39;: {&#39;amp_avg_lnd&#39;: 0.7967931491855436,
+                                                     &#39;amp_avg_ocn&#39;: 0.058609214202810477,
+                                                     &#39;pha_avg_lnd&#39;: 3.6821038142649987,
+                                                     &#39;pha_avg_ocn&#39;: 2.239311528505178}}}},
+ &#39;RegionalMasking&#39;: {&#39;TRMM&#39;: {&#39;domain&#39;: &#39;lat -50 to 50 and lon 0 to 360&#39;,
+                              &#39;id&#39;: &#39;TRMM&#39;}},
+ &#39;json_structure&#39;: [&#39;model&#39;, &#39;domain&#39;, &#39;harmonic&#39;, &#39;statistic&#39;],
+ &#39;provenance&#39;: {&#39;commandLine&#39;: &#39;/Users/lee1043/mambaforge/envs/pmp_devel_20250908/bin/savg_fourier.py &#39;
+                               &#39;-p basic_diurnal_std_hourly_mean.py&#39;,
+                &#39;conda&#39;: {&#39;Platform&#39;: &#39;osx-64&#39;,
+                          &#39;PythonVersion&#39;: &#39;3.10.13.final.0&#39;,
+                          &#39;Version&#39;: &#39;25.3.1&#39;,
+                          &#39;buildVersion&#39;: &#39;not installed&#39;},
+                &#39;date&#39;: &#39;2025-09-09 13:23:50&#39;,
+                &#39;openGL&#39;: {&#39;GLX&#39;: {&#39;client&#39;: {}, &#39;server&#39;: {}}},
+                &#39;osAccess&#39;: False,
+                &#39;packages&#39;: {&#39;PMP&#39;: &#39;3.9.1&#39;,
+                             &#39;PMPObs&#39;: &#34;See &#39;References&#39; key below, for &#34;
+                                       &#39;detailed obs provenance information.&#39;,
+                             &#39;cdat_info&#39;: None,
+                             &#39;cdp&#39;: &#39;1.7.0&#39;,
+                             &#39;esmf&#39;: &#39;0.8.10&#39;,
+                             &#39;esmpy&#39;: &#39;8.9.0&#39;,
+                             &#39;matplotlib&#39;: &#39;3.10.6&#39;,
+                             &#39;numpy&#39;: &#39;2.0.2&#39;,
+                             &#39;python&#39;: &#39;3.10.10&#39;,
+                             &#39;scipy&#39;: &#39;1.15.2&#39;,
+                             &#39;xarray&#39;: &#39;2024.9.0&#39;,
+                             &#39;xcdat&#39;: &#39;0.10.0&#39;},
+                &#39;platform&#39;: {&#39;Name&#39;: &#39;ml-9713657&#39;,
+                             &#39;OS&#39;: &#39;Darwin&#39;,
+                             &#39;Version&#39;: &#39;24.6.0&#39;},
+                &#39;userId&#39;: &#39;lee1043&#39;}}
+</pre></div></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Demo_4_modes_of_variability.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">4. Modes of Variability</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Demo_2b_monsoon_sperber.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">2B. Monsoon (Sperber)</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">3. Diurnal Cycle</a><ul>
+<li><a class="reference internal" href="#Daily-Means">Daily Means</a></li>
+<li><a class="reference internal" href="#Diurnal-Composite">Diurnal Composite</a></li>
+<li><a class="reference internal" href="#Standard-Deviation-of-Hourly-Values">Standard Deviation of Hourly Values</a></li>
+<li><a class="reference internal" href="#Fourier-Analysis">Fourier Analysis</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

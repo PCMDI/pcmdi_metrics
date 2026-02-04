@@ -1,0 +1,1242 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="7B. Precipitation Distribution" href="Demo_7b_precip_distribution.html" /><link rel="prev" title="6. ENSO" href="Demo_6_ENSO.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>7. Precipitation Variability Across Timescales - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/Demo_7_precip_variability.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/Demo_7_precip_variability.ipynb" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="7.-Precipitation-Variability-Across-Timescales">
+<h1>7. Precipitation Variability Across Timescales<a class="headerlink" href="#7.-Precipitation-Variability-Across-Timescales" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates how to use the precipitation variability metrics driver and calc_ratio script to obtain the precipitation variability metric.</p>
+<p>Our metric is based on the simulated-to-observed ratio of spectral power because the spectral power is substantially sensitive to the processing choices for power spectra analysis (e.g., window length, overlap length, and windowing function). By using the ratio, the metric is not greatly affected by the different processing choices, helping the robustness of analysis results.</p>
+<p>This notebook should be run in an environment with python, jupyterlab, pcmdi metrics package, and cdat installed. It is expected that you have downloaded the sample data as demonstrated in <a class="reference internal" href="Demo_0_download_data.html"><span class="doc">the download notebook</span></a>.</p>
+<p><strong>Reference</strong></p>
+<ul class="simple">
+<li><p>Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 2022: Benchmarking Simulated Precipitation Variability across Timescales. Journal of Climate, 35, 3173–3196, <a class="reference external" href="https://doi.org/10.1175/JCLI-D-21-0542.1">doi: 10.1175/JCLI-D-21-0542.1</a></p></li>
+<li><p>Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, <a class="reference external" href="https://doi.org/10.5194/gmd-17-3919-2024">doi:
+10.5194/gmd-17-3919-2024</a></p></li>
+</ul>
+<p>The following cell reads in the choices you made during the download data step:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">user_choices</span><span class="w"> </span><span class="kn">import</span> <span class="n">demo_data_directory</span><span class="p">,</span> <span class="n">demo_output_directory</span>
+</pre></div>
+</div>
+</div>
+<section id="Basic-Use">
+<h2>Basic Use<a class="headerlink" href="#Basic-Use" title="Link to this heading"></a></h2>
+<section id="Help">
+<h3>Help<a class="headerlink" href="#Help" title="Link to this heading"></a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag for assistance with the precip variability driver:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+variability_across_timescales_PS_driver.py<span class="w"> </span>--help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: variability_across_timescales_PS_driver.py [-h]
+                                                  [--parameters PARAMETERS]
+                                                  [--diags OTHER_PARAMETERS [OTHER_PARAMETERS ...]]
+                                                  [--mip MIP] [--exp EXP]
+                                                  [--mod MOD] [--var VAR]
+                                                  [--frq FRQ]
+                                                  [--modpath MODPATH]
+                                                  [--results_dir RESULTS_DIR]
+                                                  [--case_id CASE_ID]
+                                                  [--prd PRD [PRD ...]]
+                                                  [--fac FAC]
+                                                  [--nperseg NPERSEG]
+                                                  [--noverlap NOVERLAP]
+                                                  [--ref REF] [--res RES]
+                                                  [--regions_specs REGIONS_SPECS]
+                                                  [--cmec] [--no_cmec]
+                                                  [--region_file REGION_FILE]
+                                                  [--feature FEATURE]
+                                                  [--attr ATTR]
+
+options:
+  -h, --help            show this help message and exit
+  --parameters PARAMETERS, -p PARAMETERS
+  --diags OTHER_PARAMETERS [OTHER_PARAMETERS ...], -d OTHER_PARAMETERS [OTHER_PARAMETERS ...]
+                        Path to other user-defined parameter file. (default:
+                        None)
+  --mip MIP             cmip5, cmip6 or other mip (default: None)
+  --exp EXP             amip, cmip or others (default: None)
+  --mod MOD             model (default: None)
+  --var VAR             pr or other variable (default: None)
+  --frq FRQ             day, 3hr or other frequency (default: None)
+  --modpath MODPATH     data directory path (default: None)
+  --results_dir RESULTS_DIR
+                        results directory path (default: None)
+  --case_id CASE_ID     case_id with date (default: None)
+  --prd PRD [PRD ...]   start- and end-year for analysis (e.g., 1985 2004)
+                        (default: None)
+  --fac FAC             factor to make unit of [mm/day] (default: None)
+  --nperseg NPERSEG     length of segment in power spectra (default: None)
+  --noverlap NOVERLAP   length of overlap between segments in power spectra
+                        (default: None)
+  --ref REF             reference data path (default: None)
+  --res RES             Horizontal resolution [degree] for interpolation (lon,
+                        lat) (default: 2)
+  --regions_specs REGIONS_SPECS
+                        Provide a single custom region (default: None)
+  --cmec                Use to save CMEC format metrics JSON (default: False)
+  --no_cmec             Do not save CMEC format metrics JSON (default: False)
+  --region_file REGION_FILE
+                        File containing vector region of interest. (default:
+                        None)
+  --feature FEATURE     Feature in vectorized region. (default: None)
+  --attr ATTR           Attribute containing feature in vectorized region.
+                        (default: None)
+</pre></div></div>
+</div>
+</section>
+<section id="Parameter-file">
+<h3>Parameter file<a class="headerlink" href="#Parameter-file" title="Link to this heading"></a></h3>
+<p>Settings can be specified in a parameter file or on the command line. The basic case demonstrated here uses a parameter file, which is printed below.</p>
+<p>Note that this driver should only be used to run <strong>one</strong> model or dataset at a time.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">mod</span></code> variable can either be set to a particular file name, as shown here, or to a model name (i.e. “GISS-E2-H”).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print parameter file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;basic_precip_variability_param.py&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+mip = &#34;cmip5&#34;
+exp = &#34;historical&#34;
+mod = &#34;pr_day_GISS-E2-H_historical_r6i1p1_*.nc&#34;
+var = &#34;pr&#34;
+frq = &#34;day&#34;
+modpath = &#39;demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/&#39;
+results_dir = &#39;demo_output_tmp/precip_variability/GISS-E2-H/&#39;
+prd = [2000,2005]  # analysis period
+fac = 86400  # factor to make unit of [mm/day]
+
+# length of segment in power spectra (~10 years)
+# shortened to 2 years for demo purposes
+nperseg = 2 * 365
+# length of overlap between segments in power spectra (~5 years)
+# shortened to 1 year for demo purposes
+noverlap = 1 * 365
+
+# flag for cmec formatted JSON
+cmec = False
+
+</pre></div></div>
+</div>
+</section>
+<section id="Running-the-driver">
+<h3>Running the driver<a class="headerlink" href="#Running-the-driver" title="Link to this heading"></a></h3>
+<div class="line-block">
+<div class="line">The parameter file is passed to the driver using the <code class="docutils literal notranslate"><span class="pre">-p</span></code> flag, similar to other PMP metrics. The basic command is:</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">variability_across_timescales_PS_driver.py</span> <span class="pre">-p</span> <span class="pre">parameter_file_name.py</span></code></div>
+</div>
+<p>The next cell uses the command line syntax to execute the driver as a subprocess.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash
+variability_across_timescales_PS_driver.py<span class="w"> </span>-p<span class="w"> </span>basic_precip_variability_param.py
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/
+pr_day_GISS-E2-H_historical_r6i1p1_*.nc
+[2000, 2005]
+730 365
+2
+demo_output_tmp/precip_variability/GISS-E2-H/
+demo_output_tmp/precip_variability/GISS-E2-H/
+demo_output_tmp/precip_variability/GISS-E2-H/
+[&#39;demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc&#39;]
+GISS-E2-H.r6i1p1
+[&#39;demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc&#39;]
+GISS-E2-H.r6i1p1 365_day
+2000 2005
+Complete regridding from (2190, 90, 144) to (2190, 90, 180)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/precip_variability/lib/lib_variability_across_timescales.py:341: FutureWarning: &#39;H&#39; is deprecated and will be removed in a future version, please use &#39;h&#39; instead.
+  climtime = pd.period_range(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Complete calculating climatology and anomaly for calendar of 365_day
+Complete power spectra (segment:  730  nps: 5.0 )
+Complete domain and frequency average of spectral power
+Complete power spectra (segment:  730  nps: 5.0 )
+Complete domain and frequency average of spectral power
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:33::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/GISS-E2-H/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json
+2025-09-09 13:33:28,781 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/GISS-E2-H/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json
+2025-09-09 13:33:28,781 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/GISS-E2-H/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json
+</pre></div></div>
+</div>
+</section>
+<section id="Results">
+<h3>Results<a class="headerlink" href="#Results" title="Link to this heading"></a></h3>
+<p>Running the precipitation variability driver produces three output files, found in the demo output directory:</p>
+<div class="line-block">
+<div class="line">Spatial pattern of spectral power (forced variability) (netCDF)</div>
+<div class="line">Spatial pattern of spectral power (unforced variability) (netCDF)</div>
+<div class="line">Average of spectral power (forced and unforced) (JSON)</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>ls<span class="w"> </span><span class="o">{</span>demo_output_directory<span class="w"> </span>+<span class="w"> </span><span class="s2">&quot;/precip_variability/GISS-E2-H&quot;</span><span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PS_pr.day_regrid.180x90_GISS-E2-H.r6i1p1.nc
+PS_pr.day_regrid.180x90_GISS-E2-H.r6i1p1_unforced.nc
+PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json
+</pre></div></div>
+</div>
+<p>The next cell displays the metrics from the JSON file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span><span class="s2">&quot;precip_variability/GISS-E2-H/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;RESULTS&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  &#34;GISS-E2-H.r6i1p1&#34;: {
+    &#34;forced&#34;: {
+      &#34;Land_30N50N&#34;: {
+        &#34;annual&#34;: 1.153948602189099,
+        &#34;semi-annual&#34;: 0.36753810673147774
+      },
+      &#34;Land_30S30N&#34;: {
+        &#34;annual&#34;: 6.850995810074617,
+        &#34;semi-annual&#34;: 1.1945015595812933
+      },
+      &#34;Land_50S30S&#34;: {
+        &#34;annual&#34;: 0.8090939740005697,
+        &#34;semi-annual&#34;: 0.3429734614816379
+      },
+      &#34;Land_50S50N&#34;: {
+        &#34;annual&#34;: 4.793570167683028,
+        &#34;semi-annual&#34;: 0.8971106124805723
+      },
+      &#34;Ocean_30N50N&#34;: {
+        &#34;annual&#34;: 1.4501261513182653,
+        &#34;semi-annual&#34;: 0.3738726067518909
+      },
+      &#34;Ocean_30S30N&#34;: {
+        &#34;annual&#34;: 4.561426422605005,
+        &#34;semi-annual&#34;: 1.5069884231014559
+      },
+      &#34;Ocean_50S30S&#34;: {
+        &#34;annual&#34;: 0.5890515819402313,
+        &#34;semi-annual&#34;: 0.19150748548003432
+      },
+      &#34;Ocean_50S50N&#34;: {
+        &#34;annual&#34;: 3.3050864193776066,
+        &#34;semi-annual&#34;: 1.0780758057454571
+      },
+      &#34;Total_30N50N&#34;: {
+        &#34;annual&#34;: 1.3110986682307924,
+        &#34;semi-annual&#34;: 0.37089915519539457
+      },
+      &#34;Total_30S30N&#34;: {
+        &#34;annual&#34;: 5.155704413930352,
+        &#34;semi-annual&#34;: 1.4258796929688173
+      },
+      &#34;Total_50S30S&#34;: {
+        &#34;annual&#34;: 0.6055533541116589,
+        &#34;semi-annual&#34;: 0.20286646501256045
+      },
+      &#34;Total_50S50N&#34;: {
+        &#34;annual&#34;: 3.69797019269495,
+        &#34;semi-annual&#34;: 1.0303102268132056
+      }
+    },
+    &#34;unforced&#34;: {
+      &#34;Land_30N50N&#34;: {
+        &#34;interannual&#34;: 0.1102511231263155,
+        &#34;seasonal-annual&#34;: 0.15025706644708073,
+        &#34;sub-seasonal&#34;: 0.13618888930844547,
+        &#34;synoptic&#34;: 0.06327297649960476
+      },
+      &#34;Land_30S30N&#34;: {
+        &#34;interannual&#34;: 0.3153529794234607,
+        &#34;seasonal-annual&#34;: 0.3117985429131878,
+        &#34;sub-seasonal&#34;: 0.24779678971270186,
+        &#34;synoptic&#34;: 0.07648497908010148
+      },
+      &#34;Land_50S30S&#34;: {
+        &#34;interannual&#34;: 0.1617854187098499,
+        &#34;seasonal-annual&#34;: 0.21589364787265297,
+        &#34;sub-seasonal&#34;: 0.18475578606585347,
+        &#34;synoptic&#34;: 0.07524240453524902
+      },
+      &#34;Land_50S50N&#34;: {
+        &#34;interannual&#34;: 0.24443780233758708,
+        &#34;seasonal-annual&#34;: 0.25718039033897055,
+        &#34;sub-seasonal&#34;: 0.21022029994683689,
+        &#34;synoptic&#34;: 0.07234360585017188
+      },
+      &#34;Ocean_30N50N&#34;: {
+        &#34;interannual&#34;: 0.1326562564321627,
+        &#34;seasonal-annual&#34;: 0.1758330640897642,
+        &#34;sub-seasonal&#34;: 0.15435681112427357,
+        &#34;synoptic&#34;: 0.09817499779028156
+      },
+      &#34;Ocean_30S30N&#34;: {
+        &#34;interannual&#34;: 0.6539803811119569,
+        &#34;seasonal-annual&#34;: 0.638536454370767,
+        &#34;sub-seasonal&#34;: 0.43424291163472356,
+        &#34;synoptic&#34;: 0.11428977945404169
+      },
+      &#34;Ocean_50S30S&#34;: {
+        &#34;interannual&#34;: 0.09747609150424465,
+        &#34;seasonal-annual&#34;: 0.13244482423836876,
+        &#34;sub-seasonal&#34;: 0.11915711328928646,
+        &#34;synoptic&#34;: 0.06874014945078893
+      },
+      &#34;Ocean_50S50N&#34;: {
+        &#34;interannual&#34;: 0.46727869921587156,
+        &#34;seasonal-annual&#34;: 0.4701741107777082,
+        &#34;sub-seasonal&#34;: 0.3304475909302172,
+        &#34;synoptic&#34;: 0.10233245216785036
+      },
+      &#34;Total_30N50N&#34;: {
+        &#34;interannual&#34;: 0.12213915511604334,
+        &#34;seasonal-annual&#34;: 0.16382754040922717,
+        &#34;sub-seasonal&#34;: 0.1458286817964043,
+        &#34;synoptic&#34;: 0.08179178377228863
+      },
+      &#34;Total_30S30N&#34;: {
+        &#34;interannual&#34;: 0.5660866430210981,
+        &#34;seasonal-annual&#34;: 0.5537287386607881,
+        &#34;sub-seasonal&#34;: 0.385849171120644,
+        &#34;synoptic&#34;: 0.10447720904161918
+      },
+      &#34;Total_50S30S&#34;: {
+        &#34;interannual&#34;: 0.10229887976839763,
+        &#34;seasonal-annual&#34;: 0.13870295233220017,
+        &#34;sub-seasonal&#34;: 0.12407659422553331,
+        &#34;synoptic&#34;: 0.06922777699836992
+      },
+      &#34;Total_50S50N&#34;: {
+        &#34;interannual&#34;: 0.4084600708535097,
+        &#34;seasonal-annual&#34;: 0.41395463463349685,
+        &#34;sub-seasonal&#34;: 0.29871371960574505,
+        &#34;synoptic&#34;: 0.0944169266458939
+      }
+    }
+  }
+}
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Command-line-usage-with-Obs-data">
+<h2>Command line usage with Obs data<a class="headerlink" href="#Command-line-usage-with-Obs-data" title="Link to this heading"></a></h2>
+<p>To calculate the precipitation variability spectral power ratio, we also need results for a reference dataset. This example shows how to call the <code class="docutils literal notranslate"><span class="pre">variability_across_timescales_PS_driver</span></code> using a combination of the parameter file and command line arguments with daily observational data. The command line arguments will overwrite values that are in the parameter file.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">modpath</span></code> and <code class="docutils literal notranslate"><span class="pre">results_dir</span></code> values are set first in a separate cell to easily combine the <code class="docutils literal notranslate"><span class="pre">demo_data_directory</span></code> and <code class="docutils literal notranslate"><span class="pre">demo_output_directory</span></code> variables with other strings. The new variables are then passed to the shell command in the second cell.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">modpath</span> <span class="o">=</span> <span class="n">demo_data_directory</span> <span class="o">+</span> <span class="s1">&#39;/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/&#39;</span>
+<span class="n">results_dir</span> <span class="o">=</span> <span class="n">demo_output_directory</span> <span class="o">+</span> <span class="s1">&#39;/precip_variability/GPCP-1-3/&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>%%bash<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$modpath</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$results_dir</span><span class="s2">&quot;</span>
+variability_across_timescales_PS_driver.py<span class="w"> </span>-p<span class="w"> </span>basic_precip_variability_param.py<span class="w"> </span><span class="se">\</span>
+--mip<span class="w"> </span><span class="s1">&#39;obs&#39;</span><span class="w"> </span><span class="se">\</span>
+--mod<span class="w"> </span><span class="s1">&#39;pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc&#39;</span><span class="w"> </span><span class="se">\</span>
+--modpath<span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="se">\</span>
+--results_dir<span class="w"> </span><span class="nv">$2</span><span class="w"> </span><span class="se">\</span>
+--prd<span class="w"> </span><span class="m">1997</span><span class="w"> </span><span class="m">2016</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+demo_data_tmp/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/
+pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc
+[1997, 2016]
+730 365
+2
+demo_output_tmp/precip_variability/GPCP-1-3/
+demo_output_tmp/precip_variability/GPCP-1-3/
+demo_output_tmp/precip_variability/GPCP-1-3/
+[&#39;demo_data_tmp/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc&#39;]
+GPCP-1-3
+[&#39;demo_data_tmp/obs4MIPs_PCMDI_daily/NASA-JPL/GPCP-1-3/day/pr/gn/latest/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc&#39;]
+GPCP-1-3 gregorian
+1997 2016
+Complete regridding from (7305, 180, 360) to (7305, 90, 180)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/precip_variability/lib/lib_variability_across_timescales.py:341: FutureWarning: &#39;H&#39; is deprecated and will be removed in a future version, please use &#39;h&#39; instead.
+  climtime = pd.period_range(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Complete calculating climatology and anomaly for calendar of gregorian
+Complete power spectra (segment:  730  nps: 19.0 )
+Complete domain and frequency average of spectral power
+Complete power spectra (segment:  730  nps: 19.0 )
+Complete domain and frequency average of spectral power
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO::2025-09-09 13:37::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/GPCP-1-3/PS_pr.day_regrid.180x90_area.freq.mean_GPCP-1-3.json
+2025-09-09 13:37:31,099 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/GPCP-1-3/PS_pr.day_regrid.180x90_area.freq.mean_GPCP-1-3.json
+2025-09-09 13:37:31,099 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/GPCP-1-3/PS_pr.day_regrid.180x90_area.freq.mean_GPCP-1-3.json
+</pre></div></div>
+</div>
+</section>
+<section id="Precipitation-Variability-Metric">
+<h2>Precipitation Variability Metric<a class="headerlink" href="#Precipitation-Variability-Metric" title="Link to this heading"></a></h2>
+<p>The precipitation variability metric can be generated after model and observational spectral averages are made.</p>
+<div class="line-block">
+<div class="line">A script called “calc_ratio.py” is provided in the precip_variability codebase. This script can be called with three arguments to generate the ratio.</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">ref</span></code>: path to obs results JSON</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">modpath</span></code>: directory containing model results JSONS (not CMEC formatted JSONs)</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">results_dir</span></code>: directory for calc_ratio.py results</div>
+</div>
+<p>This script can be accessed via the PMP repo, which is how it is run here. It does not come with the PMP conda installation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>python<span class="w"> </span>../../../pcmdi_metrics/precip_variability/scripts_pcmdi/calc_ratio.py<span class="w"> </span><span class="err">\</span>
+<span class="o">--</span><span class="n">ref</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">GPCP</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="n">PS_pr</span><span class="o">.</span><span class="n">day_regrid</span><span class="mf">.180</span><span class="n">x90_area</span><span class="o">.</span><span class="n">freq</span><span class="o">.</span><span class="n">mean_GPCP</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mf">3.</span><span class="n">json</span> \
+<span class="o">--</span><span class="n">modpath</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">GISS</span><span class="o">-</span><span class="n">E2</span><span class="o">-</span><span class="n">H</span><span class="o">/</span> \
+<span class="o">--</span><span class="n">results_dir</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">ratio</span><span class="o">/</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+reference:  demo_output_tmp/precip_variability/GPCP-1-3/PS_pr.day_regrid.180x90_area.freq.mean_GPCP-1-3.json
+modpath:  demo_output_tmp/precip_variability/GISS-E2-H/
+outdir:  demo_output_tmp/precip_variability/ratio/
+[&#39;demo_output_tmp/precip_variability/GISS-E2-H/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json&#39;]
+Complete  GISS-E2-H.r6i1p1
+Complete all
+
+</pre></div></div>
+</div>
+<p>This outputs one JSON file in the <code class="docutils literal notranslate"><span class="pre">results_dir</span></code> folder. The results in this file are shown below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span><span class="s2">&quot;precip_variability/ratio/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;RESULTS&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  &#34;GISS-E2-H.r6i1p1&#34;: {
+    &#34;forced&#34;: {
+      &#34;Land_30N50N&#34;: {
+        &#34;annual&#34;: 1.6279984575673907,
+        &#34;semi-annual&#34;: 1.8670573736014948
+      },
+      &#34;Land_30S30N&#34;: {
+        &#34;annual&#34;: 1.3338114720532628,
+        &#34;semi-annual&#34;: 1.333350181560795
+      },
+      &#34;Land_50S30S&#34;: {
+        &#34;annual&#34;: 1.164227264547648,
+        &#34;semi-annual&#34;: 1.9246852085563546
+      },
+      &#34;Land_50S50N&#34;: {
+        &#34;annual&#34;: 1.3503132388688284,
+        &#34;semi-annual&#34;: 1.3917495667061235
+      },
+      &#34;Ocean_30N50N&#34;: {
+        &#34;annual&#34;: 1.052486197277382,
+        &#34;semi-annual&#34;: 0.8517712548298383
+      },
+      &#34;Ocean_30S30N&#34;: {
+        &#34;annual&#34;: 1.499118828822202,
+        &#34;semi-annual&#34;: 1.8222593026548148
+      },
+      &#34;Ocean_50S30S&#34;: {
+        &#34;annual&#34;: 1.4363958284724372,
+        &#34;semi-annual&#34;: 1.0484119422307991
+      },
+      &#34;Ocean_50S50N&#34;: {
+        &#34;annual&#34;: 1.4625476582104202,
+        &#34;semi-annual&#34;: 1.6902905191733495
+      },
+      &#34;Total_30N50N&#34;: {
+        &#34;annual&#34;: 1.2324909366302752,
+        &#34;semi-annual&#34;: 1.1401718517572579
+      },
+      &#34;Total_30S30N&#34;: {
+        &#34;annual&#34;: 1.4376639123073847,
+        &#34;semi-annual&#34;: 1.687698533085264
+      },
+      &#34;Total_50S30S&#34;: {
+        &#34;annual&#34;: 1.4035190474483108,
+        &#34;semi-annual&#34;: 1.1126375229893537
+      },
+      &#34;Total_50S50N&#34;: {
+        &#34;annual&#34;: 1.4221050736833405,
+        &#34;semi-annual&#34;: 1.6108754775087781
+      }
+    },
+    &#34;unforced&#34;: {
+      &#34;Land_30N50N&#34;: {
+        &#34;interannual&#34;: 1.3879961062215058,
+        &#34;seasonal-annual&#34;: 1.4543733420467007,
+        &#34;sub-seasonal&#34;: 1.2722446114532961,
+        &#34;synoptic&#34;: 0.9550314725762121
+      },
+      &#34;Land_30S30N&#34;: {
+        &#34;interannual&#34;: 1.5684797034953768,
+        &#34;seasonal-annual&#34;: 1.3855140760562383,
+        &#34;sub-seasonal&#34;: 1.0320215218679676,
+        &#34;synoptic&#34;: 0.6344408069820874
+      },
+      &#34;Land_50S30S&#34;: {
+        &#34;interannual&#34;: 1.2734804296657496,
+        &#34;seasonal-annual&#34;: 1.4835739537712778,
+        &#34;sub-seasonal&#34;: 1.1166071488025653,
+        &#34;synoptic&#34;: 0.6682326701057771
+      },
+      &#34;Land_50S50N&#34;: {
+        &#34;interannual&#34;: 1.5292151952174622,
+        &#34;seasonal-annual&#34;: 1.4013209418868149,
+        &#34;sub-seasonal&#34;: 1.0762109149442591,
+        &#34;synoptic&#34;: 0.6996958985943602
+      },
+      &#34;Ocean_30N50N&#34;: {
+        &#34;interannual&#34;: 0.7043783826080338,
+        &#34;seasonal-annual&#34;: 0.6455934192259555,
+        &#34;sub-seasonal&#34;: 0.6137724411737419,
+        &#34;synoptic&#34;: 0.6863874501625435
+      },
+      &#34;Ocean_30S30N&#34;: {
+        &#34;interannual&#34;: 1.2503414156435761,
+        &#34;seasonal-annual&#34;: 1.5516779450827425,
+        &#34;sub-seasonal&#34;: 1.1798960241814676,
+        &#34;synoptic&#34;: 1.0953812575228663
+      },
+      &#34;Ocean_50S30S&#34;: {
+        &#34;interannual&#34;: 0.8539632674914032,
+        &#34;seasonal-annual&#34;: 0.8423603608480983,
+        &#34;sub-seasonal&#34;: 0.7618579649944115,
+        &#34;synoptic&#34;: 0.6782173179198747
+      },
+      &#34;Ocean_50S50N&#34;: {
+        &#34;interannual&#34;: 1.192306567530281,
+        &#34;seasonal-annual&#34;: 1.388569073500126,
+        &#34;sub-seasonal&#34;: 1.0754572647719467,
+        &#34;synoptic&#34;: 0.9428927883322022
+      },
+      &#34;Total_30N50N&#34;: {
+        &#34;interannual&#34;: 0.890142181535627,
+        &#34;seasonal-annual&#34;: 0.8488114296330035,
+        &#34;sub-seasonal&#34;: 0.7938998372292917,
+        &#34;synoptic&#34;: 0.7644746195371889
+      },
+      &#34;Total_30S30N&#34;: {
+        &#34;interannual&#34;: 1.2881197802160111,
+        &#34;seasonal-annual&#34;: 1.5249482736415596,
+        &#34;sub-seasonal&#34;: 1.1523720464576694,
+        &#34;synoptic&#34;: 0.962505068170746
+      },
+      &#34;Total_50S30S&#34;: {
+        &#34;interannual&#34;: 0.8886847211435608,
+        &#34;seasonal-annual&#34;: 0.887116494612341,
+        &#34;sub-seasonal&#34;: 0.7898809941461293,
+        &#34;synoptic&#34;: 0.6773923219536805
+      },
+      &#34;Total_50S50N&#34;: {
+        &#34;interannual&#34;: 1.2352951393941365,
+        &#34;seasonal-annual&#34;: 1.3906442610537741,
+        &#34;sub-seasonal&#34;: 1.0755971788907206,
+        &#34;synoptic&#34;: 0.8809660578685662
+      }
+    }
+  }
+}
+</pre></div></div>
+</div>
+</section>
+<section id="Regional-metrics">
+<h2>Regional metrics<a class="headerlink" href="#Regional-metrics" title="Link to this heading"></a></h2>
+<p>The precipitation variability metrics have a set of default regions. However, users can instead define a single spatial region to compute metrics over. There are two ways to do this.</p>
+<ol class="arabic simple">
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">regions_specs</span></code> parameter to define a latitude/longitude box.
+Parameter file example:</p></li>
+</ol>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>regions_specs={&quot;CONUS&quot;: {&quot;domain&quot;: {&quot;latitude&quot;: (24.7, 49.4), &quot;longitude&quot;: (235.22, 293.08)}}}
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Use a shapefile to define a region. Users must provide the path to the shapefile along with the attribute/feature pair that defines the region.
+Parameter file example:</p></li>
+</ol>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>region_file=&quot;CONUS.shp&quot; # Shapefile path
+attr=&quot;NAME&quot;             # An attribute in the shapefile
+feature=&quot;CONUS&quot;         # A unique feature name that can be
+                        # found under the &quot;attr&quot; attribute
+</pre></div>
+</div>
+<p>Both options can be used at the same time. In that case, the area defined by regions_specs is applied first and can be used to trim down very large, high resolution datasets. Then the metrics are computed for the area defined by the shapefile region.</p>
+<section id="Region-example">
+<h3>Region example<a class="headerlink" href="#Region-example" title="Link to this heading"></a></h3>
+<p>First, we generate a simple shapefile for use in this demo. The shapefile contains one feature, a box that defines the CONUS region.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">shapely</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Define region box</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="p">((</span><span class="mf">233.</span><span class="p">,</span><span class="mf">22.</span><span class="p">),(</span><span class="mf">233.</span><span class="p">,</span><span class="mf">50.</span><span class="p">),(</span><span class="mf">294.</span><span class="p">,</span><span class="mf">50.</span><span class="p">),(</span><span class="mf">294.</span><span class="p">,</span><span class="mi">22</span><span class="p">))</span>
+
+<span class="c1"># Add to pandas dataframe, then convert to geopandas dataframe</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Region&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CONUS&quot;</span><span class="p">],</span> <span class="s2">&quot;Coords&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">Polygon</span><span class="p">(</span><span class="n">coords</span><span class="p">)]})</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;Coords&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:4326&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create the output location</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="o">+</span><span class="s2">&quot;/shp&quot;</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="o">+</span><span class="s2">&quot;/shp&quot;</span><span class="p">)</span>
+<span class="n">gdf</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="o">+</span><span class="s1">&#39;/shp/CONUS.shp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Add the information for this shapefile to the variability_across_timescales_PS_driver.py run command.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>variability_across_timescales_PS_driver.py<span class="w"> </span>-p<span class="w"> </span>basic_precip_variability_param.py<span class="w"> </span><span class="err">\</span>
+<span class="o">--</span><span class="n">region_file</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="o">/</span><span class="n">shp</span><span class="o">/</span><span class="n">CONUS</span><span class="o">.</span><span class="n">shp</span> \
+<span class="o">--</span><span class="n">attr</span> <span class="s1">&#39;Region&#39;</span> \
+<span class="o">--</span><span class="n">feature</span> <span class="s1">&#39;CONUS&#39;</span> \
+<span class="o">--</span><span class="n">results_dir</span> <span class="p">{</span><span class="n">demo_output_directory</span><span class="p">}</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">region_ex</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/
+pr_day_GISS-E2-H_historical_r6i1p1_*.nc
+[2000, 2005]
+730 365
+2
+demo_output_tmp/precip_variability/region_ex
+demo_output_tmp/precip_variability/region_ex
+demo_output_tmp/precip_variability/region_ex
+[&#39;demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc&#39;]
+GISS-E2-H.r6i1p1
+[&#39;demo_data_tmp/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc&#39;]
+GISS-E2-H.r6i1p1 365_day
+2000 2005
+Complete regridding from (2190, 90, 144) to (2190, 90, 180)
+Cropping from shapefile
+Reading region from file.
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/precip_variability/lib/lib_variability_across_timescales.py:313: RuntimeWarning: Mean of empty slice
+  clim = np.nanmean(dseg, axis=0)
+/Users/lee1043/mambaforge/envs/pmp_devel_20250908/lib/python3.10/site-packages/pcmdi_metrics/precip_variability/lib/lib_variability_across_timescales.py:341: FutureWarning: &#39;H&#39; is deprecated and will be removed in a future version, please use &#39;h&#39; instead.
+  climtime = pd.period_range(
+Complete calculating climatology and anomaly for calendar of 365_day
+Complete power spectra (segment:  730  nps: 5.0 )
+Complete domain and frequency average of spectral power
+Complete power spectra (segment:  730  nps: 5.0 )
+Complete domain and frequency average of spectral power
+INFO::2025-09-09 13:39::pcmdi_metrics:: Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/region_ex/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json
+2025-09-09 13:39:57,823 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/region_ex/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json
+2025-09-09 13:39:57,823 [INFO]: base.py(write:344) &gt;&gt; Results saved to a json file: /Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_output_tmp/precip_variability/region_ex/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json
+
+</pre></div></div>
+</div>
+<p>The metrics output will look different than the default example. Metrics will only be produced for a single region that we defined in this shapefile.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">demo_output_directory</span><span class="p">,</span><span class="s2">&quot;precip_variability/region_ex/PS_pr.day_regrid.180x90_area.freq.mean_GISS-E2-H.r6i1p1.json&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="s2">&quot;RESULTS&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  &#34;GISS-E2-H.r6i1p1&#34;: {
+    &#34;forced&#34;: {
+      &#34;CONUS&#34;: {
+        &#34;annual&#34;: 1.201187057408025,
+        &#34;semi-annual&#34;: 0.3809758262071558
+      }
+    },
+    &#34;unforced&#34;: {
+      &#34;CONUS&#34;: {
+        &#34;interannual&#34;: 0.15219095217372633,
+        &#34;seasonal-annual&#34;: 0.2042841051487,
+        &#34;sub-seasonal&#34;: 0.20652699240276556,
+        &#34;synoptic&#34;: 0.10360220715481483
+      }
+    }
+  }
+}
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Demo_7b_precip_distribution.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">7B. Precipitation Distribution</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Demo_6_ENSO.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">6. ENSO</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">7. Precipitation Variability Across Timescales</a><ul>
+<li><a class="reference internal" href="#Basic-Use">Basic Use</a><ul>
+<li><a class="reference internal" href="#Help">Help</a></li>
+<li><a class="reference internal" href="#Parameter-file">Parameter file</a></li>
+<li><a class="reference internal" href="#Running-the-driver">Running the driver</a></li>
+<li><a class="reference internal" href="#Results">Results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Command-line-usage-with-Obs-data">Command line usage with Obs data</a></li>
+<li><a class="reference internal" href="#Precipitation-Variability-Metric">Precipitation Variability Metric</a></li>
+<li><a class="reference internal" href="#Regional-metrics">Regional metrics</a><ul>
+<li><a class="reference internal" href="#Region-example">Region example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

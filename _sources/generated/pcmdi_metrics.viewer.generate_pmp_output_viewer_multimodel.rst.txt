@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.viewer.generate\_pmp\_output\_viewer\_multimodel
+===============================================================
+
+.. currentmodule:: pcmdi_metrics.viewer
+
+.. autofunction:: generate_pmp_output_viewer_multimodel
