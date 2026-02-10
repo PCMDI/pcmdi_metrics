@@ -1,7 +1,7 @@
 import glob
 import json
 import os
-from typing import Any
+from typing import Any, Dict, List
 
 import xsearch as xs
 
@@ -41,12 +41,12 @@ def main():
     exps = ["historical"]
     # exps = ["amip"]
     # variables = ["psl", "ts"]
-    # variables = ["pr"]
+    variables = ["ua", "va", "ta"]
     # variables = ["sic"]  # for CMIP5
-    variables = ["siconc"]  # for CMIP6
+    # variables = ["siconc"]  # for CMIP6
     freq = "mon"
-    # cmipTable = "Amon"
-    cmipTable = "SImon"  # for siconc variable in CMIP6
+    cmipTable = "Amon"
+    # cmipTable = "SImon"  # for siconc variable in CMIP6
     # cmipTable = "OImon"  # for sic variable in CMIP5
     # freq = "day"
     # cmipTable = "day"
@@ -106,7 +106,7 @@ def main():
 def generate_model_catalogue_xsearch(
     mip_era: str,
     exp: str,
-    variables: list[str],
+    variables: List[str],
     freq: str,
     cmipTable: str = None,
     grid: str = None,
@@ -197,7 +197,7 @@ def generate_model_path_dict(
     xml_cmds_sh=None,
     generate_ymls=False,
     ymls_dir=None,
-) -> dict[Any, Any]:
+) -> Dict[Any, Any]:
     """
     Generate a dictionary of models and their members with paths to netcdf files.
     """

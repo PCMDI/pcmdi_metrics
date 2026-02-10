@@ -47,7 +47,7 @@ def process_references(
                 var,
                 ref,
                 refs_dict,
-                # anncyc_ref_dict,
+                anncyc_ref_dict,
                 rad_diagnostic_variables,
                 encountered_variables,
                 levels,
