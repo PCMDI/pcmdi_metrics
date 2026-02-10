@@ -95,6 +95,8 @@ def create_sea_ice_parser():
     parser.add_argument(
         "--realization",
         dest="realization",
+        type=str,
+        nargs="+",
         help="A simulation parameter",
         required=False,
     )

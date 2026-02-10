@@ -265,7 +265,32 @@ for var in vars:
         # ----------
         # model loop
         # ----------
-        for model in test_data_set:
+
+        # Check if test_data_set is a list and contains wildcard values
+        if isinstance(test_data_set, list):
+            if any(x.lower() in test_data_set for x in ["*", "all"]):
+                test_data_set = "*"
+
+        # Handle cases where test_data_set is a wildcard string
+        if isinstance(test_data_set, str):
+            if test_data_set.lower() in ["*", "all"]:
+                search_path = (
+                    os.path.join(test_data_path, filename_template)
+                    .replace("%(variable)", varname)
+                    .replace("%(model)", "*")
+                    .replace("%(realization)", "*")
+                )
+                all_files = glob.glob(search_path)
+                all_models = [s.split("/")[-1].split(".")[2] for s in all_files]
+                # Remove duplicate elements from a list
+                models = sorted(list(set(all_models)))
+        else:
+            # If no wildcard is used, return the provided list
+            models = test_data_set
+
+        print("models:", models)
+
+        for model in models:
             print("=================================")
             print(
                 "model, runs, find_all_realizations:",

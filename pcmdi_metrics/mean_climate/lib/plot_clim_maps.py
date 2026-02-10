@@ -36,6 +36,45 @@ def plot_climatology_diff(
     figsize: tuple = (5, 10),
     fig_title: Optional[str] = None,
 ) -> None:
+    """
+    Plot climatology from test (e.g., model) and reference (e.g., observation) datasets and their difference for a specified variable over a defined season.
+
+    Parameters
+    ----------
+    ds_test : xr.Dataset
+        The test dataset containing the variable to plot.
+    data_var_test : str
+        The name of the variable in the test dataset to plot (e.g., 'pr' for precipitation).
+    ds_ref : xr.Dataset
+        The reference dataset containing the variable to plot.
+    data_var_ref : str
+        The name of the variable in the reference dataset to plot (e.g., 'pr' for precipitation).
+    level : Optional[int], optional
+        The vertical level to extract from the datasets, if applicable.
+    season : str, optional
+        The season to plot ('AC', 'DJF', 'MAM', 'JJA', 'SON'). Default is 'AC'.
+    map_projection : str, optional
+        The map projection to use for the plot. Default is 'PlateCarree'.
+    output_dir : str, optional
+        The directory to save the output plot. Default is the current directory.
+    output_filename : Optional[str], optional
+        The filename for the output plot. If not provided, a default filename will be used.
+    dataname_test : Optional[str], optional
+        The name of the dataset for the test data. If not provided, it will be inferred from the dataset.
+    dataname_ref : Optional[str], optional
+        The name of the dataset for the reference data. If not provided, it will be inferred from the dataset.
+    variable_long_name : Optional[str], optional
+        The long name of the variable to plot. If not provided, it will be inferred from the dataset.
+    units : Optional[str], optional
+        The units of the variable to plot. If not provided, it will be inferred from the dataset.
+    period : Optional[str], optional
+        The period over which to compute the climatology. If not provided, it will be inferred from the dataset.
+    figsize : tuple, optional
+        The size of the figure to create. Default is (5, 10).
+    fig_title : Optional[str], optional
+        The title of the figure. If not provided, a default title will be used.
+
+    """
     if dataname_test is None:
         dataname_test = _get_source_id(ds_test, "")
 
@@ -54,9 +93,9 @@ def plot_climatology_diff(
     # Extract specified level if provided
     if level is not None:
         level = int(level)
-        if "plev" in list(ds_test.sizes):
+        if "plev" in list(ds_test[data_var_test].sizes):
             ds_test = extract_level(ds_test, level)
-        if "plev" in list(ds_ref.sizes):
+        if "plev" in list(ds_ref[data_var_ref].sizes):
             ds_ref = extract_level(ds_ref, level)
 
     # Apply unit conversions for specific variables
@@ -660,7 +699,9 @@ def _add_gridlines(ax):
         linestyle=":",
     )
     gl.top_labels = False
+    gl.bottom_labels = True
     gl.left_labels = True
+    gl.right_labels = False
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
     gl.xlabel_style = {"size": 9, "color": "gray"}
@@ -784,6 +825,14 @@ def _load_variable_setting(
                 "colormap_diff": "RdBu_r",
             }
         },
+        "rldscs": {
+            None: {
+                "levels": np.linspace(80, 500, 21),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "rltcre": {
             None: {
                 "levels": np.arange(0, 70, 5),
@@ -835,6 +884,7 @@ def _load_variable_setting(
         "rsdt": {
             None: {
                 "levels": np.linspace(0, 450, 26),
+                # "levels": np.linspace(0, 480, 25),
                 "levels_diff": np.linspace(-1, 1, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
