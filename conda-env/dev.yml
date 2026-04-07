@@ -28,6 +28,7 @@ dependencies:
     - colorcet
     - cmocean
     - xclim
+    - pandas <3.0.0
     # ==================
     # Testing
     # ==================
@@ -38,8 +39,8 @@ dependencies:
     # Developer Tools
     # ==================
     - jupyterlab
-    - nb_conda
-    - nb_conda_kernels
+    #- nb_conda
+    #- nb_conda_kernels
     # ==================
     # Documentation
     # ==================

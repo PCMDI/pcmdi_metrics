@@ -1,10 +1,16 @@
 import copy
 import os
+import warnings
 
 import matplotlib.cm
 import matplotlib.pyplot as plt
 import xarray as xr
 from matplotlib.patches import Rectangle
+
+# Suppress the specific Shapely warning about invalid values in collections
+warnings.filterwarnings(
+    "ignore", message="invalid value encountered in create_collection"
+)
 
 
 def plot_power(

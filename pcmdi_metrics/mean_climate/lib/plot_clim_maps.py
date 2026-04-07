@@ -1,4 +1,5 @@
 import os
+import warnings
 from typing import Optional, Union
 
 import cartopy.crs as ccrs
@@ -8,6 +9,7 @@ import matplotlib as mpl
 import numpy as np
 import xarray as xr
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
+from cartopy.util import add_cyclic_point
 from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm
 
@@ -16,6 +18,11 @@ from pcmdi_metrics.stats import cor_xy, mean_xy, rms_xy, seasonal_mean
 
 from .colormap import colormap_WhiteBlueGreenYellowRed
 from .load_and_regrid import extract_level
+
+# Suppress the specific Shapely warning about invalid values in collections
+warnings.filterwarnings(
+    "ignore", message="invalid value encountered in create_collection"
+)
 
 
 def plot_climatology_diff(
@@ -176,10 +183,17 @@ def plot_climatology_diff(
         # Set the global extent to cover the entire globe regardless of region that data exists
         ax.set_global()
 
+        # Find the longitude index and add the cyclic point
+        # https://gist.github.com/darothen/c7560d8d19ffca90024c1f2df4927599
+        lon = ds_test[lon_key]
+        lon_idx = da_plot.dims.index(lon_key)
+        wrap_data, wrap_lon = add_cyclic_point(da_plot.values, coord=lon, axis=lon_idx)
+
+        # Plot the data
         ax.contourf(
-            ds_test[lon_key],
+            wrap_lon,
             ds_test[lat_key],
-            da_plot,
+            wrap_data,
             transform=ccrs.PlateCarree(),
             levels=contour_levels_plot,
             extend=cmap_ext_plot,
@@ -461,11 +475,19 @@ def plot_climatology(
         # Set the global extent to cover the entire globe regardless of region that data exists
         ax.set_global()
 
+        # Find the longitude index and add the cyclic point
+        # https://gist.github.com/darothen/c7560d8d19ffca90024c1f2df4927599
+        lon = da_season[lon_key]
+        lon_idx = da_season.dims.index(lon_key)
+        wrap_data, wrap_lon = add_cyclic_point(
+            da_season.values, coord=lon, axis=lon_idx
+        )
+
         # Plot the data
         ax.contourf(
-            da_season[lon_key],
+            wrap_lon,
             da_season[lat_key],
-            da_season,
+            wrap_data,
             transform=ccrs.PlateCarree(),
             levels=contour_levels,
             extend=cmap_ext,

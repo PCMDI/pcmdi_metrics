@@ -209,7 +209,11 @@ def read_data_in(
         data_timeseries = adjust_units(data_timeseries, UnitsAdjust)
 
     # Masking
-    if var_to_consider == "ts" and LandMask:
+    if (
+        (var_in_data.lower() in ["ts", "sst"])
+        or (var_to_consider.lower() in ["ts", "sst"])
+        and LandMask
+    ):
         # Replace temperature below -1.8 C to -1.8 C (sea ice)
         data_timeseries = sea_ice_adjust(data_timeseries)
 
@@ -228,6 +232,7 @@ def read_data_in(
         data_timeseries = apply_landmask(data_timeseries, landfrac=landfrac)
 
     ds_time_subsetted[var_in_data] = data_timeseries
+    # ds_time_subsetted = ds_time_subsetted.merge(data_timeseries.rename(var_in_data))  #, compat='override')
 
     return ds_time_subsetted
 

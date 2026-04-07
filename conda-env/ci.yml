@@ -28,6 +28,7 @@ dependencies:
     - colorcet
     - cmocean
     - xclim
+    - pandas <3.0.0
     # ==================
     # Testing
     # ==================

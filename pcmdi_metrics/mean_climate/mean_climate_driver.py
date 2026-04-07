@@ -123,7 +123,7 @@ t_grid = create_target_grid(target_grid_resolution=target_grid)
 sft = create_land_sea_mask(t_grid)
 
 # add sft to target grid dataset
-t_grid["sftlf"] = sft
+t_grid = t_grid.merge(sft.rename("sftlf"))
 
 if debug:
     print("t_grid (after sftlf added):", t_grid)
@@ -226,6 +226,8 @@ for var in vars:
             reference_data_path, obs_dict[varname][ref_dataset_name]["template"]
         )
         print("ref_data_full_path:", ref_data_full_path)
+        print("varname:", varname)
+        print("level:", level)
 
         # load data and regrid
         try:

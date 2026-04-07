@@ -1,3 +1,5 @@
+import copy
+
 import xarray as xr
 
 from pcmdi_metrics.io import (
@@ -134,7 +136,7 @@ def get_residual_timeseries(
         raise TypeError(
             "The first parameter of get_residual_timeseries must be an xarray Dataset"
         )
-    ds_residual = ds_anomaly.copy()
+    ds_residual = copy.deepcopy(ds_anomaly)
     if RmDomainMean:
         # Get domain mean
         ds_anomaly_region = region_subset(
