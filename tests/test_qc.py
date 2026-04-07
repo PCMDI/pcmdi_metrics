@@ -13,8 +13,8 @@ from pcmdi_metrics.utils import (
 @pytest.fixture
 def create_dataset():
     def _create_dataset(start_date, periods, freq, calendar="gregorian"):
-        dates = xr.cftime_range(
-            start_date, periods=periods, freq=freq, calendar=calendar
+        dates = xr.date_range(
+            start_date, periods=periods, freq=freq, calendar=calendar, use_cftime=True
         )
         return xr.Dataset({"time": dates})
 

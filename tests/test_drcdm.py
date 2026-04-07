@@ -7,12 +7,13 @@ from pcmdi_metrics.drcdm.lib import compute_metrics
 
 def create_random_precip(years, max_val=None, min_val=None):
     # Returns array of precip along with sftlf
-    times = xr.cftime_range(
+    times = xr.date_range(
         start="{0}-01-01".format(years[0]),
         end="{0}-12-31".format(years[1]),
         freq="D",
         calendar="noleap",
         name="time",
+        use_cftime=True,
     )
     latd = 2
     lond = 2
@@ -66,12 +67,13 @@ def create_seasonal_precip(season):
     mos = sd[season]
 
     years = [1980, 1981]
-    times = xr.cftime_range(
+    times = xr.date_range(
         start="{0}-01-01".format(years[0]),
         end="{0}-12-31".format(years[1]),
         freq="D",
         calendar="noleap",
         name="time",
+        use_cftime=True,
     )
     latd = 2
     lond = 2
