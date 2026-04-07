@@ -37,6 +37,7 @@ def create_random_precip(years, max_val=None, min_val=None):
 
     fake_ds["time"].encoding["calendar"] = "noleap"
     fake_ds["time"].encoding["units"] = "days since 0000-01-01"
+    fake_ds["lat"].encoding["units"] = "degrees_north"
     fake_ds = fake_ds.bounds.add_missing_bounds()
 
     if max_val is not None:
