@@ -1016,7 +1016,7 @@ def multiportraitplot(
         aspect=40,
     )
     cbar.ax.set_yticklabels(
-        ["-2 $\sigma$", "-1", "MMV", "1", "2 $\sigma$"], fontdict=fontdict  # noqa
+        [r"-2 $\sigma$", "-1", "MMV", "1", r"2 $\sigma$"], fontdict=fontdict  # noqa
     )
     dict_arrow = dict(facecolor="k", width=8, headwidth=40, headlength=40, shrink=0.0)
     dict_txt = dict(fontsize=40, rotation="vertical", ha="center", weight="bold")
