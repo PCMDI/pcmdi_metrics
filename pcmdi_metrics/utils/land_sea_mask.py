@@ -11,7 +11,7 @@ import xarray as xr
 import xcdat as xc
 
 from pcmdi_metrics import resources
-from pcmdi_metrics.io import get_grid
+from pcmdi_metrics.io import get_grid, get_latitude_key, get_longitude_key
 
 
 def create_land_sea_mask(
@@ -61,9 +61,11 @@ def create_land_sea_mask(
 
         # Get the longitude and latitude from the xarray dataset
         if lon_key is None:
-            lon_key = xc.axis.get_dim_keys(obj, axis="X")
+            # lon_key = xc.axis.get_dim_keys(obj, axis="X")
+            lon_key = get_longitude_key(obj)
         if lat_key is None:
-            lat_key = xc.axis.get_dim_keys(obj, axis="Y")
+            # lat_key = xc.axis.get_dim_keys(obj, axis="Y")
+            lat_key = get_latitude_key(obj)
 
         lon = obj[lon_key]
         lat = obj[lat_key]

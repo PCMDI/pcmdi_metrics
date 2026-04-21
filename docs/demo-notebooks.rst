@@ -71,10 +71,11 @@ Practical Use Cases
    examples/return_value_portrait_plot_demo
 
 
-Data analysis and support
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Data analysis and support tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. nbgallery::
 
    examples/landmask
    examples/pmp_metrics_database
+   examples/eof_classification

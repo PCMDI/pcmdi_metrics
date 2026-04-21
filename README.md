@@ -126,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v4.0.2]      | Technical update, to better comply with newer xarray versions and reduce dependencies by migrating external legacy code (cdp)
 | [v4.0.1]      | Technical update
 | [v4.0.0]      | Newerly support higher Python versions, `>= 3.10, < 3.14`
 
@@ -189,6 +190,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v4.0.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.2
 [v4.0.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.1
 [v4.0.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.0
 [v4.0.0rc1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.0rc1

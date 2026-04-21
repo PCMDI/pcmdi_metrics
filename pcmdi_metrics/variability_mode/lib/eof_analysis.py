@@ -316,6 +316,11 @@ def linear_regression(x: xr.DataArray, y: xr.DataArray, debug: bool = False) -> 
     # get original global dimension
     lat = get_latitude(y)
     lon = get_longitude(y)
+
+    # get dimension names
+    lat_key = get_latitude_key(y)
+    lon_key = get_longitude_key(y)
+
     # Convert 3d (time, lat, lon) to 2d (time, lat*lon) for polyfit applying
     im = y.shape[2]
     jm = y.shape[1]
@@ -329,9 +334,11 @@ def linear_regression(x: xr.DataArray, y: xr.DataArray, debug: bool = False) -> 
     slope = np.array(slope_1d.reshape(jm, im))
     intercept = np.array(intercept_1d.reshape(jm, im))
     # Set lat/lon coordinates
-    slope = xr.DataArray(slope, coords={"lat": lat, "lon": lon}, dims=["lat", "lon"])
+    slope = xr.DataArray(
+        slope, coords={lat_key: lat, lon_key: lon}, dims=[lat_key, lon_key]
+    )
     intercept = xr.DataArray(
-        intercept, coords={"lat": lat, "lon": lon}, dims=["lat", "lon"]
+        intercept, coords={lat_key: lat, lon_key: lon}, dims=[lat_key, lon_key]
     )
     # return result
     return slope.where(slope != 1e20), intercept.where(intercept != 1e20)
