@@ -1,29 +1,18 @@
 import argparse
 import glob
 import importlib.util
-import logging
 import os
 import shutil
 import subprocess
-import sys
 import tempfile
-import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 import cftime
-import netCDF4
 import numpy as np
 import pandas as pd
 import xarray as xr
 from netCDF4 import Dataset
-from scipy.interpolate import interp1d
-from tqdm import tqdm
-from xarray.conventions import SerializationWarning
-
-warnings.filterwarnings("ignore", category=SerializationWarning)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
-sys.dont_write_bytecode = True
 
 
 # Parameters
@@ -37,7 +26,7 @@ def _load_params_from_file(path):
             spec.loader.exec_module(module)
             return module
     except Exception as e:
-        logging.warning(f"Failed to import params file '{path}': {e}")
+        print(f"WARNING: Failed to import params file '{path}': {e}")
     return None
 
 
@@ -112,9 +101,9 @@ class BlockingParser:
                 params_path = default_candidate
 
         params_mod = None if argparse_vals_only else _load_params_from_file(params_path)
-        _get = lambda name, default=None: (
-            getattr(params_mod, name, default) if params_mod else default
-        )
+
+        def _get(name, default=None):
+            return getattr(params_mod, name, default) if params_mod else default
 
         params = {
             "case_id": args.case_id or _get("CASE_ID", "blocking"),
@@ -161,7 +150,7 @@ def _parse_e3sm_file_dates(file_path):
         return datetime.strptime(start_str, "%Y%m%d"), datetime.strptime(
             end_str, "%Y%m%d"
         )
-    except:
+    except Exception:
         return None, None
 
 
@@ -183,7 +172,7 @@ def _e3sm_preprocess(ds, pressure_level=None):
             ds = ds.sel({level_name: target}, method="nearest")
             try:
                 ds = ds.drop_vars(level_name)
-            except:
+            except Exception:
                 pass
             break
 
@@ -193,7 +182,7 @@ def _e3sm_preprocess(ds, pressure_level=None):
     if "time" in ds.dims:
         try:
             ds = ds.resample(time="1D").mean()
-        except:
+        except Exception:
             pass
     return ds
 
@@ -293,12 +282,12 @@ def run_ibto_and_write_combined(
 
     # Use temp directory to store intermediate files (memory management)
     output_temp_dir = tempfile.mkdtemp(prefix="block_processing_", dir=output_base_dir)
-    logging.info(f"Created temporary directory: {output_temp_dir}")
+    print(f"Created temporary directory: {output_temp_dir}")
     print()
     output_temp_files = []
 
     for file_path in filtered_files:
-        logging.info("Processing %s", file_path)
+        print(f"Processing {file_path}")
         ds = xr.open_dataset(file_path, engine="netcdf4")
         ds_daily = _e3sm_preprocess(ds, pressure_level=pressure_level)
 
@@ -344,9 +333,8 @@ def run_ibto_and_write_combined(
 
     # Combine all temp files into single dataset for stitching
     print()
-    logging.info(
-        "Combining %d temporary files into one dataset (mfdataset).",
-        len(output_temp_files),
+    print(
+        f"Combining {len(output_temp_files)} temporary files into one dataset (mfdataset)."
     )
     print()
     combined = xr.open_mfdataset(output_temp_files, combine="by_coords")
@@ -379,8 +367,8 @@ def run_ibto_and_write_combined(
         "longitude": {"dtype": "float64", "zlib": True, "complevel": 1},
     }
     final_dataset = final_dataset.chunk({"time": 365})
-    combined_path = os.path.join(output_temp_dir, "block_tag_1d.test.nc")
-    logging.info("Writing combined dataset to %s", combined_path)
+    combined_path = os.path.join(output_temp_dir, "block_tag_1d.nc")
+    print(f"Writing combined dataset to {combined_path}")
     print()
     final_dataset.to_netcdf(
         combined_path,
@@ -396,7 +384,7 @@ def run_ibto_and_write_combined(
             os.remove(temp_file)
         except Exception:
             pass
-    logging.info(f"Cleaned up {len(output_temp_files)} temporary files")
+    print(f"Cleaned up {len(output_temp_files)} temporary files")
     print()
     return combined_path, output_temp_dir
 
@@ -411,10 +399,8 @@ def call_stitchblobs(combined_path, temp_dir, stitched_out_name, stitched_path=N
         stitched_path = os.path.join(temp_dir, stitched_out_name)
     stitch_bin = shutil.which("StitchBlobs")
     if stitch_bin is None:
-        logging.warning(
-            "StitchBlobs binary not found on PATH. Skipping stitching step."
-        )
-        logging.info(
+        print("WARNING: StitchBlobs binary not found on PATH. Skipping stitching step.")
+        print(
             "If you want stitching, install or put StitchBlobs on PATH and re-run this script."
         )
         return None
@@ -438,26 +424,26 @@ def call_stitchblobs(combined_path, temp_dir, stitched_out_name, stitched_path=N
         "20",  # Require 20% spatial overlap for tracking
         "--verbose",
     ]
-    logging.info("Running StitchBlobs (mintime=%s): %s", "4d", " ".join(cmd))
+    print(f"Running StitchBlobs (mintime=4d): {' '.join(cmd)}")
     print()
     try:
         proc = subprocess.run(
             cmd, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
     except Exception as e:
-        logging.error("Failed to execute StitchBlobs: %s", e)
+        print(f"ERROR: Failed to execute StitchBlobs: {e}")
         return None
     if proc.returncode != 0:
-        logging.error(
-            f"StitchBlobs failed (exit {proc.returncode}):\n{proc.stdout}\n{proc.stderr}"
+        print(
+            f"ERROR: StitchBlobs failed (exit {proc.returncode}):\n{proc.stdout}\n{proc.stderr}"
         )
         return None
     if os.path.exists(stitched_path):
-        logging.info("Stitching complete, output at: %s", stitched_path)
+        print(f"Stitching complete, output at: {stitched_path}")
         print()
         return stitched_path
-    logging.warning(
-        "StitchBlobs reported success but output file not found: %s", stitched_path
+    print(
+        f"WARNING: StitchBlobs reported success but output file not found: {stitched_path}"
     )
     return None
 
@@ -553,7 +539,7 @@ def realign_block_ids(input_file, final_file):
         _copy_attrs(obj_varin, obj_var_out, skip=("_FillValue",))
         obj_var_out[:] = filtered_obj_id
 
-    logging.info(
+    print(
         f"Reassigned sequential block IDs written to '{os.path.basename(final_file)}'."
     )
     print()
@@ -573,7 +559,7 @@ def compute_lwa_for_date(
     target_dt = pd.Timestamp(date).to_pydatetime()
     hgt_files = _filter_files_by_date_range(all_files, target_dt, target_dt)
     if not hgt_files:
-        logging.warning(f"No files found for date {date_str}")
+        print(f"WARNING: No files found for date {date_str}")
         return None, None, None, None, None
 
     def _pp(ds):
@@ -590,7 +576,7 @@ def compute_lwa_for_date(
         cf_date = _cfdate_like(ds_daily["time"], pd.Timestamp(date).to_pydatetime())
         z500 = ds_daily["hgt"].sel(time=cf_date, method="nearest")
     except KeyError:
-        logging.warning(f"Date {date_str} not found in dataset")
+        print(f"WARNING: Date {date_str} not found in dataset")
         ds.close()
         return None, None, None, None, None
 
@@ -622,17 +608,23 @@ def compute_lwa_for_date(
         z_full = _as_ndarray(z500.isel(longitude=li).values, fill=np.nan)
         sort_idx = np.argsort(z_full)
         phi_sorted = phi[sort_idx]
-        cosphi_sorted = cosphi[sort_idx]
-        dphi_sorted = dphi[sort_idx]
         z_prime_sorted = z_col[sort_idx]
-        z_interp = interp1d(
-            phi_sorted,
-            z_prime_sorted,
-            kind="linear",
-            bounds_error=False,
-            fill_value=0.0,
-        )
-        z_regrid = z_interp(phi)
+        order = np.argsort(phi_sorted)
+        x = phi_sorted[order]
+        y = z_prime_sorted[order]
+        x_unique, inv = np.unique(x, return_inverse=True)
+        if len(x_unique) != len(x):
+            y_accum = np.zeros_like(x_unique, dtype=float)
+            counts = np.zeros_like(x_unique, dtype=np.int64)
+            finite = np.isfinite(y)
+            np.add.at(y_accum, inv[finite], y[finite])
+            np.add.at(counts, inv[finite], 1)
+            y = np.where(counts > 0, y_accum / counts, np.nan)
+            x = x_unique
+        else:
+            x = x_unique
+
+        z_regrid = np.interp(phi, x, y, left=0.0, right=0.0)
         z_regrid_weighted = z_regrid * cosphi * dphi
 
         for lat_idx in valid_lat_idx:
@@ -669,7 +661,7 @@ def analyze_blocks_and_write(
     end_date,
     pressure_level,
 ):
-    nc_block = netCDF4.Dataset(block_file_path, "r")
+    nc_block = Dataset(block_file_path, "r")
     hgt_files_all = sorted(glob.glob(file_pattern))
     start_dt_loc = pd.Timestamp(start_date).to_pydatetime()
     end_dt_loc = pd.Timestamp(end_date).to_pydatetime()
@@ -689,7 +681,6 @@ def analyze_blocks_and_write(
     ds_hgt = ds_hgt.sortby("time")
     hgt = ds_hgt["hgt"]
     hgt_lat = ds_hgt["latitude"].values
-    hgt_lon = ds_hgt["longitude"].values
     R = 6371  # Earth radius in km (redefined from earlier usage in meters)
 
     block_lat = _as_ndarray(nc_block.variables["latitude"][:], fill=np.nan)
@@ -731,21 +722,18 @@ def analyze_blocks_and_write(
 
     # Map between block grid and height grid (may differ in resolution)
     hgt_lat_map = {lat: np.abs(hgt_lat - lat).argmin() for lat in block_lat}
-    hgt_lon_map = {
-        lon: np.abs((hgt_lon % 360) - (lon % 360)).argmin() for lon in block_lon
-    }
 
     block_id = nc_block.variables["block_id"]
 
     # First pass: collect all grid points belonging to each block
-    logging.info("First pass: collecting block locations...")
+    print("First pass: collecting block locations...")
     block_points = defaultdict(lambda: {"times": [], "y": [], "x": []})
     block_times = {}
     block_area = defaultdict(list)
 
     for t in valid_time_indices:
         if t % 100 == 0:
-            logging.info(f"Processing timestep {t}/{len(times_all)}")
+            print(f"Processing timestep {t}/{len(times_all)}")
         tag_slice = _as_ndarray(block_id[t, :, :], fill=0)
         valid_mask = ~np.isnan(tag_slice) & (tag_slice != 0)
         unique_blocks = np.unique(tag_slice[valid_mask])
@@ -766,7 +754,7 @@ def analyze_blocks_and_write(
             block_area[block].append((area_km2, times[t]))
 
     print()
-    logging.info("Converting block point lists to arrays...")
+    print("Converting block point lists to arrays...")
     print()
     for block in block_points:
         block_points[block]["times"] = np.array(
@@ -776,7 +764,7 @@ def analyze_blocks_and_write(
         block_points[block]["x"] = np.array(block_points[block]["x"], dtype=np.int32)
 
     # Second pass: compute statistics for each block
-    logging.info("Second pass: analyzing blocks...")
+    print("Second pass: analyzing blocks...")
     block_data = {}
     BI_values = {}
     LWA_data = {}
@@ -785,9 +773,8 @@ def analyze_blocks_and_write(
     lat_MZ_dict = {}
     lon_MZ_dict = {}
 
-    for block in tqdm(
-        block_points.keys(), desc="Analyzing blocks", total=len(block_points)
-    ):
+    print(f"Analyzing blocks ({len(block_points)} blocks)...")
+    for block in block_points.keys():
         times_arr = block_points[block]["times"]
         y_arr = block_points[block]["y"]
         x_arr = block_points[block]["x"]
@@ -806,7 +793,7 @@ def analyze_blocks_and_write(
         )
 
         if not np.isfinite(hgt_vals).any():
-            logging.debug(f"Skipping block {block} due to all-NaN hgt values")
+            print(f"DEBUG: Skipping block {block} due to all-NaN hgt values")
             continue
 
         max_index = np.nanargmax(hgt_vals)
@@ -950,24 +937,22 @@ def analyze_blocks_and_write(
         }
 
     print()
-    logging.info("Block classifications:")
+    print("Block classifications:")
     cutoff_low_ids = set()
     for block, data in LWA_data.items():
-        logging.info(f"Block {block}: {data['classification']}")
+        print(f"Block {block}: {data['classification']}")
         if data["classification"] == "cutoff low":
             cutoff_low_ids.add(block)
 
     excluded_ids = cutoff_low_ids
-    logging.info(
-        f"Excluded {len(cutoff_low_ids)} cutoff lows (total {len(excluded_ids)})."
-    )
+    print(f"Excluded {len(cutoff_low_ids)} cutoff lows (total {len(excluded_ids)}).")
     print()
 
     nc_block.close()
     ds_hgt.close()
 
     # Write filtered NetCDF with sequential IDs
-    logging.info("Writing filtered NetCDF with vectorized remapping...")
+    print("Writing filtered NetCDF with vectorized remapping...")
     print()
     with Dataset(block_file_path, "r") as src:
         time_dim = src.dimensions["time"].size
@@ -976,12 +961,8 @@ def analyze_blocks_and_write(
         total_chunks = (time_dim + chunk_size - 1) // chunk_size
 
         # Build ID remap to create sequential IDs
-        logging.info(f"Scanning IDs across {total_chunks} chunks to build remap map...")
-        for idx, t_start in enumerate(
-            tqdm(
-                range(0, time_dim, chunk_size), total=total_chunks, desc="Scanning IDs"
-            )
-        ):
+        print(f"Scanning IDs across {total_chunks} chunks...")
+        for t_start in range(0, time_dim, chunk_size):
             t_end = min(t_start + chunk_size, time_dim)
             block_id_chunk = _as_ndarray(
                 src.variables["block_id"][t_start:t_end, :, :], fill=0
@@ -989,6 +970,7 @@ def analyze_blocks_and_write(
             mask = np.isin(block_id_chunk, list(excluded_ids))
             filtered_chunk = np.where(mask, 0, block_id_chunk)
             unique_ids.update(np.unique(filtered_chunk[filtered_chunk != 0]).tolist())
+        print("Done scanning IDs.")
 
         id_map = {
             int(old_id): new_id
@@ -1024,12 +1006,8 @@ def analyze_blocks_and_write(
             excluded_ids_arr = np.array(list(excluded_ids))
 
             print()
-            logging.info(f"Writing remapped block_id in {total_chunks} chunks...")
-            for idx, t_start in enumerate(
-                tqdm(
-                    range(0, time_dim, chunk_size), total=total_chunks, desc="Remapping"
-                )
-            ):
+            print(f"Remapping block IDs across {total_chunks} chunks...")
+            for t_start in range(0, time_dim, chunk_size):
                 t_end = min(t_start + chunk_size, time_dim)
                 block_id_chunk = _as_ndarray(
                     src.variables["block_id"][t_start:t_end, :, :], fill=0
@@ -1040,6 +1018,7 @@ def analyze_blocks_and_write(
                 remapped_chunk = np.zeros_like(filtered_chunk)
                 remapped_chunk[valid_mask] = remap_array[filtered_chunk[valid_mask]]
                 out_var[t_start:t_end, :, :] = remapped_chunk
+            print("Done remapping block IDs.")
 
     def _date_mz_for_block(bid):
         t_idx = t_MZ_dict.get(bid, None)
@@ -1049,12 +1028,12 @@ def analyze_blocks_and_write(
             return (
                 times[t_idx].date() if hasattr(times[t_idx], "date") else times[t_idx]
             )
-        except:
+        except Exception:
             return pd.NaT
 
     # Assemble CSV summary (excluding cutoff lows and spatial exclusions)
     print()
-    logging.info("Assembling CSV summary...")
+    print("Assembling CSV summary...")
     print()
     valid_block_ids = sorted(set(block_data.keys()) - excluded_ids)
     filtered_block_data = {bid: block_data[bid] for bid in valid_block_ids}
@@ -1087,11 +1066,11 @@ def analyze_blocks_and_write(
         df["block_id"] = (
             df["block_id"].map(lambda b: id_map.get(int(b), np.nan)).astype("Int64")
         )
-    except:
-        logging.warning("ID remap unavailable; keeping original block IDs in CSV.")
+    except Exception:
+        print("WARNING: ID remap unavailable; keeping original block IDs in CSV.")
     df = df.drop(columns=["block_id_original"], errors="ignore")
     df.to_csv(csv_path, index=False)
-    logging.info(f"Block summary written to {csv_path}")
+    print(f"Block summary written to {csv_path}")
     print()
 
 
@@ -1136,7 +1115,7 @@ def run_full_combined_pipeline(
         output_dir, f"block_id_base.{start_year}{end_year}.nc"
     )
     realign_block_ids(stitched_path, final_block_nc)
-    logging.info("Starting analysis on stitched blocks..")
+    print("Starting analysis on stitched blocks..")
     print()
 
     # LOCAL WAVE ACTIVITY (LWA) COMPUTATION / BLOCK ANALYSIS AND OUTPUT
@@ -1155,10 +1134,10 @@ def run_full_combined_pipeline(
     # Remove intermediate base file now that analysis is complete
     try:
         os.remove(final_block_nc)
-        logging.info(f"Deleted intermediate file: {final_block_nc}")
+        print(f"Deleted intermediate file: {final_block_nc}")
         print()
     except Exception as e:
-        logging.warning(f"Could not delete intermediate file {final_block_nc}: {e}")
+        print(f"WARNING: Could not delete intermediate file {final_block_nc}: {e}")
 
     outputs = {
         "combined_path": combined_path,
@@ -1173,10 +1152,10 @@ def run_full_combined_pipeline(
     try:
         if cleanup_temp and os.path.abspath(output_dir) != os.path.abspath(temp_dir):
             shutil.rmtree(temp_dir)
-            logging.info(f"Deleted temporary directory: {temp_dir}")
+            print(f"Deleted temporary directory: {temp_dir}")
             print()
     except Exception as e:
-        logging.warning(f"Could not delete temporary directory {temp_dir}: {e}")
+        print(f"WARNING: Could not delete temporary directory {temp_dir}: {e}")
 
     return outputs
 
@@ -1191,12 +1170,10 @@ def run_blocking_driver(parameter=None):
     if parameter is None:
         parameter = BlockingParser().get_parameter(argparse_vals_only=False)
 
-    logging.info(
-        f"Using params from: {getattr(parameter, 'params_path', None) or 'CLI only'}"
-    )
+    print(f"Using params from: {getattr(parameter, 'params_path', None) or 'CLI only'}")
     print()
     output_dir = verify_output_path(parameter.OUTPUT_DIR, parameter.case_id)
-    logging.info(f"Output directory: {output_dir}")
+    print(f"Output directory: {output_dir}")
     print()
 
     res = run_full_combined_pipeline(
@@ -1209,9 +1186,7 @@ def run_blocking_driver(parameter=None):
         cleanup_temp=parameter.CLEANUP_TEMP,
     )
 
-    logging.info(
-        f"Processing complete. Outputs: {res['lwa_out_nc']}, {res['csv_path']}"
-    )
+    print(f"Processing complete. Outputs: {res['lwa_out_nc']}, {res['csv_path']}")
     return res
 
 
