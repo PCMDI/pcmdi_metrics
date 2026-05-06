@@ -21,6 +21,9 @@ OBS_GRID_RESOLUTION_KM = 25.0
 OBS_GRID_CELL_AREA_KM2 = OBS_GRID_RESOLUTION_KM * OBS_GRID_RESOLUTION_KM
 N_MONTHS = 12
 
+LAT_CANDIDATES = ["lat", "latitude", "Lat", "Latitude", "LAT", "nav_lat"]
+LON_CANDIDATES = ["lon", "longitude", "Lon", "Longitude", "LON", "nav_lon"]
+
 
 def calc_iiee_annual_cycle(
     ds_obs,
@@ -60,40 +63,15 @@ def calc_iiee_annual_cycle(
     eyear : int, optional
         Ending year of the analysis period, inclusive. Default is ``2014``.
     save_dir : str or None, optional
-        Directory where figures are saved. If ``None``, figures are not saved
-        unless plotting functions are called separately. Default is ``"output"``.
+        Directory where figures are saved. If ``None``, figures are not saved.
+        Default is ``"output"``.
     debug : bool, optional
         If ``True``, print additional diagnostic information. Default is ``False``.
 
     Returns
     -------
     dict
-        Dictionary containing metadata and monthly IIEE metrics. The structure is::
-
-            {
-                "metadata": {
-                    "start_year": int,
-                    "end_year": int,
-                    "obs_variable": str,
-                    "model_variable": str,
-                    "ice_threshold_percent": float,
-                    "grid_cell_area_km2": float
-                },
-                "metrics": {
-                    1: {
-                        "iiee_overestimated_km2": float,
-                        "iiee_underestimated_km2": float,
-                        "iiee_total_area_km2": float
-                    },
-                    ...
-                    12: {...}
-                }
-            }
-
-    Notes
-    -----
-    The observational ``status_flag`` is assumed to be time-invariant and is
-    taken from the first time index after temporal subsetting.
+        Dictionary containing metadata and monthly IIEE metrics.
     """
     validate_inputs(ds_obs, ds_model, obs_data_var, model_data_var)
 
@@ -105,6 +83,9 @@ def calc_iiee_annual_cycle(
 
     obs_monthly_clim["status_flag"] = obs_subset["status_flag"].isel(time=0)
 
+    obs_lat_name, obs_lon_name = get_coordinate_names(obs_subset)
+    model_lat_name, model_lon_name = get_coordinate_names(model_subset)
+
     result = {
         "metadata": {
             "start_year": syear,
@@ -113,6 +94,10 @@ def calc_iiee_annual_cycle(
             "model_variable": model_data_var,
             "ice_threshold_percent": ICE_THRESHOLD_PERCENT,
             "grid_cell_area_km2": OBS_GRID_CELL_AREA_KM2,
+            "obs_lat_name": obs_lat_name,
+            "obs_lon_name": obs_lon_name,
+            "model_lat_name": model_lat_name,
+            "model_lon_name": model_lon_name,
         },
         "metrics": {},
     }
@@ -158,10 +143,6 @@ def calc_iiee(
     """
     Calculate Integrated Ice-Edge Error (IIEE) for a single monthly field.
 
-    The IIEE is the area where the model and observations disagree on the
-    presence of sea ice, using a sea ice concentration threshold of
-    ``ICE_THRESHOLD_PERCENT``.
-
     Parameters
     ----------
     obs_data : xarray.Dataset
@@ -171,36 +152,24 @@ def calc_iiee(
         Model monthly dataset containing sea ice concentration.
     obs_data_var : str, optional
         Name of the observational sea ice concentration variable.
-        Default is ``"ice_conc"``.
     model_data_var : str, optional
         Name of the model sea ice concentration variable.
-        Default is ``"siconc"``.
     debug : bool, optional
-        If ``True``, print scalar diagnostic values. Default is ``False``.
+        If ``True``, print scalar diagnostic values.
 
     Returns
     -------
     tuple[dict, dict]
-        metrics : dict
-            Dictionary with scalar IIEE values in km²:
-            - ``iiee_overestimated_km2``
-            - ``iiee_underestimated_km2``
-            - ``iiee_total_area_km2``
-
-        diagnostics : dict
-            Dictionary containing spatial fields used for plotting:
-            - ``model_sic``
-            - ``obs_sic``
-            - ``ice_model``
-            - ``ice_obs``
-            - ``ice_diff``
+        Metrics dictionary and diagnostics dictionary.
     """
     validate_monthly_inputs(obs_data, model_data, obs_data_var, model_data_var)
 
     projection = get_polar_equal_area_projection()
 
-    obs_x, obs_y = project_observational_grid(obs_data, projection)
-    model_x, model_y = project_model_grid(model_data, projection)
+    obs_x, obs_y = project_grid(obs_data, grid_label="obs", projection=projection)
+    model_x, model_y = project_grid(
+        model_data, grid_label="model", projection=projection
+    )
 
     obs_sic = obs_data[obs_data_var]
     obs_status_flag = obs_data["status_flag"]
@@ -265,46 +234,104 @@ def get_polar_equal_area_projection():
     )
 
 
-def project_observational_grid(obs_data, projection):
+def _find_coordinate_name(ds, candidates, coord_type):
     """
-    Project observational longitude and latitude coordinates to x/y meters.
+    Find the first matching coordinate or variable name in a dataset.
 
     Parameters
     ----------
-    obs_data : xarray.Dataset
-        Observational dataset containing ``lon`` and ``lat``.
+    ds : xarray.Dataset
+        Dataset to inspect.
+    candidates : list[str]
+        Candidate names to search for.
+    coord_type : str
+        Coordinate type for error messages.
+
+    Returns
+    -------
+    str
+        Matched coordinate or variable name.
+
+    Raises
+    ------
+    ValueError
+        If no candidate name is found.
+    """
+    for name in candidates:
+        if name in ds.coords or name in ds.variables:
+            return name
+
+    raise ValueError(f"Could not find a {coord_type} coordinate. Tried: {candidates}")
+
+
+def get_coordinate_names(ds):
+    """
+    Resolve latitude and longitude coordinate names in a dataset.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset containing latitude and longitude.
+
+    Returns
+    -------
+    tuple[str, str]
+        Latitude name, longitude name.
+    """
+    lat_name = _find_coordinate_name(ds, LAT_CANDIDATES, "latitude")
+    lon_name = _find_coordinate_name(ds, LON_CANDIDATES, "longitude")
+    return lat_name, lon_name
+
+
+def project_grid(ds, grid_label, projection):
+    """
+    Project a dataset grid to planar x/y coordinates.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset containing latitude and longitude coordinates or variables.
+    grid_label : str
+        Grid label, expected values are ``"obs"`` or ``"model"``.
     projection : pyproj.Proj
-        Projection used to convert lon/lat to planar coordinates.
+        Projection used to convert lon/lat to x/y in meters.
 
     Returns
     -------
     tuple[np.ndarray, np.ndarray]
-        Projected x and y arrays for the observational grid.
+        Projected x and y arrays.
+
+    Raises
+    ------
+    ValueError
+        If coordinate dimensionality is unsupported.
     """
-    return projection(obs_data["lon"].data, obs_data["lat"].data)
+    lat_name, lon_name = get_coordinate_names(ds)
 
+    lat_values = ds[lat_name].data
+    lon_values = ds[lon_name].data
 
-def project_model_grid(model_data, projection):
-    """
-    Project model longitude and latitude coordinates to x/y meters.
+    if grid_label == "obs":
+        if lat_values.ndim != lon_values.ndim:
+            raise ValueError(
+                f"Observational latitude and longitude dimensions do not match: "
+                f"{lat_name}.ndim={lat_values.ndim}, {lon_name}.ndim={lon_values.ndim}"
+            )
+        return projection(lon_values, lat_values)
 
-    Parameters
-    ----------
-    model_data : xarray.Dataset
-        Model dataset containing 1D ``lon`` and ``lat`` coordinates.
-    projection : pyproj.Proj
-        Projection used to convert lon/lat to planar coordinates.
+    if grid_label == "model":
+        if lon_values.ndim == 1 and lat_values.ndim == 1:
+            lon_2d, lat_2d = np.meshgrid(lon_values, lat_values)
+        elif lon_values.ndim == 2 and lat_values.ndim == 2:
+            lon_2d, lat_2d = lon_values, lat_values
+        else:
+            raise ValueError(
+                f"Incompatible model coordinate dimensions: "
+                f"{lon_name}.ndim={lon_values.ndim}, {lat_name}.ndim={lat_values.ndim}"
+            )
+        return projection(lon_2d, lat_2d)
 
-    Returns
-    -------
-    tuple[np.ndarray, np.ndarray]
-        Projected x and y arrays for the model grid.
-    """
-    model_lon_2d, model_lat_2d = np.meshgrid(
-        model_data["lon"].data,
-        model_data["lat"].data,
-    )
-    return projection(model_lon_2d, model_lat_2d)
+    raise ValueError(f"Unsupported grid_label: {grid_label}")
 
 
 def interpolate_model_to_obs_grid(
@@ -635,21 +662,24 @@ def validate_inputs(ds_obs, ds_model, obs_data_var, model_data_var):
     ValueError
         If required variables or coordinates are missing.
     """
-    for name in [obs_data_var, "status_flag"]:
-        if name not in ds_obs.data_vars:
-            raise ValueError(
-                f"Required observational data variable '{name}' not found."
-            )
+    if obs_data_var not in ds_obs.data_vars:
+        raise ValueError(
+            f"Required observational data variable '{obs_data_var}' not found."
+        )
+    if "status_flag" not in ds_obs.data_vars:
+        raise ValueError(
+            "Required observational data variable 'status_flag' not found."
+        )
+    if model_data_var not in ds_model.data_vars:
+        raise ValueError(f"Required model data variable '{model_data_var}' not found.")
 
-    for name in [model_data_var]:
-        if name not in ds_model.data_vars:
-            raise ValueError(f"Required model data variable '{name}' not found.")
+    if "time" not in ds_obs.coords and "time" not in ds_obs.variables:
+        raise ValueError("Required observational coordinate 'time' not found.")
+    if "time" not in ds_model.coords and "time" not in ds_model.variables:
+        raise ValueError("Required model coordinate 'time' not found.")
 
-    for name in ["lat", "lon", "time"]:
-        if name not in ds_obs.coords and name not in ds_obs:
-            raise ValueError(f"Required observational coordinate '{name}' not found.")
-        if name not in ds_model.coords and name not in ds_model:
-            raise ValueError(f"Required model coordinate '{name}' not found.")
+    get_coordinate_names(ds_obs)
+    get_coordinate_names(ds_model)
 
 
 def validate_monthly_inputs(obs_data, model_data, obs_data_var, model_data_var):
@@ -672,13 +702,18 @@ def validate_monthly_inputs(obs_data, model_data, obs_data_var, model_data_var):
     ValueError
         If required fields are missing.
     """
-    for name in [obs_data_var, "status_flag", "lat", "lon"]:
-        if name not in obs_data and name not in obs_data.coords:
+    for name in [obs_data_var, "status_flag"]:
+        if name not in obs_data.data_vars and name not in obs_data.variables:
             raise ValueError(f"Required observational field '{name}' not found.")
 
-    for name in [model_data_var, "lat", "lon"]:
-        if name not in model_data and name not in model_data.coords:
-            raise ValueError(f"Required model field '{name}' not found.")
+    if (
+        model_data_var not in model_data.data_vars
+        and model_data_var not in model_data.variables
+    ):
+        raise ValueError(f"Required model field '{model_data_var}' not found.")
+
+    get_coordinate_names(obs_data)
+    get_coordinate_names(model_data)
 
 
 def check_sic_units(obs_sic, model_sic):
