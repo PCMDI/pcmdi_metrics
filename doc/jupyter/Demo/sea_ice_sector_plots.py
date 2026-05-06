@@ -16,7 +16,9 @@ logging.getLogger("xcdat").setLevel(logging.ERROR)
 # ----------
 print("Creating Arctic map")
 # Load and process data
-obs_file = "demo_data/misc_demo_data/ocn/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
+obs_file = (
+    "demo_data/misc_demo_data/ocn/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
+)
 obs = xc.open_dataset(obs_file)
 obs = obs.mean("time")
 mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
