@@ -73,19 +73,25 @@ def calc_iiee_annual_cycle(
     dict
         Dictionary containing metadata and monthly IIEE metrics.
     """
+    # Quick quality control
     validate_inputs(ds_obs, ds_model, obs_data_var, model_data_var)
 
+    # Subset time period (e.g., 1988-2014)
     obs_subset = ds_obs.sel(time=slice(f"{syear}-01", f"{eyear}-12"))
     model_subset = ds_model.sel(time=slice(f"{syear}-01", f"{eyear}-12"))
 
+    # Get annual cycle
     obs_monthly_clim = get_annual_cycle(obs_subset, obs_data_var)
     model_monthly_clim = get_annual_cycle(model_subset, model_data_var)
 
+    # status_flag is needed to find land grid (thus, not time varying)
     obs_monthly_clim["status_flag"] = obs_subset["status_flag"].isel(time=0)
 
+    # Get coordinate info
     obs_lat_name, obs_lon_name = get_coordinate_names(obs_subset)
     model_lat_name, model_lon_name = get_coordinate_names(model_subset)
 
+    # Prepare output dict with metadata
     result = {
         "metadata": {
             "start_year": syear,
@@ -102,6 +108,7 @@ def calc_iiee_annual_cycle(
         "metrics": {},
     }
 
+    # Calculate metrics per month
     for month_index in range(N_MONTHS):
         month = month_index + 1
 
@@ -162,11 +169,18 @@ def calc_iiee(
     tuple[dict, dict]
         Metrics dictionary and diagnostics dictionary.
     """
+    # Quick quality control
     validate_monthly_inputs(obs_data, model_data, obs_data_var, model_data_var)
 
+    # CONVERTING coordinates onto OSI SAF grid in meters centered at the North Pole
+    # Define the Lambert Azimuthal Equal-Area (laea) projection centered at the North Pole
+    # This coordinate is used in OSI SAF data
     projection = get_polar_equal_area_projection()
 
+    # Conversion of satellite coordinates from degrees to meters centered at the North Pole
     obs_x, obs_y = project_grid(obs_data, grid_label="obs", projection=projection)
+
+    # Conversion of model latitude and longitude to meters centered at the North Pole
     model_x, model_y = project_grid(
         model_data, grid_label="model", projection=projection
     )
@@ -177,6 +191,7 @@ def calc_iiee(
 
     check_sic_units(obs_sic, model_sic)
 
+    # INTERPOLATING model data onto observational data grid (i.e., laea projection)
     model_sic_on_obs_grid = interpolate_model_to_obs_grid(
         model_sic=model_sic,
         model_x=model_x,
@@ -186,6 +201,7 @@ def calc_iiee(
         obs_status_flag=obs_status_flag,
     )
 
+    # IIEE CALCULATION
     metrics, diagnostics = compute_iiee_metrics_and_diagnostics(
         obs_sic=obs_sic,
         model_sic_on_obs_grid=model_sic_on_obs_grid,
@@ -368,6 +384,7 @@ def interpolate_model_to_obs_grid(
     obs_points_xy = np.column_stack((obs_x.ravel(), obs_y.ravel()))
     obs_status_flag_1d = obs_status_flag.values.ravel()
 
+    # the model input data are interpolated onto the observational data grid
     model_sic_interpolated_1d = griddata(
         model_points_xy[model_ocean_mask],
         model_sic_1d[model_ocean_mask],
@@ -409,16 +426,26 @@ def compute_iiee_metrics_and_diagnostics(
     obs_status_flag_1d = obs_status_flag.values.ravel()
     grid_shape = model_sic_on_obs_grid.shape
 
+    # Define ice edge threshold (i.e., 15%)
     ice_model = model_sic_1d > ICE_THRESHOLD_PERCENT
     ice_obs = obs_sic_1d > ICE_THRESHOLD_PERCENT
 
+    # Finding areas where they disagree: Overestiamted vs. Underestimated
+    # overestimated: False positive (model says ice, obs says water)
     iiee_false_positive = ice_model & ~ice_obs
+    # underestimated: False negative (model says water, obs says ice)
     iiee_false_negative = ~ice_model & ice_obs
+    # Integrating over the total area
     iiee_total_mask = iiee_false_positive | iiee_false_negative
 
+    # Area size: sum of pixels where there is disagreement * area of those pixels
     iiee_overestimated_km2 = OBS_GRID_CELL_AREA_KM2 * iiee_false_positive.sum()
     iiee_underestimated_km2 = OBS_GRID_CELL_AREA_KM2 * iiee_false_negative.sum()
     iiee_total_area_km2 = OBS_GRID_CELL_AREA_KM2 * iiee_total_mask.sum()
+
+    # KEY VARIABLES: iiee_total_area_km2, iiee_overestimated_km2, and iiee_underestimated_km2
+    # NOTE: lakes are NOT completeley removed yet and sub-Arctic regions are included
+    # FOR FUTURE: applying a Arctic mask with several sub-regions as well as excluding lakes.
 
     if debug:
         print("iiee_overestimated_km2:", iiee_overestimated_km2)
@@ -431,6 +458,7 @@ def compute_iiee_metrics_and_diagnostics(
         "iiee_total_area_km2": float(iiee_total_area_km2),
     }
 
+    # Save difference for plotting overestimated and underestimated area
     ice_diff = ice_model.astype(float) - ice_obs.astype(float)
     ice_diff[obs_status_flag_1d == 1] = np.nan
 
@@ -476,11 +504,15 @@ def plot_ice_comparison(
     sic_cmap = plt.get_cmap("Blues_r").copy()
     sic_cmap.set_bad(color="#FFF9C4")
 
+    # Define Proxy Artists for the legends
     model_line = mlines.Line2D([], [], color="red", linewidth=1, label="Model Edge")
     obs_line = mlines.Line2D([], [], color="limegreen", linewidth=1, label="OBS Edge")
+
+    # New Proxy Artists for filled areas
     over_patch = mpatches.Patch(color="red", alpha=0.3, label="Overestimated Area")
     under_patch = mpatches.Patch(color="blue", alpha=0.3, label="Underestimated Area")
 
+    # --- PANEL 1 & 2 (Model & OBS) ---
     for i, (field_key, edge_key, edge_color, title, line_handle) in enumerate(
         [
             ("model_sic", "ice_model", "red", "Model SIC & Edge", model_line),
@@ -515,8 +547,14 @@ def plot_ice_comparison(
         pad=0.02,
     )
 
+    # --- PANEL 3: Difference ---
     diff_data = diag_dict["ice_diff"]
+
+    # Background Image
     diff_im = axes[2].imshow(diff_data, cmap="RdBu_r", origin="upper", alpha=0.3)
+
+    # FILL AREAS: Positive (1) in Red, Negative (-1) in Blue
+    # levels=[0.5, 1.5] catches the +1 values; levels=[-1.5, -0.5] catches -1 values
     axes[2].contourf(diff_data, levels=[0.5, 1.5], colors=["red"], alpha=0.3)
     axes[2].contourf(diff_data, levels=[-1.5, -0.5], colors=["blue"], alpha=0.3)
 
@@ -538,6 +576,8 @@ def plot_ice_comparison(
     axes[2].legend(handles=legend_handles, loc="lower left", fontsize=10)
     axes[2].set_title("Spatial Difference")
     axes[2].set_facecolor("#F1F5F7")
+
+    # Turn off ticks and ticklabels
     axes[2].set_xticks([])
     axes[2].set_yticks([])
     axes[2].tick_params(
@@ -548,6 +588,7 @@ def plot_ice_comparison(
     box_diff = axes[2].get_position()
     axes[2].set_position([box_diff.x0, box_ref.y0, box_ref.width, box_ref.height])
 
+    # --- METRICS TEXT BOX ---
     if metrics_dict is not None:
         metrics_text = (
             f"IIEE Total Area: {metrics_dict['iiee_total_area_km2'] / 1e6:.2f} M km²\n"
@@ -594,8 +635,10 @@ def plot_iiee_seasonal_cycle(metrics_data, title="Monthly IIEE", save_path=None)
         metrics_data["metrics"] if "metrics" in metrics_data else metrics_data
     )
 
+    # Convert to DataFrame and scale units to Million km^2
     df = pd.DataFrame.from_dict(data_to_plot, orient="index") / 1e6
 
+    # Create the plot
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(
         df.index,
