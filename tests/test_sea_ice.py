@@ -6,11 +6,12 @@ from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
 
 def create_fake_sea_ice_ds():
     years = [1980, 1999]
-    times = xr.cftime_range(
+    times = xr.date_range(
         start="{0}-01-01".format(years[0]),
         end="{0}-12-31".format(years[1]),
         freq="ME",
         calendar="noleap",
+        use_cftime=True,
         name="time",
     )
     latd = 2

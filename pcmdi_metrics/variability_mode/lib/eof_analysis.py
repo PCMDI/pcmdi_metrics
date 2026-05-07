@@ -199,19 +199,25 @@ def arbitrary_checking(mode: str, eof_Nth: xr.DataArray) -> bool:
         ):
             reverse_sign = True
     elif mode == "SAM":
-        if eof_Nth.sel({lat_key: slice(-60, -90)}).mean().item() >= 0:
+        lat = eof_Nth[lat_key]
+        lat_slice = slice(-90, -60) if lat[0] < lat[-1] else slice(-60, -90)
+        if eof_Nth.sel({lat_key: lat_slice}).mean().item() >= 0:
             reverse_sign = True
     elif mode == "PSA1":
+        lat = eof_Nth[lat_key]
+        lat_slice = slice(-59.5, -64.5) if lat[0] > lat[-1] else slice(-64.5, -59.5)
         if (
-            eof_Nth.sel({lat_key: slice(-59.5, -64.5), lon_key: slice(207.5, 212.5)})
+            eof_Nth.sel({lat_key: lat_slice, lon_key: slice(207.5, 212.5)})
             .mean()
             .item()
             >= 0
         ):
             reverse_sign = True
     elif mode == "PSA2":
+        lat = eof_Nth[lat_key]
+        lat_slice = slice(-57.5, -62.5) if lat[0] > lat[-1] else slice(-62.5, -57.5)
         if (
-            eof_Nth.sel({lat_key: slice(-57.5, -62.5), lon_key: slice(277.5, 282.5)})
+            eof_Nth.sel({lat_key: lat_slice, lon_key: slice(277.5, 282.5)})
             .mean()
             .item()
             >= 0
@@ -321,18 +327,32 @@ def linear_regression(x: xr.DataArray, y: xr.DataArray, debug: bool = False) -> 
     lat_key = get_latitude_key(y)
     lon_key = get_longitude_key(y)
 
+    # Ensure (time, lat, lon) order before indexing by position
+    time_key = get_time_key(y)
+    y = y.transpose(time_key, lat_key, lon_key)
+
     # Convert 3d (time, lat, lon) to 2d (time, lat*lon) for polyfit applying
     im = y.shape[2]
     jm = y.shape[1]
-    y_2d = y.data.reshape(y.shape[0], jm * im)
+    # Use np.asarray to handle both numpy and Dask-backed arrays
+    y_2d = np.asarray(y).reshape(y.shape[0], jm * im)
+    x_np = np.asarray(x)
     if debug:
         print("x.shape:", x.shape)
         print("y_2d.shape:", y_2d.shape)
     # Linear regression
-    slope_1d, intercept_1d = np.polyfit(np.array(x), np.array(y_2d), 1)
+    # np.polyfit (via lstsq) fails with LinAlgError on NaN columns in newer numpy.
+    # Identify columns that are fully finite and only regress those.
+    valid_cols = np.all(np.isfinite(y_2d), axis=0)
+    slope_1d = np.full(jm * im, np.nan)
+    intercept_1d = np.full(jm * im, np.nan)
+    if valid_cols.any():
+        coeffs = np.polyfit(x_np, y_2d[:, valid_cols], 1)
+        slope_1d[valid_cols] = coeffs[0]
+        intercept_1d[valid_cols] = coeffs[1]
     # Retreive to variabile from numpy array
-    slope = np.array(slope_1d.reshape(jm, im))
-    intercept = np.array(intercept_1d.reshape(jm, im))
+    slope = slope_1d.reshape(jm, im)
+    intercept = intercept_1d.reshape(jm, im)
     # Set lat/lon coordinates
     slope = xr.DataArray(
         slope, coords={lat_key: lat, lon_key: lon}, dims=[lat_key, lon_key]
@@ -341,7 +361,7 @@ def linear_regression(x: xr.DataArray, y: xr.DataArray, debug: bool = False) -> 
         intercept, coords={lat_key: lat, lon_key: lon}, dims=[lat_key, lon_key]
     )
     # return result
-    return slope.where(slope != 1e20), intercept.where(intercept != 1e20)
+    return slope, intercept
 
 
 def gain_pseudo_pcs(
@@ -389,7 +409,7 @@ def gain_pseudo_pcs(
     pseudo_pcs = pseudo_pcs[:, eofn - 1]
     # Arbitrary sign control, attempt to make all plots have the same sign
     if reverse_sign:
-        pseudo_pcs *= -1
+        pseudo_pcs = pseudo_pcs * -1
     # return result
     return pseudo_pcs
 
@@ -454,8 +474,7 @@ def gain_pcs_fraction(
     reconstructed_field = eof_pattern * pcs
 
     # 2-2) Get variance of reconstructed field
-    # time_key_2 = get_time_key(reconstructed_field)
-    time_key_2 = get_time_key(ds_eof_pattern)
+    time_key_2 = get_time_key(pcs)
     variance_partial = reconstructed_field.var(dim=[time_key_2])
     # area average
     varname_variance_partial = "variance_partial"

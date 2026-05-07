@@ -13,8 +13,8 @@ from pcmdi_metrics.utils import (
 @pytest.fixture
 def create_dataset():
     def _create_dataset(start_date, periods, freq, calendar="gregorian"):
-        dates = xr.cftime_range(
-            start_date, periods=periods, freq=freq, calendar=calendar
+        dates = xr.date_range(
+            start_date, periods=periods, freq=freq, calendar=calendar, use_cftime=True
         )
         return xr.Dataset({"time": dates})
 
@@ -50,13 +50,13 @@ def test_check_daily_time_axis_missing_time_key(create_dataset):
 # Test check_monthly_time_axis
 @pytest.mark.parametrize("calendar", ["gregorian", "noleap", "360_day"])
 def test_check_monthly_time_axis_correct(create_dataset, calendar):
-    ds = create_dataset("2000-01-01", 24, "M", calendar=calendar)
+    ds = create_dataset("2000-01-01", 24, "ME", calendar=calendar)
     assert check_monthly_time_axis(ds) is None
 
 
 def test_check_monthly_time_axis_incorrect(create_dataset):
     # Test with incorrect monthly sequence
-    ds = create_dataset("2000-01-01", 24, "2M")
+    ds = create_dataset("2000-01-01", 24, "2ME")
     with pytest.raises(ValueError, match="DATA ERROR: time is not correct!"):
         check_monthly_time_axis(ds)
 
@@ -68,7 +68,7 @@ def test_check_monthly_time_axis_non_datetime():
 
 
 def test_check_monthly_time_axis_missing_time_key(create_dataset):
-    ds = create_dataset("2000-01-01", 24, "M")
+    ds = create_dataset("2000-01-01", 24, "ME")
     with pytest.raises(KeyError):
         check_monthly_time_axis(ds, time_key="non_existent_key")
 
