@@ -41,7 +41,7 @@ def main():
     exps = ["historical"]
     # exps = ["amip"]
     # variables = ["psl", "ts"]
-    variables = ["ua", "va", "ta"]
+    variables = ["pr", "ua", "va", "ta"]
     # variables = ["sic"]  # for CMIP5
     # variables = ["siconc"]  # for CMIP6
     freq = "mon"

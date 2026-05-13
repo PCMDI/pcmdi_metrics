@@ -326,9 +326,11 @@ def process_dataset(
                 ".nc", f"_{grid_resolution}.nc"
             ).replace("_gn_", "_gr_")
             os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
-            ds_ac_interp.to_netcdf(
-                os.path.join(out_path_interp, version, interp_filename_nc)
+            ac_interp_filepath = os.path.join(
+                out_path_interp, version, interp_filename_nc
             )
+            print("Save AC interp nc file:", ac_interp_filepath)
+            ds_ac_interp.to_netcdf(ac_interp_filepath)
 
     # Extract level and plot climatology
     # Check if variable is 4D

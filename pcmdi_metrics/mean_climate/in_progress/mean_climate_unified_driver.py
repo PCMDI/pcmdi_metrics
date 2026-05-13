@@ -67,11 +67,12 @@ variables = [
 ]
 
 # rad_diagnostic_variables = ["rt", "rst", "rstcre", "rltcre"]
-
-
-# variables = ["pr"]
 """
 
+
+variables = ["pr"]
+
+"""
 variables = [
     "ua-200",
     "va-200",
@@ -83,20 +84,21 @@ variables = [
     "va-850",
     "ta-850",
 ]
+"""
 
 # ---------
 # Reference
 # ---------
-default_ref_only = True  # if True, use only the reference marked as "default" in the ref_catalogue file
+default_ref_only = False  # if True, use only the reference marked as "default" in the ref_catalogue file
 all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
 # Reference data in raw time series format (not annual cycle)
-ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20260209.json"
+ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_latest.json"
 ref_data_head = "/global/cfs/projectdirs/m4581/obs4MIPs"  # optional, if ref_catalogue file does not include entire directory path
 is_ref_input_annual_cycle = False
 
 # Reference data in annual cycle format
-# ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_1980-2014_catalogue_byVar_v20250904.json"
+# ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_1980-2014_catalogue_byVar_v20260513.json"
 # ref_data_head = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_1980-2014"
 # is_ref_input_annual_cycle = True
 
@@ -118,7 +120,7 @@ print("models:", models)
 # --------------
 regions = ["global"]
 
-target_grid = "2.5x2.5"
+target_grid_resolution = "2.5x2.5"
 
 # start = "1981-01"
 # end = "2004-12"
@@ -138,7 +140,7 @@ output_path = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_c
 
 # Set version identifier using the current date if not provided
 version = datetime.datetime.now().strftime("v%Y%m%d")
-version = "v20250825"
+# version = "v20250825"
 print("version:", version)
 
 first_member_only = True  # if True, use only the first member of each model
@@ -186,6 +188,26 @@ print("variables_level_dict:", variables_level_dict)
 
 print("refs_dict:")
 print_dict(refs_dict)
+
+
+# Exclude some data to avoid memory overuse
+def remove_nested_key(data, target_key):
+    if isinstance(data, dict):
+        # Use list(data.keys()) to avoid "dictionary changed size" error
+        for key in list(data.keys()):
+            if key == target_key:
+                del data[key]
+            else:
+                remove_nested_key(data[key], target_key)
+    elif isinstance(data, list):
+        for item in data:
+            remove_nested_key(item, target_key)
+
+
+remove_nested_key(refs_dict, "MSWEP-V280-Past")
+remove_nested_key(refs_dict, "MSWEP-V280-Past-nogauge")
+remove_nested_key(refs_dict, "PRISM-M3")
+
 # print("models_dict:")
 # print_dict(models_dict)
 
@@ -203,13 +225,14 @@ interim_output_path_dict = {
 # ----------------------
 # grid for interpolation
 # ----------------------
-common_grid = create_target_grid(target_grid_resolution=target_grid)
+common_grid = create_target_grid(target_grid_resolution=target_grid_resolution)
 
 # generate land sea mask for the target grid
 sft = create_land_sea_mask(common_grid)
 
 # add sft to target grid dataset
-common_grid["sftlf"] = sft
+# common_grid["sftlf"] = sft
+common_grid = common_grid.merge(sft.rename("sftlf"))
 
 # ------------------------
 # main loop over variables
@@ -241,7 +264,17 @@ for var in variables_unique:
                 else:
                     refs = []
 
-            if not is_ref_input_annual_cycle:
+            if is_ref_input_annual_cycle:
+                # TODO: This part is missing interpolation if given AC is not on common grid.
+                print(
+                    f"Skipping process_references for {var} since is_ref_input_annual_cycle=True"
+                )
+                for ref in refs:
+                    ref_data_path = get_ref_data_path(refs_dict, var, ref)
+                    print("ref, ref_data_path:", ref, ref_data_path)
+                    anncyc_ref_dict[var][ref] = xcdat_open(ref_data_path)
+            else:
+                print(f"Get annual cycle for {var}")
                 anncyc_ref_dict = process_references(
                     var,
                     refs,
@@ -256,14 +289,6 @@ for var in variables_unique:
                     anncyc_ref_dict,
                     encountered_variables,
                 )
-            else:
-                print(
-                    f"Skipping process_references for {var} since is_ref_input_annual_cycle=True"
-                )
-                for ref in refs:
-                    ref_data_path = get_ref_data_path(refs_dict, var, ref)
-                    print("ref, ref_data_path:", ref, ref_data_path)
-                    anncyc_ref_dict[var][ref] = xcdat_open(ref_data_path)
 
             print("start processing models...")
             process_models(
