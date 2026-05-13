@@ -8,7 +8,17 @@ APIs
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of Application Programming Interfaces (APIs) available in `pcmdi_metrics (> v3.6.1)`.
+Unless specified, the following Application Programming Interfaces (APIs) are available in `pcmdi_metrics (> v3.6.1)` or higher.
+
+Analysis
+~~~~~~~~
+
+`eof_classification` is available in `pcmdi_metrics (> v4.1)` or higher.
+
+.. autosummary::
+    :toctree: generated/
+
+    variability_mode.eof_classification
 
 
 Custom calendars
@@ -110,7 +120,7 @@ Quality control (QC) and repair
     utils.check_daily_time_axis
     utils.check_monthly_time_axis
     utils.regenerate_time_axis
-    
+
 
 Miscellaneous tools
 ~~~~~~~~~~~~~~~~~~~
@@ -125,7 +135,7 @@ Miscellaneous tools
 Viewer
 ~~~~~~
 
-Viewer will be available in `pcmdi_metrics (> v3.9.1)`.
+Viewer is available in `pcmdi_metrics (> v3.9.1)` or higher.
 
 .. autosummary::
     :toctree: generated/

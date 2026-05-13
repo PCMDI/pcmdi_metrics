@@ -51,12 +51,14 @@ def test_check_daily_time_axis_missing_time_key(create_dataset):
 @pytest.mark.parametrize("calendar", ["gregorian", "noleap", "360_day"])
 def test_check_monthly_time_axis_correct(create_dataset, calendar):
     ds = create_dataset("2000-01-01", 24, "MS", calendar=calendar)
+
     assert check_monthly_time_axis(ds) is None
 
 
 def test_check_monthly_time_axis_incorrect(create_dataset):
     # Test with incorrect monthly sequence
     ds = create_dataset("2000-01-01", 24, "2MS")
+
     with pytest.raises(ValueError, match="DATA ERROR: time is not correct!"):
         check_monthly_time_axis(ds)
 
@@ -69,6 +71,7 @@ def test_check_monthly_time_axis_non_datetime():
 
 def test_check_monthly_time_axis_missing_time_key(create_dataset):
     ds = create_dataset("2000-01-01", 24, "MS")
+
     with pytest.raises(KeyError):
         check_monthly_time_axis(ds, time_key="non_existent_key")
 

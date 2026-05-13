@@ -48,7 +48,33 @@ def _determine_conda():
     return conda_exe
 
 
+def _determine_pixi():
+    """
+    Attempt to determine the path to the pixi executable, or return None if not available.
+    """
+    import shutil
+
+    override_pixi_exe = os.environ.get("PCMDI_PIXI_EXE")
+    if override_pixi_exe:
+        return override_pixi_exe
+
+    # PIXI_EXE is set by pixi when it activates an environment
+    pixi_exe = os.environ.get("PIXI_EXE")
+    if pixi_exe and os.path.exists(pixi_exe):
+        return pixi_exe
+
+    return shutil.which("pixi")
+
+
+def _is_pixi_env():
+    """Return True if running inside a pixi-managed environment."""
+    return bool(
+        os.environ.get("PIXI_ENVIRONMENT_NAME") or os.environ.get("PIXI_PROJECT_ROOT")
+    )
+
+
 CONDA = _determine_conda()
+PIXI = _determine_pixi()
 
 # ----------
 # Standalone functions
@@ -141,19 +167,7 @@ def generateProvenance(extra_pairs={}, history=True):
     prov["osAccess"] = bool(os.access("/", os.W_OK) * os.access("/", os.R_OK))
     prov["commandLine"] = " ".join(sys.argv)
     prov["date"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    prov["conda"] = OrderedDict()
-    pairs = {
-        "Platform": "platform ",
-        "Version": "conda version ",
-        "IsPrivate": "conda is private ",
-        "envVersion": "conda-env version ",
-        "buildVersion": "conda-build version ",
-        "PythonVersion": "python version ",
-        "RootEnvironment": "root environment ",
-        "DefaultEnvironment": "default environment ",
-    }
-    populate_prov(prov["conda"], CONDA + " info", pairs, sep=":", index=-1)
-    pairs = {
+    package_pairs = {
         "cdp": "cdp ",
         "cdat_info": "cdat_info ",
         "esmf": "esmf ",
@@ -165,13 +179,50 @@ def generateProvenance(extra_pairs={}, history=True):
         "xcdat": "xcdat ",
         "xarray": "xarray ",
     }
-    # Actual environement used
-    p = Popen(shlex.split(CONDA + " env export"), stdout=PIPE, stderr=PIPE)
-    o, e = p.communicate()
-    prov["conda"]["yaml"] = o.decode("utf-8")
     prov["packages"] = OrderedDict()
-    populate_prov(prov["packages"], CONDA + " list", pairs, fill_missing=None)
-    populate_prov(prov["packages"], CONDA + " list", extra_pairs, fill_missing=None)
+    if _is_pixi_env() and PIXI:
+        prov["pixi"] = OrderedDict()
+        try:
+            p = Popen(shlex.split(PIXI + " info"), stdout=PIPE, stderr=PIPE)
+            o, _ = p.communicate()
+            prov["pixi"]["info"] = o.decode("utf-8")
+        except Exception:
+            pass
+        try:
+            p = Popen(shlex.split(PIXI + " list"), stdout=PIPE, stderr=PIPE)
+            o, _ = p.communicate()
+            prov["pixi"]["list"] = o.decode("utf-8")
+        except Exception:
+            pass
+        populate_prov(
+            prov["packages"], PIXI + " list", package_pairs, fill_missing=None
+        )
+        populate_prov(prov["packages"], PIXI + " list", extra_pairs, fill_missing=None)
+    else:
+        prov["conda"] = OrderedDict()
+        conda_info_pairs = {
+            "Platform": "platform ",
+            "Version": "conda version ",
+            "IsPrivate": "conda is private ",
+            "envVersion": "conda-env version ",
+            "buildVersion": "conda-build version ",
+            "PythonVersion": "python version ",
+            "RootEnvironment": "root environment ",
+            "DefaultEnvironment": "default environment ",
+        }
+        populate_prov(
+            prov["conda"], CONDA + " info", conda_info_pairs, sep=":", index=-1
+        )
+        try:
+            p = Popen(shlex.split(CONDA + " env export"), stdout=PIPE, stderr=PIPE)
+            o, _ = p.communicate()
+            prov["conda"]["yaml"] = o.decode("utf-8")
+        except Exception:
+            pass
+        populate_prov(
+            prov["packages"], CONDA + " list", package_pairs, fill_missing=None
+        )
+        populate_prov(prov["packages"], CONDA + " list", extra_pairs, fill_missing=None)
     # Trying to capture glxinfo
     pairs = {
         "vendor": "OpenGL vendor string",

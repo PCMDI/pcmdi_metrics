@@ -11,6 +11,7 @@ def create_fake_sea_ice_ds():
         end="{0}-12-31".format(years[1]),
         freq="ME",
         calendar="noleap",
+        use_cftime=True,
         name="time",
         use_cftime=True,
     )

@@ -300,6 +300,17 @@ def _regrid_align(eofs_dict, *ctrls):
     return eof_arrs, ctrl_arrs, lat, lon, w2d
 
 
+def _check_inversion(eof_da, ctrl_da):
+    """Return True if the EOF is sign-inverted relative to the control."""
+    eof_sub = _subset(eof_da)
+    ctrl_sub = _subset(ctrl_da)
+    eof_interp = eof_sub.interp_like(ctrl_sub, method="linear")
+    eof_al, ctrl_al = xr.align(eof_interp, ctrl_sub, join="inner")
+    lat = eof_al["lat"].values
+    w2d = _coslat_w2d(lat, eof_al["lon"].size)
+    return _wcor(eof_al.values, ctrl_al.values, w2d) < 0
+
+
 # =============================================================================
 # SUBSPACE HELPERS
 # =============================================================================
@@ -940,7 +951,7 @@ def _consensus(method_results):
     return top_label, "very weak", cons_conf
 
 
-def write_outputs(res_sub, res_corr, res_km, output_root=None):
+def write_outputs(res_sub, res_corr, res_km, output_root=None, consensus_results=None):
     if output_root is None:
         output_root = OUTPUT_ROOT
     out_tsv = f"{output_root}_consensus.tsv"
@@ -956,7 +967,10 @@ def write_outputs(res_sub, res_corr, res_km, output_root=None):
         "robust >= 0.7, medium >= 0.5, weak >= 0.3, very weak < 0.3. "
         "Because model EOFs may span a subspace that mixes the reference "
         "patterns, multiple EOFs can receive the same label when their "
-        "projections are not cleanly separable."
+        "projections are not cleanly separable. "
+        "Notes: 'sign-inverted' means the EOF has opposite sign convention "
+        "to the reference pattern. 'check sign' means the classification "
+        "confidence is below 0.5 and the sign should be verified manually."
     )
 
     # -- Consensus table --
@@ -973,6 +987,7 @@ def write_outputs(res_sub, res_corr, res_km, output_root=None):
         "Consensus_conf",
         "Quality",
         "Warning",
+        "Notes",
     ]
     rows = []
     for m in models:
@@ -982,6 +997,14 @@ def write_outputs(res_sub, res_corr, res_km, output_root=None):
             k = res_km.get(m, {}).get(n, {"label": "NA", "confidence": 0.0})
             cons, quality, cons_conf = _consensus([s, c, k])
             warn = "WARNING" if quality in ("weak", "very weak") else ""
+            if consensus_results is not None:
+                inv = consensus_results.get(m, {}).get(n, {}).get("inverted", False)
+                if cons_conf >= 0.5:
+                    note = "sign-inverted" if inv else ""
+                else:
+                    note = "check sign"
+            else:
+                note = ""
             rows.append(
                 [
                     m,
@@ -996,6 +1019,7 @@ def write_outputs(res_sub, res_corr, res_km, output_root=None):
                     f"{cons_conf:.2f}",
                     quality,
                     warn,
+                    note,
                 ]
             )
 
@@ -1110,9 +1134,9 @@ def eof_classification(
         EA_ctrl, SCA_ctrl, triplets, kmeans_centers_file=kmeans_centers_file
     )
 
-    write_outputs(res_sub, res_corr, res_km, output_root=output_root)
-
     # Build and return consensus results dict
+    triplet_dict = {name: eofs for name, eofs in triplets}
+
     models = sorted(set(res_sub) | set(res_corr) | set(res_km))
     consensus_results = {}
     for m in models:
@@ -1122,16 +1146,34 @@ def eof_classification(
             c = res_corr.get(m, {}).get(n, {"label": "NA", "confidence": 0.0})
             k = res_km.get(m, {}).get(n, {"label": "NA", "confidence": 0.0})
             cons_label, quality, cons_conf = _consensus([s, c, k])
+
+            inverted = False
+            if m in triplet_dict:
+                if cons_label == "EA":
+                    inverted = _check_inversion(triplet_dict[m][n], EA_ctrl)
+                elif cons_label == "SCA":
+                    inverted = _check_inversion(triplet_dict[m][n], SCA_ctrl)
+
             consensus_results[m][n] = {
                 "label": cons_label,
                 "confidence": cons_conf,
                 "quality": quality,
+                "inverted": inverted,
                 "methods": {
                     "subspace": s,
                     "correlation": c,
                     "kmeans": k,
                 },
             }
+
+    write_outputs(
+        res_sub,
+        res_corr,
+        res_km,
+        output_root=output_root,
+        consensus_results=consensus_results,
+    )
+
     return consensus_results
 
 
