@@ -151,6 +151,7 @@ def process_models(
                     print("calculate_and_save_metrics for model done")
             except Exception as e:
                 print(f"Error from process_models for {var} {model} {run}:", e)
+                pass
 
     for level in levels:
         if level is None:
