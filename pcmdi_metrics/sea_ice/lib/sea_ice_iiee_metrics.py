@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import pyproj
 import xcdat as xc
+from matplotlib.colors import BoundaryNorm, ListedColormap
 from scipy.interpolate import griddata
 
 warnings.filterwarnings("ignore", message="invalid value encountered in divide")
@@ -108,6 +109,8 @@ def calc_iiee_annual_cycle(
         "metrics": {},
     }
 
+    monthly_diagnostics = {}
+
     # Calculate metrics per month
     for month_index in range(N_MONTHS):
         month = month_index + 1
@@ -121,6 +124,7 @@ def calc_iiee_annual_cycle(
         )
 
         result["metrics"][month] = metrics
+        monthly_diagnostics[month] = diagnostics
 
         if save_dir is not None:
             plot_ice_comparison(
@@ -129,6 +133,17 @@ def calc_iiee_annual_cycle(
                 time_label=f"Month: {month} ({syear}-{eyear})",
                 save_path=os.path.join(save_dir, f"sic_iiee_month_{month}.png"),
             )
+
+    if save_dir is not None:
+        plot_iiee_all_months_grid(
+            monthly_diagnostics=monthly_diagnostics,
+            monthly_metrics=result["metrics"],
+            syear=syear,
+            eyear=eyear,
+            save_path=os.path.join(save_dir, "sic_iiee_all_months.png"),
+            show_edge_on_diff=False,
+            show_diff_colorbar=False,
+        )
 
     if save_dir is not None:
         plot_iiee_seasonal_cycle(
@@ -509,8 +524,8 @@ def plot_ice_comparison(
     obs_line = mlines.Line2D([], [], color="limegreen", linewidth=1, label="OBS Edge")
 
     # New Proxy Artists for filled areas
-    over_patch = mpatches.Patch(color="red", alpha=0.3, label="Overestimated Area")
-    under_patch = mpatches.Patch(color="blue", alpha=0.3, label="Underestimated Area")
+    over_patch = mpatches.Patch(color="#C00707", label="Overestimated Area")
+    under_patch = mpatches.Patch(color="#000080", label="Underestimated Area")
 
     # --- PANEL 1 & 2 (Model & OBS) ---
     for i, (field_key, edge_key, edge_color, title, line_handle) in enumerate(
@@ -550,13 +565,19 @@ def plot_ice_comparison(
     # --- PANEL 3: Difference ---
     diff_data = diag_dict["ice_diff"]
 
-    # Background Image
-    diff_im = axes[2].imshow(diff_data, cmap="RdBu_r", origin="upper", alpha=0.3)
-
     # FILL AREAS: Positive (1) in Red, Negative (-1) in Blue
     # levels=[0.5, 1.5] catches the +1 values; levels=[-1.5, -0.5] catches -1 values
-    axes[2].contourf(diff_data, levels=[0.5, 1.5], colors=["red"], alpha=0.3)
-    axes[2].contourf(diff_data, levels=[-1.5, -0.5], colors=["blue"], alpha=0.3)
+    diff_cmap = ListedColormap(["#000080", "#ADD8E6", "#C00707"])
+    diff_cmap.set_bad(color="#FFF9C4")
+    norm = BoundaryNorm([-1.5, -0.5, 0.5, 1.5], diff_cmap.N)
+
+    diff_im = axes[2].imshow(
+        diff_data,
+        cmap=diff_cmap,
+        norm=norm,
+        origin="upper",
+        interpolation="none",
+    )
 
     if show_diff_colorbar:
         fig.colorbar(
@@ -674,6 +695,173 @@ def plot_iiee_seasonal_cycle(metrics_data, title="Monthly IIEE", save_path=None)
     ax.grid(True, linestyle=":", alpha=0.6)
     ax.legend(frameon=True, loc="upper right")
     ax.axhline(0, color="gray", linewidth=0.8, alpha=0.5)
+
+    if save_path:
+        save_dir = os.path.dirname(save_path)
+        if save_dir:
+            os.makedirs(save_dir, exist_ok=True)
+        plt.savefig(save_path, bbox_inches="tight", dpi=150)
+        plt.close()
+    else:
+        plt.show()
+
+
+def plot_iiee_all_months_grid(
+    monthly_diagnostics,
+    monthly_metrics=None,
+    syear=None,
+    eyear=None,
+    save_path=None,
+    show_edge_on_diff=False,
+    show_diff_colorbar=False,
+):
+    """
+    Plot all 12 climatological months in a single multi-panel figure.
+
+    Parameters
+    ----------
+    monthly_diagnostics : dict
+        Dictionary keyed by month number (1..12), where each value is the
+        diagnostics dictionary returned by ``calc_iiee()``.
+    monthly_metrics : dict, optional
+        Dictionary keyed by month number (1..12), where each value is the
+        metrics dictionary returned by ``calc_iiee()``.
+    syear, eyear : int, optional
+        Year range for title annotation.
+    save_path : str, optional
+        If provided, save the figure to this path.
+    show_edge_on_diff : bool, optional
+        If True, overlay model and obs ice edges on the difference panels.
+    show_diff_colorbar : bool, optional
+        If True, add a colorbar for the difference column.
+    """
+    fig, axes = plt.subplots(nrows=12, ncols=3, figsize=(12, 42))
+
+    sic_cmap = plt.get_cmap("Blues_r").copy()
+    sic_cmap.set_bad(color="#FFF9C4")
+
+    diff_cmap = ListedColormap(["#000080", "#ADD8E6", "#C00707"])
+    diff_cmap.set_bad(color="#FFF9C4")
+    norm = BoundaryNorm([-1.5, -0.5, 0.5, 1.5], diff_cmap.N)
+
+    model_line = mlines.Line2D([], [], color="red", linewidth=1, label="Model Edge")
+    obs_line = mlines.Line2D([], [], color="limegreen", linewidth=1, label="OBS Edge")
+    over_patch = mpatches.Patch(color="#C00707", label="Overestimated Area")
+    under_patch = mpatches.Patch(color="#000080", label="Underestimated Area")
+
+    sic_im = None
+    diff_im = None
+
+    for month in range(1, 13):
+        diag_dict = monthly_diagnostics[month]
+        metrics_dict = (
+            monthly_metrics.get(month) if monthly_metrics is not None else None
+        )
+        row = month - 1
+
+        ax = axes[row, 0]
+        sic_im = ax.imshow(
+            diag_dict["model_sic"], cmap=sic_cmap, origin="upper", vmin=0, vmax=100
+        )
+        ax.contour(diag_dict["ice_model"], levels=[0.5], colors="red", linewidths=1)
+        ax.set_facecolor("#ADD8E6")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if row == 0:
+            ax.set_title("Model SIC & Edge")
+        ax.set_ylabel(f"Month {month}", fontsize=11)
+
+        ax = axes[row, 1]
+        ax.imshow(diag_dict["obs_sic"], cmap=sic_cmap, origin="upper", vmin=0, vmax=100)
+        ax.contour(diag_dict["ice_obs"], levels=[0.5], colors="limegreen", linewidths=1)
+        ax.set_facecolor("#ADD8E6")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if row == 0:
+            ax.set_title("OBS SIC & Edge")
+
+        ax = axes[row, 2]
+        diff_im = ax.imshow(
+            diag_dict["ice_diff"],
+            cmap=diff_cmap,
+            norm=norm,
+            origin="upper",
+            interpolation="none",
+        )
+        if show_edge_on_diff:
+            ax.contour(diag_dict["ice_model"], levels=[0.5], colors="red", linewidths=1)
+            ax.contour(
+                diag_dict["ice_obs"], levels=[0.5], colors="limegreen", linewidths=1
+            )
+        ax.set_facecolor("#F1F5F7")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if row == 0:
+            ax.set_title("Spatial Difference")
+
+        if metrics_dict is not None:
+            metrics_text = (
+                f"Total: {metrics_dict['iiee_total_area_km2'] / 1e6:.2f}\n"
+                f"Over: {metrics_dict['iiee_overestimated_km2'] / 1e6:.2f}\n"
+                f"Under: {metrics_dict['iiee_underestimated_km2'] / 1e6:.2f}"
+            )
+            ax.text(
+                0.98,
+                0.98,
+                metrics_text,
+                transform=ax.transAxes,
+                fontsize=8,
+                va="top",
+                ha="right",
+                bbox=dict(
+                    boxstyle="round",
+                    facecolor="white",
+                    alpha=0.75,
+                    edgecolor="gray",
+                ),
+            )
+
+    if syear is not None and eyear is not None:
+        title = f"Sea Ice Evaluation for Monthly Climatology, {syear}-{eyear}"
+    else:
+        title = "Sea Ice Evaluation for Monthly Climatology"
+
+    fig.suptitle(title, fontsize=18, y=0.975)
+
+    fig.legend(
+        handles=[model_line, obs_line, over_patch, under_patch],
+        loc="upper center",
+        ncol=4,
+        frameon=True,
+        bbox_to_anchor=(0.5, 0.965),
+    )
+
+    # Reserve explicit top and bottom space
+    plt.tight_layout(rect=[0, 0.06, 1, 0.965], w_pad=0.05)
+
+    # Force draw so axes positions are finalized
+    fig.canvas.draw()
+
+    # Dedicated horizontal colorbar axis under columns 1 and 2
+    left = axes[-1, 0].get_position().x0
+    right = axes[-1, 1].get_position().x1
+    cbar_bottom = 0.045
+    cbar_height = 0.012
+    cax = fig.add_axes([left, cbar_bottom, right - left, cbar_height])
+
+    if sic_im is not None:
+        cbar = fig.colorbar(sic_im, cax=cax, orientation="horizontal")
+        cbar.set_label("Sea Ice Concentration (%)")
+
+    if show_diff_colorbar and diff_im is not None:
+        fig.colorbar(
+            diff_im,
+            ax=axes[:, 2],
+            orientation="vertical",
+            shrink=0.98,
+            pad=0.01,
+            label="Under <-- diff --> Over",
+        )
 
     if save_path:
         save_dir = os.path.dirname(save_path)
