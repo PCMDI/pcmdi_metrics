@@ -415,10 +415,7 @@ for mod in models:
         run_in_modpath = _filename_tokens(model_path).index(realization_for_glob)
         print("run_in_modpath:", run_in_modpath)
         # Collect available runs
-        runs_list = [
-            _filename_tokens(path)[run_in_modpath]
-            for path in model_path_list
-        ]
+        runs_list = [_filename_tokens(path)[run_in_modpath] for path in model_path_list]
     except Exception:
         if realization not in ["all", "*"]:
             runs_list = [realization]
