@@ -7,17 +7,21 @@ import xcdat as xc
 
 logging.getLogger("xcdat").setLevel(logging.ERROR)
 
-# Load data -- model
+# Input files
 
-# "/p/user_pub/pmp/demo/sea-ice/links_siconc/E3SM-1-0/historical/r1i2p2f1/siconc/siconc_SImon_E3SM-1-0_historical_r1i2p2f1_*_*.nc"
-ds = xc.open_mfdataset(
-    "demo_data/CMIP5_demo_timeseries/historical/atmos/mon/siconc_SImon_E3SM-1-1_historical_r1i1p1f1_gr_201001-201412.nc"
-)
-
-# "/p/user_pub/pmp/demo/sea-ice/links_area/E3SM-1-0/areacello_Ofx_E3SM-1-0_historical_r1i1p1f1_gr.nc"
-area = xc.open_dataset(
+MODEL_DATA = "demo_data/CMIP5_demo_timeseries/historical/atmos/mon/siconc_SImon_E3SM-1-0_historical_r1i1p1f1_gr_201001-201412.nc"
+MODEL_AREA = (
     "demo_data/misc_demo_data/fx/areacello_Ofx_E3SM-1-0_historical_r1i1p1f1_gr.nc"
 )
+
+OBS_DATA = (
+    "demo_data/misc_demo_data/ocn/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
+)
+
+# Load data -- model
+ds = xc.open_mfdataset(MODEL_DATA)
+
+area = xc.open_dataset(MODEL_AREA)
 
 arctic = (
     (ds.siconc.where(ds.lat > 0) * 1e-2 * area.areacello * 1e-6)
@@ -33,9 +37,7 @@ Note for the above line
 # Load data -- observation
 
 # obs_file = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
-obs_file = (
-    "demo_data/misc_demo_data/ocn/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
-)
+obs_file = OBS_DATA
 obs = xc.open_dataset(obs_file)
 obs_area = 625
 obs_arctic = (
