@@ -4,14 +4,14 @@
 # --------------------
 # List of models to include in analysis
 test_data_set = [
-    "E3SM-1-1",
+    "E3SM-1-0",
 ]
 
 # realization can be a single realization, a list of realizations, or "*" for all realizations
 realization = "r1i1p1f1"
 
 # test_data_path is a template for the model data parent directory
-test_data_path = "demo_data/CMIP5_demo_timeseries/historical/atmos/mon"
+test_data_path = "demo_data/CMIP5_demo_timeseries/historical/ice/mon"
 
 # filename_template is a template for the model data file name
 # combine it with test_data_path to get complete data path
