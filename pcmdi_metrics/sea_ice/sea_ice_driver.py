@@ -448,7 +448,7 @@ if __name__ == "__main__":
                     print("No land/sea mask file found for", model, run)
                     # Set flag to generate sftlf after loading data
                     sft_exists = False
-                if ~sft_exists and no_mask:
+                if (not sft_exists) and no_mask:
                     # Make mask with all zeros, effectively no masking.
                     print("--no_mask is True. No land/sea mask applied.")
                     mask = xarray.zeros_like(ds[var].isel({"time": 0}))
