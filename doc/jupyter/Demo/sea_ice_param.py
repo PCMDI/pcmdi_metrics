@@ -29,7 +29,7 @@ ModUnitsAdjust = (True, "multiply", 1e-2)
 
 # Template for the grid area file
 area_template = (
-    "demo_data/misc_demo_data/fx/areacello_Ofx_E3SM-1-0_historical_r1i1p1f1_gr.nc"
+    "demo_data/misc_demo_data/fx/areacello_Ofx_%(model)_historical_r1i1p1f1_*.nc"
 )
 
 # Area variable name; likely 'areacello' or 'areacella' for CMIP6
