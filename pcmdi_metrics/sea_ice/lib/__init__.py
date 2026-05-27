@@ -1,2 +1,1 @@
-from .sea_ice_iiee_metrics import calc_iiee_annual_cycle
 from .sea_ice_parser import create_sea_ice_parser

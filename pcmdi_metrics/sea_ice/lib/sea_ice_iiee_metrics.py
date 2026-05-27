@@ -13,6 +13,8 @@ import xcdat as xc
 from matplotlib.colors import BoundaryNorm, ListedColormap
 from scipy.interpolate import griddata
 
+from pcmdi_metrics.io.xcdat_dataset_io import get_calendar
+
 warnings.filterwarnings("ignore", message="invalid value encountered in divide")
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
@@ -73,24 +75,48 @@ def calc_iiee_annual_cycle(
     -------
     dict
         Dictionary containing metadata and monthly IIEE metrics.
+
+    Example usage
+    ---------------------
+    This function is mainly intended for development testing or command-line
+    execution. In package usage, call ``calc_iiee_annual_cycle()`` directly:
+
+    >>> import xcdat as xc
+    >>> ds_obs = xc.open_dataset("data/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc")
+    >>> ds_model = xc.open_mfdataset("data/siconc_SImon_E3SM-1-0_historical_r1i1p1f1_*_*.nc")
+    >>> from pcmdi_metrics.sea_ice import calc_iiee_annual_cycle
+    >>> result = calc_iiee_annual_cycle(
+    ...     ds_obs=ds_obs,
+    ...     ds_model=ds_model,
+    ...     obs_data_var="ice_conc",
+    ...     model_data_var="siconc",
+    ...     syear=2010,
+    ...     eyear=2014,
+    ...     save_dir="output",
+    ... )
     """
     # Quick quality control
     validate_inputs(ds_obs, ds_model, obs_data_var, model_data_var)
 
-    # Subset time period (e.g., 1988-2014)
-    obs_subset = ds_obs.sel(time=slice(f"{syear}-01", f"{eyear}-12"))
-    model_subset = ds_model.sel(time=slice(f"{syear}-01", f"{eyear}-12"))
+    # Get annual cycle for time period (e.g., 1988-2014)
+    eday_model = get_eday_model_considering_calendar(ds_model)
 
-    # Get annual cycle
-    obs_monthly_clim = get_annual_cycle(obs_subset, obs_data_var)
-    model_monthly_clim = get_annual_cycle(model_subset, model_data_var)
+    reference_period_obs = (f"{syear}-01-01", f"{eyear}-12-31")
+    reference_period_model = (f"{syear}-01-01", f"{eyear}-12-{eday_model}")
+
+    obs_monthly_clim = get_annual_cycle(
+        ds_obs, obs_data_var, reference_period=reference_period_obs
+    )
+    model_monthly_clim = get_annual_cycle(
+        ds_model, model_data_var, reference_period=reference_period_model
+    )
 
     # status_flag is needed to find land grid (thus, not time varying)
-    obs_monthly_clim["status_flag"] = obs_subset["status_flag"].isel(time=0)
+    obs_monthly_clim["status_flag"] = ds_obs["status_flag"].isel(time=0)
 
     # Get coordinate info
-    obs_lat_name, obs_lon_name = get_coordinate_names(obs_subset)
-    model_lat_name, model_lon_name = get_coordinate_names(model_subset)
+    obs_lat_name, obs_lon_name = get_coordinate_names(ds_obs)
+    model_lat_name, model_lon_name = get_coordinate_names(ds_model)
 
     # Prepare output dict with metadata
     result = {
@@ -145,7 +171,6 @@ def calc_iiee_annual_cycle(
             show_diff_colorbar=False,
         )
 
-    if save_dir is not None:
         plot_iiee_seasonal_cycle(
             metrics_data=result,
             title="Monthly Integrated Ice-Edge Error (IIEE)",
@@ -227,7 +252,15 @@ def calc_iiee(
     return metrics, diagnostics
 
 
-def get_annual_cycle(ds, data_var):
+def get_eday_model_considering_calendar(ds):
+    calendar = get_calendar(ds)
+    if "360" in calendar:
+        return 30
+    else:
+        return 31
+
+
+def get_annual_cycle(ds, data_var, reference_period=None):
     """
     Compute the monthly climatology of a variable.
 
@@ -237,13 +270,21 @@ def get_annual_cycle(ds, data_var):
         Input dataset.
     data_var : str
         Variable name for climatology calculation.
+    reference_period : tuple[str, str] | None, optional
+        The climatological reference period, which is a subset of the entire time series.
+        This parameter accepts a tuple of strings in the format ‘yyyy-mm-dd’.
+        For example, ('1850-01-01', '1899-12-31'). If no value is provided,
+        the climatological reference period will be the full period covered by the dataset.
+        See https://xcdat.readthedocs.io/en/latest/generated/xarray.Dataset.temporal.climatology.html for details.
 
     Returns
     -------
     xarray.Dataset
         Monthly climatology dataset with 12 time steps.
     """
-    return ds.temporal.climatology(data_var, freq="month")
+    return ds.temporal.climatology(
+        data_var, freq="month", reference_period=reference_period
+    )
 
 
 def get_polar_equal_area_projection():
@@ -1032,7 +1073,8 @@ def main():
 
     >>> import xcdat as xc
     >>> ds_obs = xc.open_dataset("data/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc")
-    >>> ds_model = xc.open_mfdataset("data/siconc_SImon_E3SM-1-1_historical_r1i1p1f1_*_*.nc")
+    >>> ds_model = xc.open_mfdataset("data/siconc_SImon_E3SM-1-0_historical_r1i1p1f1_*_*.nc")
+    >>> from pcmdi_metrics.sea_ice import calc_iiee_annual_cycle
     >>> result = calc_iiee_annual_cycle(
     ...     ds_obs=ds_obs,
     ...     ds_model=ds_model,
@@ -1049,7 +1091,7 @@ def main():
 
     >>> python sea_ice_iiee.py \\
     ...   --obs-file data/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc \\
-    ...   --model-files "data/siconc_SImon_E3SM-1-1_historical_r1i1p1f1_*_*.nc" \\
+    ...   --model-files "data/siconc_SImon_E3SM-1-0_historical_r1i1p1f1_*_*.nc" \\
     ...   --obs-data-var ice_conc \\
     ...   --model-data-var siconc \\
     ...   --syear 2010 \\
