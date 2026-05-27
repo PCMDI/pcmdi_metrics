@@ -24,6 +24,13 @@ authors:
     family-names: Ullrich
     affiliation: Lawrence Livermore National Laboratory and UC Davis
     orcid: 'https://orcid.org/0000-0003-4118-4590'
+  - family-names: Goodnight
+    given-names: Seth
+    affiliation: Lawrence Livermore National Laboratory
+  - given-names: Zhang
+    family-names: Shixuan
+    affiliation: Pacific Northwest National Laboratory
+    orcid: 'https://orcid.org/0000-0002-5723-9747'
 identifiers:
   - type: doi
     value: 10.5281/zenodo.592790
@@ -39,5 +46,5 @@ keywords:
   - climatology
   - climate variability
 license: BSD-3-Clause
-version: '4.0.3'
-date-released: '2026-04-30'
+version: '4.0.4'
+date-released: '2026-05-07'

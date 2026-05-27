@@ -126,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v4.0.4]      | Technical update
 | [v4.0.3]      | Technical update, with test release for the new `eof_classification` capability
 | [v4.0.2]      | Technical update, to better comply with newer xarray versions and reduce dependencies by migrating external legacy code (cdp)
 | [v4.0.1]      | Technical update
@@ -192,6 +193,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v4.0.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.4
 [v4.0.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.3
 [v4.0.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.2
 [v4.0.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.1
@@ -247,10 +249,11 @@ Release Notes and History
 Current Core Development Team
 -----------------------------
 * [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
-* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
-* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
 * [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
-* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
+* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/), PMP Founder)
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/), Core Developer)
+* [Seth Goodnight](https://people.llnl.gov/goodnight1) ([LLNL](https://www.llnl.gov/), Core Developer)
+* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/), Collaborative Core Developer)
 
 All Contributors
 ----------------
