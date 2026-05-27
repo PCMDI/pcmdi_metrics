@@ -19,6 +19,14 @@ warnings.filterwarnings("ignore", message="invalid value encountered in divide")
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
+"""
+Code History
+------------
+2026-04 Original code written in Matlab was conveted to Python by Younjoo Lee (NRL)
+2026-05 Developed a Python API based on the conveted code. Jiwoo Lee (LLNL)
+"""
+
+
 ICE_THRESHOLD_PERCENT = 15.0
 OBS_GRID_RESOLUTION_KM = 25.0
 OBS_GRID_CELL_AREA_KM2 = OBS_GRID_RESOLUTION_KM * OBS_GRID_RESOLUTION_KM
