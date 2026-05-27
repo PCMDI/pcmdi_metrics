@@ -84,8 +84,8 @@ def calc_iiee_annual_cycle(
     dict
         Dictionary containing metadata and monthly IIEE metrics.
 
-    Example usage
-    ---------------------
+    Examples
+    --------
     This function is mainly intended for development testing or command-line
     execution. In package usage, call ``calc_iiee_annual_cycle()`` directly:
 
