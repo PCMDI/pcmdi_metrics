@@ -101,8 +101,13 @@ def plot_climatology_diff(
     # Optimize layout
     plt.subplots_adjust(top=0.86)
 
+    ds_test_plot = ds_test_season[data_var_test].copy().to_dataset(name=data_var_test)
+    ds_diff_plot = (
+        ds_test_season[data_var_test].copy() - ds_ref_season[data_var_ref].copy()
+    ).to_dataset(name="diff")
+
     contour_levels, cmap, cmap_ext, norm = _prepare_colorbar_settings(
-        ds_test, data_var_test, level
+        ds_test_plot, data_var_test, level
     )
 
     (
@@ -110,7 +115,9 @@ def plot_climatology_diff(
         cmap_diff,
         cmap_diff_ext,
         norm_diff,
-    ) = _prepare_colorbar_settings(ds_test, data_var_test, level, diff=True)
+    ) = _prepare_colorbar_settings(
+        ds_diff_plot, "diff", level, diff=True
+    )  # supply difference dataset instead
 
     proj = _prepare_map_projection_settings(map_projection)
 
@@ -1180,10 +1187,16 @@ def _load_variable_setting(
     # Use default settings if not found
     vmin = float(ds[data_var].min())
     vmax = float(ds[data_var].max())
+
+    if diff:  # ensuring levels range from (-val, val)
+        v_abs_max = max([abs(vmin), abs(vmax)])  # guaranteed > 0
+        vmin = -v_abs_max
+        vmax = v_abs_max
+
     if contour_levels is None:
         contour_levels = np.linspace(vmin, vmax, 21)
     if contour_levels_diff is None:
-        contour_levels_diff = np.linspace(vmin / 2.0, vmax / 2.0, 21)
+        contour_levels_diff = np.linspace(vmin, vmax, 21)
     if cmap is None:
         cmap = plt.get_cmap("jet")
     if cmap_diff is None:
