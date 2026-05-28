@@ -290,15 +290,18 @@ for obs in list_obs:
                         print("file_name:", file_name)
                 else:
                     file_name = param.reference_data_path[obs].replace("VAR", var0)
+
                 file_areacell = None  # temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
                 except Exception:
                     file_landmask = None
+
                 try:
                     areacell_in_file = dict_var["areacell"]["var_name"]
                 except Exception:
                     areacell_in_file = None
+
                 try:
                     landmask_in_file = dict_var["landmask"]["var_name"]
                 except Exception:
