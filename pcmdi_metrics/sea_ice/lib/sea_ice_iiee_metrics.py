@@ -128,7 +128,7 @@ def calc_iiee_annual_cycle(
     # Get coordinate info
     obs_lat_name, obs_lon_name = get_coordinate_names(ds_obs)
     model_lat_name, model_lon_name = get_coordinate_names(ds_model)
-    
+
     # Prepare output dict with metadata
     result = {
         "metadata": {
@@ -168,7 +168,7 @@ def calc_iiee_annual_cycle(
                 map_filename = f"{identifier}_sic_iiee_month_{month}.png"
             else:
                 map_filename = f"sic_iiee_month_{month}.png"
-            
+
             plot_ice_comparison(
                 diag_dict=diagnostics,
                 metrics_dict=metrics,
@@ -184,7 +184,7 @@ def calc_iiee_annual_cycle(
         else:
             map_all_filename = "sic_iiee_all_months.png"
             lineplot_filename = "sic_iiee_line_plot.png"
-            
+
         plot_iiee_all_months_grid(
             monthly_diagnostics=monthly_diagnostics,
             monthly_metrics=result["metrics"],
@@ -712,8 +712,8 @@ def plot_ice_comparison(
 
 
 def plot_iiee_seasonal_cycle(
-    metrics_data, 
-    title="Monthly IIEE", 
+    metrics_data,
+    title="Monthly IIEE",
     save_path=None,
     identifier=None,
 ):
@@ -772,7 +772,7 @@ def plot_iiee_seasonal_cycle(
         if identifier:
             title += f"\n{identifier.replace("_", ", ")}"
         ax.set_title(title, fontsize=14, fontweight="bold")
-        
+
     ax.set_xlabel("Month", fontsize=12)
     ax.set_ylabel("Area (Million km²)", fontsize=12)
     ax.set_xticks(range(1, 13))
@@ -912,7 +912,7 @@ def plot_iiee_all_months_grid(
         title = f"Sea Ice Evaluation for Monthly Climatology, {syear}-{eyear}"
     else:
         title = "Sea Ice Evaluation for Monthly Climatology"
-        
+
     if identifier:
         title += f"\n{identifier.replace("_", ", ")}"
 
