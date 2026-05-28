@@ -345,11 +345,13 @@ if __name__ == "__main__":
             list_of_runs = realizations
         else:
             list_of_runs = realizations
-        print(list_of_runs)
+        print("runs: ", list_of_runs)
 
         # Model grid area
         print(lib.replace_multi(area_template, tags))
-        area = xc.open_dataset(glob.glob(lib.replace_multi(area_template, tags))[0])
+        area_path = glob.glob(lib.replace_multi(area_template, tags))[0]
+        print("area_path:", area_path)
+        area = xc.open_dataset(area_path)
         area[area_var] = lib.adjust_units(area[area_var], AreaUnitsAdjust)
 
         if len(list_of_runs) > 0:
@@ -363,6 +365,7 @@ if __name__ == "__main__":
                     "%(realization)": run,
                 }
                 test_data_tmp = lib.replace_multi(test_data_path, tags)
+                print("test_data_tmp:", test_data_tmp)
                 if "*" in test_data_tmp:
                     # Get the most recent version for last wildcard
                     ind = test_data_tmp.split("/")[::-1].index("*")
@@ -371,8 +374,11 @@ if __name__ == "__main__":
                     globbed.sort()
                     test_data_tmp = globbed[-1]
                 test_data_full_path = os.path.join(test_data_tmp, filename_template)
+                print("test_data_full_path 1:", test_data_full_path)
                 test_data_full_path = lib.replace_multi(test_data_full_path, tags)
+                print("test_data_full_path 2:", test_data_full_path)
                 test_data_full_path = glob.glob(test_data_full_path)
+                print("test_data_full_path 3:", test_data_full_path)
                 test_data_full_path.sort()
                 if len(test_data_full_path) == 0:
                     print("")
@@ -442,7 +448,7 @@ if __name__ == "__main__":
                     print("No land/sea mask file found for", model, run)
                     # Set flag to generate sftlf after loading data
                     sft_exists = False
-                if ~sft_exists and no_mask:
+                if (not sft_exists) and no_mask:
                     # Make mask with all zeros, effectively no masking.
                     print("--no_mask is True. No land/sea mask applied.")
                     mask = xarray.zeros_like(ds[var].isel({"time": 0}))
@@ -505,7 +511,7 @@ if __name__ == "__main__":
             # Get regional metrics
             # --------------------
             print("\n-------------------------------------------")
-            print("Calculating model regional average metrics \nfor ", model)
+            print(f"Calculating model regional average metrics \nfor {model}")
             print("--------------------------------------------")
 
             for rgn in real_clim:
