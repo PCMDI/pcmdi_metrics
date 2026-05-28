@@ -43,6 +43,7 @@ def calc_iiee_annual_cycle(
     model_data_var="siconc",
     syear=1988,
     eyear=2014,
+    identifier=None,
     save_dir="output",
     debug=False,
 ):
@@ -73,6 +74,8 @@ def calc_iiee_annual_cycle(
         Starting year of the analysis period, inclusive. Default is ``1988``.
     eyear : int, optional
         Ending year of the analysis period, inclusive. Default is ``2014``.
+    identifier : str, optional
+        Text identifier that to be added to diagnostics' headser and as a part of output files
     save_dir : str or None, optional
         Directory where figures are saved. If ``None``, figures are not saved.
         Default is ``"output"``.
@@ -125,7 +128,7 @@ def calc_iiee_annual_cycle(
     # Get coordinate info
     obs_lat_name, obs_lon_name = get_coordinate_names(ds_obs)
     model_lat_name, model_lon_name = get_coordinate_names(ds_model)
-
+    
     # Prepare output dict with metadata
     result = {
         "metadata": {
@@ -161,28 +164,43 @@ def calc_iiee_annual_cycle(
         monthly_diagnostics[month] = diagnostics
 
         if save_dir is not None:
+            if identifier:
+                map_filename = f"{identifier}_sic_iiee_month_{month}.png"
+            else:
+                map_filename = f"sic_iiee_month_{month}.png"
+            
             plot_ice_comparison(
                 diag_dict=diagnostics,
                 metrics_dict=metrics,
                 time_label=f"Month: {month} ({syear}-{eyear})",
-                save_path=os.path.join(save_dir, f"sic_iiee_month_{month}.png"),
+                save_path=os.path.join(save_dir, map_filename),
+                identifier=identifier,
             )
 
     if save_dir is not None:
+        if identifier:
+            map_all_filename = f"{identifier}_sic_iiee_all_months.png"
+            lineplot_filename = f"{identifier}_sic_iiee_line_plot.png"
+        else:
+            map_all_filename = "sic_iiee_all_months.png"
+            lineplot_filename = "sic_iiee_line_plot.png"
+            
         plot_iiee_all_months_grid(
             monthly_diagnostics=monthly_diagnostics,
             monthly_metrics=result["metrics"],
             syear=syear,
             eyear=eyear,
-            save_path=os.path.join(save_dir, "sic_iiee_all_months.png"),
+            save_path=os.path.join(save_dir, map_all_filename),
             show_edge_on_diff=False,
             show_diff_colorbar=False,
+            identifier=identifier,
         )
 
         plot_iiee_seasonal_cycle(
             metrics_data=result,
             title="Monthly Integrated Ice-Edge Error (IIEE)",
-            save_path=os.path.join(save_dir, "iiee.png"),
+            save_path=os.path.join(save_dir, lineplot_filename),
+            identifier=identifier,
         )
 
     return result
@@ -544,6 +562,7 @@ def plot_ice_comparison(
     save_path=None,
     show_edge_on_diff=False,
     show_diff_colorbar=False,
+    identifier=None,
 ):
     """
     Plot model SIC, observed SIC, and their spatial difference.
@@ -562,6 +581,8 @@ def plot_ice_comparison(
         If ``True``, overlay model and observed ice edges on the difference panel.
     show_diff_colorbar : bool, optional
         If ``True``, add a colorbar to the difference panel.
+    identifier : str, optional
+        If provided, it will be shown in the header
     """
     fig, axes = plt.subplots(1, 3, figsize=(16, 6))
 
@@ -675,7 +696,10 @@ def plot_ice_comparison(
             bbox=dict(boxstyle="round", facecolor="white", alpha=0.8, edgecolor="gray"),
         )
 
-    plt.suptitle(f"Sea Ice Evaluation: {time_label}", fontsize=16, y=0.98)
+    title = f"Sea Ice Evaluation: {time_label}"
+    if identifier:
+        title += f"\n{identifier.replace("_", ", ")}"
+    plt.suptitle(title, fontsize=16, y=0.98)
 
     if save_path:
         save_dir = os.path.dirname(save_path)
@@ -687,7 +711,12 @@ def plot_ice_comparison(
         plt.show()
 
 
-def plot_iiee_seasonal_cycle(metrics_data, title="Monthly IIEE", save_path=None):
+def plot_iiee_seasonal_cycle(
+    metrics_data, 
+    title="Monthly IIEE", 
+    save_path=None,
+    identifier=None,
+):
     """
     Plot the seasonal cycle of monthly IIEE metrics.
 
@@ -700,6 +729,8 @@ def plot_iiee_seasonal_cycle(metrics_data, title="Monthly IIEE", save_path=None)
         Title of the plot.
     save_path : str, optional
         If provided, save the figure to this path.
+    identifier : str, optional
+        If provided, it will be shown in the header
     """
     data_to_plot = (
         metrics_data["metrics"] if "metrics" in metrics_data else metrics_data
@@ -737,7 +768,11 @@ def plot_iiee_seasonal_cycle(metrics_data, title="Monthly IIEE", save_path=None)
         alpha=0.8,
     )
 
-    ax.set_title(title, fontsize=14, fontweight="bold")
+    if title:
+        if identifier:
+            title += f"\n{identifier.replace("_", ", ")}"
+        ax.set_title(title, fontsize=14, fontweight="bold")
+        
     ax.set_xlabel("Month", fontsize=12)
     ax.set_ylabel("Area (Million km²)", fontsize=12)
     ax.set_xticks(range(1, 13))
@@ -763,6 +798,7 @@ def plot_iiee_all_months_grid(
     save_path=None,
     show_edge_on_diff=False,
     show_diff_colorbar=False,
+    identifier=None,
 ):
     """
     Plot all 12 climatological months in a single multi-panel figure.
@@ -783,6 +819,8 @@ def plot_iiee_all_months_grid(
         If True, overlay model and obs ice edges on the difference panels.
     show_diff_colorbar : bool, optional
         If True, add a colorbar for the difference column.
+    identifier : str, optional
+        If provided, it will be shown in the header
     """
     fig, axes = plt.subplots(nrows=12, ncols=3, figsize=(12, 42))
 
@@ -874,6 +912,9 @@ def plot_iiee_all_months_grid(
         title = f"Sea Ice Evaluation for Monthly Climatology, {syear}-{eyear}"
     else:
         title = "Sea Ice Evaluation for Monthly Climatology"
+        
+    if identifier:
+        title += f"\n{identifier.replace("_", ", ")}"
 
     fig.suptitle(title, fontsize=18, y=0.975)
 
@@ -882,7 +923,7 @@ def plot_iiee_all_months_grid(
         loc="upper center",
         ncol=4,
         frameon=True,
-        bbox_to_anchor=(0.5, 0.965),
+        bbox_to_anchor=(0.5, 0.961),
     )
 
     # Reserve explicit top and bottom space
