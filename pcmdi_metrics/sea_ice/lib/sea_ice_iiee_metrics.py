@@ -698,7 +698,7 @@ def plot_ice_comparison(
 
     title = f"Sea Ice Evaluation: {time_label}"
     if identifier:
-        title += f"\n{identifier.replace("_", ", ")}"
+        title += f"\n{identifier.replace('_', ', ')}"
     plt.suptitle(title, fontsize=16, y=0.98)
 
     if save_path:
@@ -770,7 +770,7 @@ def plot_iiee_seasonal_cycle(
 
     if title:
         if identifier:
-            title += f"\n{identifier.replace("_", ", ")}"
+            title += f"\n{identifier.replace('_', ', ')}"
         ax.set_title(title, fontsize=14, fontweight="bold")
 
     ax.set_xlabel("Month", fontsize=12)
@@ -914,7 +914,7 @@ def plot_iiee_all_months_grid(
         title = "Sea Ice Evaluation for Monthly Climatology"
 
     if identifier:
-        title += f"\n{identifier.replace("_", ", ")}"
+        title += f"\n{identifier.replace('_', ', ')}"
 
     fig.suptitle(title, fontsize=18, y=0.975)
 
