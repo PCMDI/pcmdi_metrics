@@ -1166,6 +1166,7 @@ def _load_variable_setting(
     }
 
     # Initialize
+
     contour_levels = None
     contour_levels_diff = None
     cmap = None
@@ -1185,6 +1186,7 @@ def _load_variable_setting(
             cmap_ext_diff = "both"
 
     # Use default settings if not found
+    n = 21  # Number of levels to use
     vmin = float(ds[data_var].min())
     vmax = float(ds[data_var].max())
 
@@ -1193,18 +1195,26 @@ def _load_variable_setting(
         vmin = -v_abs_max
         vmax = v_abs_max
 
+    # rounding fixes
+    raw_step = (vmax - vmin) / (n - 1)
+    base = 10 ** np.floor(np.log10(raw_step))
+
+    step = np.ceil(raw_step / base) * base
+    start = step * (np.floor(vmin / step))
+    end = step * (np.ceil(vmax / step))
+
     if contour_levels is None:
-        contour_levels = np.linspace(vmin, vmax, 21)
+        contour_levels = np.arange(start, end + step, step)
     if contour_levels_diff is None:
-        contour_levels_diff = np.linspace(vmin, vmax, 21)
+        contour_levels_diff = np.arange(start, end + step, step)
     if cmap is None:
         cmap = plt.get_cmap("jet")
     if cmap_diff is None:
         cmap_diff = plt.get_cmap("RdBu_r")
-    if cmap_ext is None:
-        cmap_ext = "both"
-    if cmap_ext_diff is None:
-        cmap_ext_diff = "both"
+    if cmap_ext is None:  # Prevent colorbar extension
+        cmap_ext = None
+    if cmap_ext_diff is None:  # Prevent colorbar extension
+        cmap_ext_diff = None
 
     if diff:
         return contour_levels_diff, cmap_diff, cmap_ext_diff
