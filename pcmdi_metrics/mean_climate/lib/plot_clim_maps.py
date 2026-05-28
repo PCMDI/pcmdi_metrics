@@ -776,8 +776,8 @@ def _load_variable_setting(
     var_setting_dict = {
         "pr": {
             None: {
-                "levels": [0, 0.5] + list(np.arange(1, 18, 1)),
-                "levels_diff": [-5, -2, -1, -0.5, -0.2, 0, 0.2, 0.5, 1, 2, 5],
+                "contour_levels": [0, 0.5] + list(np.arange(1, 18, 1)),
+                "contour_levels_diff": [-5, -2, -1, -0.5, -0.2, 0, 0.2, 0.5, 1, 2, 5],
                 "colormap": "WhiteBlueGreenYellowRed",
                 "colormap_diff": "BrBG",
                 "colormap_ext": "max",
@@ -785,8 +785,22 @@ def _load_variable_setting(
         },
         "prw": {
             None: {
-                "levels": np.arange(0, 22, 1),
-                "levels_diff": [-10, -5, -2, -1, -0.5, -0.2, 0, 0.2, 0.5, 1, 2, 5, 10],
+                "contour_levels": np.arange(0, 22, 1),
+                "contour_levels_diff": [
+                    -10,
+                    -5,
+                    -2,
+                    -1,
+                    -0.5,
+                    -0.2,
+                    0,
+                    0.2,
+                    0.5,
+                    1,
+                    2,
+                    5,
+                    10,
+                ],
                 "colormap": "WhiteBlueGreenYellowRed",
                 "colormap_diff": "BrBG",
                 "colormap_ext": "max",
@@ -794,96 +808,149 @@ def _load_variable_setting(
         },
         "psl": {
             None: {
-                "levels": np.arange(980, 1040, 5),
-                "levels_diff": [-10, -5, -2, -1, -0.5, -0.2, 0, 0.2, 0.5, 1, 2, 5, 10],
+                "contour_levels": np.arange(980, 1040, 5),
+                "contour_levels_diff": [
+                    -10,
+                    -5,
+                    -2,
+                    -1,
+                    -0.5,
+                    -0.2,
+                    0,
+                    0.2,
+                    0.5,
+                    1,
+                    2,
+                    5,
+                    10,
+                ],
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "BrBG",
             }
         },
         "rlds": {
             None: {
-                "levels": np.linspace(80, 500, 21),
-                "levels_diff": np.linspace(-50, 50, 21),
+                "contour_levels": np.linspace(80, 500, 21),
+                "contour_levels_diff": np.linspace(-50, 50, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rltcre": {
             None: {
-                "levels": np.arange(0, 70, 5),
-                "levels_diff": np.linspace(-30, 30, 13),
+                "contour_levels": np.arange(0, 70, 5),
+                "contour_levels_diff": np.linspace(-30, 30, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rlus": {
             None: {
-                "levels": np.linspace(100, 500, 21),
-                "levels_diff": np.linspace(-40, 40, 21),
+                "contour_levels": np.linspace(100, 500, 21),
+                "contour_levels_diff": np.linspace(-40, 40, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rlut": {
             None: {
-                "levels": [100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320],
-                "levels_diff": [-50, -40, -30, -20, -10, -5, 5, 10, 20, 30, 40, 50],
+                "contour_levels": [
+                    100,
+                    120,
+                    140,
+                    160,
+                    180,
+                    200,
+                    220,
+                    240,
+                    260,
+                    280,
+                    300,
+                    320,
+                ],
+                "contour_levels_diff": [
+                    -50,
+                    -40,
+                    -30,
+                    -20,
+                    -10,
+                    -5,
+                    5,
+                    10,
+                    20,
+                    30,
+                    40,
+                    50,
+                ],
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rlutcs": {
             None: {
-                "levels": [100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320],
-                "levels_diff": np.linspace(-40, 40, 21),
+                "contour_levels": [
+                    100,
+                    120,
+                    140,
+                    160,
+                    180,
+                    200,
+                    220,
+                    240,
+                    260,
+                    280,
+                    300,
+                    320,
+                ],
+                "contour_levels_diff": np.linspace(-40, 40, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rsds": {
             None: {
-                "levels": np.linspace(50, 300, 26),
-                "levels_diff": np.linspace(-50, 50, 21),
+                "contour_levels": np.linspace(50, 300, 26),
+                "contour_levels_diff": np.linspace(-50, 50, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rsdscs": {
             None: {
-                "levels": np.linspace(0, 400, 21),
-                "levels_diff": np.linspace(-40, 40, 21),
+                "contour_levels": np.linspace(0, 400, 21),
+                "contour_levels_diff": np.linspace(-40, 40, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rsdt": {
             None: {
-                "levels": np.linspace(0, 450, 26),
-                "levels_diff": np.linspace(-1, 1, 21),
+                "contour_levels": np.linspace(0, 450, 26),
+                "contour_levels_diff": np.linspace(-1, 1, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rstcre": {
             None: {
-                "levels": np.arange(-200, 10, 10),
-                "levels_diff": np.linspace(-50, 50, 21),
+                "contour_levels": np.arange(-200, 10, 10),
+                "contour_levels_diff": np.linspace(-50, 50, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rstscre": {
             None: {
-                "levels": np.linspace(-50, 50, 21),
-                "levels_diff": np.linspace(-30, 30, 13),
+                "contour_levels": np.linspace(-50, 50, 21),
+                "contour_levels_diff": np.linspace(-30, 30, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rsus": {
             None: {
-                "levels": np.linspace(0, 300, 16),
-                "levels_diff": np.linspace(-60, 60, 13),
+                "contour_levels": np.linspace(0, 300, 16),
+                "contour_levels_diff": np.linspace(-60, 60, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
                 "colormap_ext": "max",
@@ -891,8 +958,8 @@ def _load_variable_setting(
         },
         "rsuscs": {
             None: {
-                "levels": np.linspace(0, 300, 16),
-                "levels_diff": np.linspace(-60, 60, 13),
+                "contour_levels": np.linspace(0, 300, 16),
+                "contour_levels_diff": np.linspace(-60, 60, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
                 "colormap_ext": "max",
@@ -900,8 +967,8 @@ def _load_variable_setting(
         },
         "rsut": {
             None: {
-                "levels": np.linspace(0, 300, 16),
-                "levels_diff": np.linspace(-60, 60, 13),
+                "contour_levels": np.linspace(0, 300, 16),
+                "contour_levels_diff": np.linspace(-60, 60, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
                 "colormap_ext": "max",
@@ -909,8 +976,8 @@ def _load_variable_setting(
         },
         "sfcWind": {
             None: {
-                "levels": np.linspace(0, 10, 21),
-                "levels_diff": np.linspace(-6, 6, 13),
+                "contour_levels": np.linspace(0, 10, 21),
+                "contour_levels_diff": np.linspace(-6, 6, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
                 "colormap_ext": "max",
@@ -918,71 +985,113 @@ def _load_variable_setting(
         },
         "ta": {
             200: {
-                "levels": np.arange(-70, -40, 2),
-                "levels_diff": np.linspace(-10, 10, 21),
+                "contour_levels": np.arange(-70, -40, 2),
+                "contour_levels_diff": np.linspace(-10, 10, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "jet",
             },
             500: {
-                "levels": np.linspace(-45, 5, 21),
-                "levels_diff": None,
+                "contour_levels": np.linspace(-45, 5, 21),
+                "contour_levels_diff": None,
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             },
             850: {
-                "levels": np.arange(-35, 40, 5),
-                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "contour_levels": np.arange(-35, 40, 5),
+                "contour_levels_diff": [
+                    -15,
+                    -10,
+                    -5,
+                    -2,
+                    -1,
+                    -0.5,
+                    0,
+                    0.5,
+                    1,
+                    2,
+                    5,
+                    10,
+                    15,
+                ],
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             },
         },
         "tas": {
             None: {
-                "levels": np.arange(-40, 45, 5),
-                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "contour_levels": np.arange(-40, 45, 5),
+                "contour_levels_diff": [
+                    -15,
+                    -10,
+                    -5,
+                    -2,
+                    -1,
+                    -0.5,
+                    0,
+                    0.5,
+                    1,
+                    2,
+                    5,
+                    10,
+                    15,
+                ],
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "tauu": {
             None: {
-                "levels": np.linspace(-0.1, 0.1, 11),
-                "levels_diff": np.linspace(-0.1, 0.1, 11),
+                "contour_levels": np.linspace(-0.1, 0.1, 11),
+                "contour_levels_diff": np.linspace(-0.1, 0.1, 11),
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             }
         },
         "tauv": {
             None: {
-                "levels": np.linspace(-0.1, 0.1, 11),
-                "levels_diff": np.linspace(-0.1, 0.1, 11),
+                "contour_levels": np.linspace(-0.1, 0.1, 11),
+                "contour_levels_diff": np.linspace(-0.1, 0.1, 11),
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             }
         },
         "ts": {
             None: {
-                "levels": np.arange(-40, 45, 5),
-                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "contour_levels": np.arange(-40, 45, 5),
+                "contour_levels_diff": [
+                    -15,
+                    -10,
+                    -5,
+                    -2,
+                    -1,
+                    -0.5,
+                    0,
+                    0.5,
+                    1,
+                    2,
+                    5,
+                    10,
+                    15,
+                ],
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "ua": {
             200: {
-                "levels": np.arange(-70, 80, 10),
-                "levels_diff": np.linspace(-20, 20, 21),
+                "contour_levels": np.arange(-70, 80, 10),
+                "contour_levels_diff": np.linspace(-20, 20, 21),
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
             500: {
-                "levels": np.arange(-40, 45, 5),
-                "levels_diff": np.linspace(-20, 20, 21),
+                "contour_levels": np.arange(-40, 45, 5),
+                "contour_levels_diff": np.linspace(-20, 20, 21),
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
             850: {
-                "levels": [
+                "contour_levels": [
                     -25,
                     -20,
                     -15,
@@ -1000,35 +1109,49 @@ def _load_variable_setting(
                     20,
                     25,
                 ],
-                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "contour_levels_diff": [
+                    -15,
+                    -10,
+                    -5,
+                    -2,
+                    -1,
+                    -0.5,
+                    0,
+                    0.5,
+                    1,
+                    2,
+                    5,
+                    10,
+                    15,
+                ],
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
         },
         "va": {
             200: {
-                "levels": np.linspace(-10, 10, 11),
-                "levels_diff": np.linspace(-5, 5, 6),
+                "contour_levels": np.linspace(-10, 10, 11),
+                "contour_levels_diff": np.linspace(-5, 5, 6),
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
             500: {
-                "levels": np.linspace(-10, 10, 11),
-                "levels_diff": np.linspace(-5, 5, 6),
+                "contour_levels": np.linspace(-10, 10, 11),
+                "contour_levels_diff": np.linspace(-5, 5, 6),
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
             850: {
-                "levels": np.linspace(-10, 10, 11),
-                "levels_diff": np.linspace(-5, 5, 6),
+                "contour_levels": np.linspace(-10, 10, 11),
+                "contour_levels_diff": np.linspace(-5, 5, 6),
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
         },
         "zg": {
             500: {
-                "levels": np.arange(4800, 6000, 100),
-                "levels_diff": np.linspace(-120, 120, 13),
+                "contour_levels": np.arange(4800, 6000, 100),
+                "contour_levels_diff": np.linspace(-120, 120, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             },
@@ -1036,8 +1159,8 @@ def _load_variable_setting(
     }
 
     # Initialize
-    levels = None
-    levels_diff = None
+    contour_levels = None
+    contour_levels_diff = None
     cmap = None
     cmap_diff = None
     cmap_ext = None
@@ -1047,8 +1170,8 @@ def _load_variable_setting(
     if data_var in var_setting_dict:
         if level in var_setting_dict[data_var]:
             settings = var_setting_dict[data_var][level]
-            levels = settings.get("levels", None)
-            levels_diff = settings.get("levels_diff", None)
+            contour_levels = settings.get("contour_levels", None)
+            contour_levels_diff = settings.get("contour_levels_diff", None)
             cmap = _get_colormap(settings.get("colormap", None))
             cmap_diff = _get_colormap(settings.get("colormap_diff", None))
             cmap_ext = settings.get("colormap_ext", "both")
@@ -1057,10 +1180,10 @@ def _load_variable_setting(
     # Use default settings if not found
     vmin = float(ds[data_var].min())
     vmax = float(ds[data_var].max())
-    if levels is None:
-        levels = np.linspace(vmin, vmax, 21)
-    if levels_diff is None:
-        levels_diff = np.linspace(vmin / 2.0, vmax / 2.0, 21)
+    if contour_levels is None:
+        contour_levels = np.linspace(vmin, vmax, 21)
+    if contour_levels_diff is None:
+        contour_levels_diff = np.linspace(vmin / 2.0, vmax / 2.0, 21)
     if cmap is None:
         cmap = plt.get_cmap("jet")
     if cmap_diff is None:
@@ -1071,9 +1194,9 @@ def _load_variable_setting(
         cmap_ext_diff = "both"
 
     if diff:
-        return levels_diff, cmap_diff, cmap_ext_diff
+        return contour_levels_diff, cmap_diff, cmap_ext_diff
 
-    return levels, cmap, cmap_ext
+    return contour_levels, cmap, cmap_ext
 
 
 def _get_colormap(colormap):
