@@ -165,9 +165,9 @@ def calc_iiee_annual_cycle(
 
         if save_dir is not None:
             if identifier:
-                map_filename = f"{identifier}_sic_iiee_month_{month}.png"
+                map_filename = f"sic_iiee_{identifier}_month_{month:02d}.png"
             else:
-                map_filename = f"sic_iiee_month_{month}.png"
+                map_filename = f"sic_iiee_month_{month:02d}.png"
 
             plot_ice_comparison(
                 diag_dict=diagnostics,
@@ -179,8 +179,8 @@ def calc_iiee_annual_cycle(
 
     if save_dir is not None:
         if identifier:
-            map_all_filename = f"{identifier}_sic_iiee_all_months.png"
-            lineplot_filename = f"{identifier}_sic_iiee_line_plot.png"
+            map_all_filename = f"sic_iiee_{identifier}_month_all.png"
+            lineplot_filename = f"sic_iiee_{identifier}_line_plot.png"
         else:
             map_all_filename = "sic_iiee_all_months.png"
             lineplot_filename = "sic_iiee_line_plot.png"
