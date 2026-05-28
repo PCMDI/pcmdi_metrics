@@ -13,12 +13,13 @@ Unless specified, the following Application Programming Interfaces (APIs) are av
 Analysis
 ~~~~~~~~
 
-`eof_classification` is available in `pcmdi_metrics (> v4.1)` or higher.
+`eof_classification` and `calc_iiee_annual_cycle` are available in `pcmdi_metrics (> v4.1)` or higher.
 
 .. autosummary::
     :toctree: generated/
 
     variability_mode.eof_classification
+    sea_ice.calc_iiee_annual_cycle
 
 
 Custom calendars
