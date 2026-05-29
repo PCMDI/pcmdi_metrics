@@ -125,8 +125,14 @@ def cor_xy(dm, do, var="variable", weights=None):
     dm = da_to_ds(dm, var)
     do = da_to_ds(do, var)
 
+    valid = dm[var].notnull() & do[var].notnull()
+    dm[var] = dm[var].where(valid)
+    do[var] = do[var].where(valid)
+
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
+
+    weights = weights.where(valid).fillna(0)
 
     dm_avg = dm.spatial.average(var, axis=["X", "Y"], weights=weights)[var].values
     do_avg = do.spatial.average(var, axis=["X", "Y"], weights=weights)[var].values
@@ -324,8 +330,13 @@ def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
     if isinstance(do, xr.DataArray):
         do = da_to_ds(do, var)
 
+    valid = dm[var].notnull() & do[var].notnull()
+    dm[var] = dm[var].where(valid)
+    do[var] = do[var].where(valid)
+
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
+    weights = weights.where(valid).fillna(0)
 
     dm_tmp = dm.copy()
     do_tmp = do.copy()
@@ -399,4 +410,5 @@ def zonal_mean(dm, do, var="variable"):
 
     dm_zm = dm.spatial.average(var, axis=["X"])
     do_zm = do.spatial.average(var, axis=["X"])
+
     return dm_zm, do_zm  # DataSets

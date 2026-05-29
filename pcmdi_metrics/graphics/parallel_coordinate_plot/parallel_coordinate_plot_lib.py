@@ -324,13 +324,15 @@ def parallel_coordinate_plot(
                     hue="group",
                     split=True,
                     linewidth=0.1,
-                    scale="count",
-                    scale_hue=False,
+                    density_norm="width",  # replaces scale="count"
+                    common_norm=True,  # replaces scale_hue=False
                     palette={
                         group1_name: violin_colors[0],
                         group2_name: violin_colors[1],
                     },
-                    cut=0,
+                    cut=0.5,  # slightly extend KDE beyond sampled min/max to avoid abrupt clipping
+                    bw_adjust=2.0,  # smooth KDE, useful when one group has few samples
+                    gridsize=300,  # smoother violin boundary
                 )
 
     # Line or marker
