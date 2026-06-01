@@ -79,3 +79,4 @@ Data analysis and support tools
    examples/landmask
    examples/pmp_metrics_database
    examples/eof_classification
+   examples/sea_ice_iiee_metrics
