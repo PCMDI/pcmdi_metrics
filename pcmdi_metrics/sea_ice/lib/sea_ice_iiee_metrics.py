@@ -22,8 +22,8 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 """
 Code History
 ------------
-2026-04 Original code written in Matlab was conveted to Python by Younjoo Lee (NRL)
-2026-05 Developed a Python API based on the conveted code. Jiwoo Lee (LLNL)
+2026-04 Original code written in Matlab was conveted to Python by Younjoo Lee (Naval Postgraduate School (NPS))
+2026-05 Developed a Python API based on the conveted code. Jiwoo Lee (Lawrence Livermore National Laboratory (LLNL))
 """
 
 
