@@ -126,7 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
-| [v4.1.0]      | Technical update
+| [v4.1.0]      | New capabilities (**ENSO Metrics, Sea Ice IIEE Metric, and EOF Classification) and technical update
 | [v4.0.4]      | Technical update
 | [v4.0.3]      | Technical update, with test release for the new `eof_classification` capability
 | [v4.0.2]      | Technical update, to better comply with newer xarray versions and reduce dependencies by migrating external legacy code (cdp)
@@ -142,7 +142,7 @@ Release Notes and History
 | ------------- | ------------------------------------- |
 | [v4.0.0rc1]   | Pre-release of development version: Newerly support higher Python versions, `>= 3.10, < 3.14`
 | ------------- | ------------------------------------- |
-| [v3.9.3]      | New capability (**ENSO metrics) and technical update
+| [v3.9.3]      | Technical update
 | [v3.9.2]      | Technical update
 | [v3.9.1]      | New capability (**new modes for modes of variability metrics: EA, SCA**) and technical update
 | [v3.9]        | New capability (**Decision-Relevant metrics, Database access API**) and new demo notebooks
