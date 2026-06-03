@@ -1176,6 +1176,13 @@ def _load_variable_setting(
 
     # Check if the variable and level exist in the settings
     if data_var in var_setting_dict:
+        first_key = next(iter(var_setting_dict[data_var]))
+        cmap = _get_colormap(
+            var_setting_dict[data_var][first_key].get("colormap", None)
+        )
+        cmap_diff = _get_colormap(
+            var_setting_dict[data_var][first_key].get("colormap_diff", None)
+        )
         if level in var_setting_dict[data_var]:
             settings = var_setting_dict[data_var][level]
             contour_levels = settings.get("contour_levels", None)
@@ -1211,10 +1218,10 @@ def _load_variable_setting(
         cmap = plt.get_cmap("jet")
     if cmap_diff is None:
         cmap_diff = plt.get_cmap("RdBu_r")
-    if cmap_ext is None:  # Prevent colorbar extension
-        cmap_ext = None
-    if cmap_ext_diff is None:  # Prevent colorbar extension
-        cmap_ext_diff = None
+    if cmap_ext is None:  # Allow colorbar extension
+        cmap_ext = "both"
+    if cmap_ext_diff is None:  # Allow colorbar extension
+        cmap_ext_diff = "both"
 
     if diff:
         return contour_levels_diff, cmap_diff, cmap_ext_diff
