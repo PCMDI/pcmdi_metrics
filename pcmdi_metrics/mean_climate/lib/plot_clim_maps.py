@@ -1176,6 +1176,7 @@ def _load_variable_setting(
 
     # Check if the variable and level exist in the settings
     if data_var in var_setting_dict:
+        # The variable might exist, but not the level. In that case, use the colormaps for the first level within the variable dictionary
         first_key = next(iter(var_setting_dict[data_var]))
         cmap = _get_colormap(
             var_setting_dict[data_var][first_key].get("colormap", None)
