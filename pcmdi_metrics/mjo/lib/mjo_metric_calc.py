@@ -66,41 +66,50 @@ def compute_mjo_ewr_from_dataset(
     Parameters
     ----------
     ds : xr.Dataset
-        Daily precipitation (or OLR) dataset. Must be CF-compliant with
-        latitude, longitude, and a recognised time coordinate.
+        Daily precipitation or OLR dataset. Must be CF-compliant with
+        latitude, longitude, and a recognized time coordinate.
     data_var : str
-        Name of the variable to analyse within *ds* (e.g. ``"pr"``).
-    start_year : int or None
-        First year of the analysis window. If None, inferred from the dataset's
-        first time step.
-    end_year : int or None
-        Last year of the analysis window. If None, inferred from the dataset's
-        last time step.
-    season : {"NDJFMA", "MJJASO"}
-        Season for segment extraction.
-    cmm_grid : bool
-        If ``True``, regrid to a common ``deg_x`` × ``deg_x`` grid before
-        the spectral analysis.
-    deg_x : float
-        Grid spacing (degrees) used when *cmm_grid* is ``True``.
-    units_adjust : tuple or None
+        Name of the variable to analyze within ``ds`` (for example, ``"pr"``).
+    start_year : int or None, optional
+        First year of the analysis window, inclusive. Default is ``None``,
+        in which case the year is inferred from the dataset's first time step.
+    end_year : int or None, optional
+        Last year of the analysis window, inclusive. Default is ``None``,
+        in which case the year is inferred from the dataset's last time step.
+    season : {"NDJFMA", "MJJASO"}, optional
+        Season used to extract yearly segments. Default is ``"NDJFMA"``.
+    cmm_grid : bool, optional
+        If ``True``, regrid to a common ``deg_x`` x ``deg_x`` grid before
+        spectral analysis. Default is ``False``.
+    deg_x : float, optional
+        Grid spacing in degrees used when ``cmm_grid`` is ``True``.
+        Default is ``2.5``.
+    units_adjust : tuple or None, optional
         Passed directly to :func:`pcmdi_metrics.utils.adjust_units`.
-        ``None`` skips unit conversion.
-    segment_length : int
-        Number of time steps per segment (must be even). Defaults to 180.
+        Default is ``None``, which skips unit conversion.
+    segment_length : int, optional
+        Number of time steps per segment. Default is ``180``, which is 180 days for daily input data.
+        Must be even.
 
     Returns
     -------
     dict
-        ``east_power``, ``west_power``, ``east_west_power_ratio``,
-        ``analysis_time_window_start_year``, ``analysis_time_window_end_year``.
+        Dictionary containing:
+        - ``east_power``: eastward power
+        - ``west_power``: westward power
+        - ``east_west_power_ratio``: east/west power ratio
+        - ``analysis_time_window_start_year``: resolved start year
+        - ``analysis_time_window_end_year``: resolved end year
+        - ``_oee``: intermediate output power spectrum object for downstream
+        plotting or diagnostics
 
     Raises
     ------
     ValueError
-        If *season* is not one of the accepted values, or if the dataset
-        does not cover the requested time window.
+        If ``season`` is invalid or if the dataset does not cover the requested
+        analysis window.
     """
+
     if season not in {"NDJFMA", "MJJASO"}:
         raise ValueError(f"season must be 'NDJFMA' or 'MJJASO', got {season!r}")
 
