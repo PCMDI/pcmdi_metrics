@@ -13,7 +13,13 @@ Unless specified, the following Application Programming Interfaces (APIs) are av
 Analysis & Diagnostics
 ~~~~~~~~~~~~~~~~~~~~~~
 
-`eof_classification` and `calc_iiee_annual_cycle` are available in `pcmdi_metrics (> v4.1)` or higher.
+PMP is currently expanding its public APIs for diagnostics and metrics. This effort is intended to make more of PMP’s 
+capabilities available through a cleaner, more flexible and accessible for users and developers. As the API surface grows, 
+additional diagnostics and metric calculations will be exposed in a way that supports both programmatic use and 
+integration into workflows, while maintaining consistency with the package’s existing design and documentation conventions.
+
+`variability_mode.eof_classification` and `sea_ice.calc_iiee_annual_cycle` are available in `pcmdi_metrics (> v4.1)` or higher.
+`mjo.compute_mjo_ewr_from_dataset` is available in `pcmdi_metrics (> v4.1.1)` or higher.
 
 .. autosummary::
     :toctree: generated/
