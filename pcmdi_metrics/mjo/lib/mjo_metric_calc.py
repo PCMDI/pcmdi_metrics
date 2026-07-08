@@ -49,8 +49,8 @@ np_float = np.float64
 def compute_mjo_ewr_from_dataset(
     ds: xr.Dataset,
     data_var: str,
-    start_year: int,
-    end_year: int,
+    start_year: int | None = None,
+    end_year: int | None = None,
     season: str = "NDJFMA",
     cmm_grid: bool = False,
     deg_x: float = 2.5,
@@ -70,10 +70,12 @@ def compute_mjo_ewr_from_dataset(
         latitude, longitude, and a recognised time coordinate.
     data_var : str
         Name of the variable to analyse within *ds* (e.g. ``"pr"``).
-    start_year : int
-        First year of the analysis window (inclusive).
-    end_year : int
-        Last year of the analysis window (inclusive).
+    start_year : int or None
+        First year of the analysis window. If None, inferred from the dataset's
+        first time step.
+    end_year : int or None
+        Last year of the analysis window. If None, inferred from the dataset's
+        last time step.
     season : {"NDJFMA", "MJJASO"}
         Season for segment extraction.
     cmm_grid : bool
@@ -118,6 +120,12 @@ def compute_mjo_ewr_from_dataset(
         ds[time_key][-1].item().day,
     )
 
+    if start_year is None:
+        start_year = first_time.year
+    if end_year is None:
+        end_year = last_time.year
+
+    # Validate requested window against available data
     if season == "NDJFMA":
         if first_time > datetime(start_year, 11, 1):
             start_year += 1
@@ -125,9 +133,18 @@ def compute_mjo_ewr_from_dataset(
             end_year -= 1
         mon, day = 11, 1
         num_year = end_year - start_year
-    else:  # MJJASO
+    elif season == "MJJASO":
+        if first_time > datetime(start_year, 5, 1):
+            start_year += 1
+        if last_time < datetime(end_year, 10, 31):
+            end_year -= 1
         mon, day = 5, 1
         num_year = end_year - start_year + 1
+    else:
+        raise ValueError(f"season must be 'NDJFMA' or 'MJJASO', got {season!r}")
+
+    if start_year > end_year:
+        raise ValueError("Dataset does not cover the requested season/time window.")
 
     nt = segment_length
     nl = int(360 / deg_x) if cmm_grid else len(lon.values)
