@@ -10,17 +10,17 @@ APIs
 
 Unless specified, the following Application Programming Interfaces (APIs) are available in `pcmdi_metrics (> v3.6.1)` or higher.
 
-Analysis
-~~~~~~~~
+Analysis & Diagnostics
+~~~~~~~~~~~~~~~~~~~~~~
 
 `eof_classification` and `calc_iiee_annual_cycle` are available in `pcmdi_metrics (> v4.1)` or higher.
 
 .. autosummary::
     :toctree: generated/
 
-    variability_mode.eof_classification
+    mjo.compute_mjo_ewr_from_dataset
     sea_ice.calc_iiee_annual_cycle
-
+    variability_mode.eof_classification
 
 Custom calendars
 ~~~~~~~~~~~~~~~~
