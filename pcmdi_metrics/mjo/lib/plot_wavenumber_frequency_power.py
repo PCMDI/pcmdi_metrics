@@ -1,8 +1,6 @@
-import copy
 import os
 import warnings
 
-import matplotlib.cm
 import matplotlib.pyplot as plt
 import xarray as xr
 from matplotlib.patches import Rectangle
