@@ -183,11 +183,12 @@ def compute_mjo_ewr_from_dataset(
     segment_ano: dict[int, xr.Dataset] = {}
     for year in range(start_year, end_year):
         ano = segments[year].copy()
-        ano[data_var] = xr.DataArray(
-            segments[year][data_var].values - sea_cyc_values,
-            dims=segments[year][data_var].dims,
-            coords=segments[year][data_var].coords,
-        )
+        if num_year > 1:
+            ano[data_var] = xr.DataArray(
+                segments[year][data_var].values - sea_cyc_values,
+                dims=segments[year][data_var].dims,
+                coords=segments[year][data_var].coords,
+            )
         segment_ano[year] = ano
 
     # ------------------------------------------------------------------
