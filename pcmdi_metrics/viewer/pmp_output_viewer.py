@@ -988,9 +988,11 @@ def create_mean_clim_divedown_df(mean_clim_dict, mips, assets_path):
             lambda row: (
                 f"{img_url_head}/{row['MIP']}/{row['Experiment']}/clim/v20210811/{row['Variable']}/{row['Region']}/{row['Variable']}_{row['MIP']}_{row['Experiment']}_{row['Model']}_{s.lower()}_global.png"
                 if row["MIP"] == "cmip6"
-                else f"{img_url_head}/{row['MIP']}/{row['Experiment']}/clim/v20200505/{row['Variable']}/{row['Variable']}_{row['MIP']}_{row['Experiment']}_{row['Model']}_{s.lower()}.png"
-                if row["MIP"] == "cmip5"
-                else None
+                else (
+                    f"{img_url_head}/{row['MIP']}/{row['Experiment']}/clim/v20200505/{row['Variable']}/{row['Variable']}_{row['MIP']}_{row['Experiment']}_{row['Model']}_{s.lower()}.png"
+                    if row["MIP"] == "cmip5"
+                    else None
+                )
             ),
             axis=1,
         )
@@ -1122,19 +1124,21 @@ def create_mov_df(mov_dict, mips):
                 "var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005"
             ]["RESULTS"][row["Model"]]
             is not None
-            else ", ".join(
-                list(
-                    results_dict[row["MIP"]]["variability_modes"][
-                        "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
-                    ]["RESULTS"][row["Model"]].keys()
+            else (
+                ", ".join(
+                    list(
+                        results_dict[row["MIP"]]["variability_modes"][
+                            "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+                        ]["RESULTS"][row["Model"]].keys()
+                    )
                 )
+                if row["MIP"] == "cmip5"
+                and results_dict[row["MIP"]]["variability_modes"][
+                    "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+                ]["RESULTS"][row["Model"]]
+                is not None
+                else None
             )
-            if row["MIP"] == "cmip5"
-            and results_dict[row["MIP"]]["variability_modes"][
-                "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
-            ]["RESULTS"][row["Model"]]
-            is not None
-            else None
         ),
         axis=1,
     )
@@ -1156,22 +1160,24 @@ def create_mov_df(mov_dict, mips):
                 "var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005"
             ]["RESULTS"][row["Model"]]
             is not None
-            else ", ".join(
-                list(
-                    ["1900-2005"]
-                    * len(
-                        results_dict[row["MIP"]]["variability_modes"][
-                            "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
-                        ]["RESULTS"][row["Model"]].keys()
+            else (
+                ", ".join(
+                    list(
+                        ["1900-2005"]
+                        * len(
+                            results_dict[row["MIP"]]["variability_modes"][
+                                "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+                            ]["RESULTS"][row["Model"]].keys()
+                        )
                     )
                 )
+                if row["MIP"] == "cmip5"
+                and results_dict[row["MIP"]]["variability_modes"][
+                    "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+                ]["RESULTS"][row["Model"]]
+                is not None
+                else None
             )
-            if row["MIP"] == "cmip5"
-            and results_dict[row["MIP"]]["variability_modes"][
-                "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
-            ]["RESULTS"][row["Model"]]
-            is not None
-            else None
         ),
         axis=1,
     )
@@ -1180,9 +1186,11 @@ def create_mov_df(mov_dict, mips):
         lambda row: (
             f"{url_head}mip={row['MIP']}&exp=historical&ver=v20220825&mode={row['Mode']}&ref={row['Reference']}&var={row['Variable']}&method={row['Method']}&season={row['Season']}&model={row['Model']}&runs={row['Runs']}&periods={row['Periods']}"
             if row["MIP"] == "cmip6"
-            else f"{url_head}mip={row['MIP']}&exp=historical&ver=v20200116&mode={row['Mode']}&ref={row['Reference']}&var={row['Variable']}&method={row['Method']}&season={row['Season']}&model={row['Model']}&runs={row['Runs']}&periods={row['Periods']}"
-            if row["MIP"] == "cmip5"
-            else None
+            else (
+                f"{url_head}mip={row['MIP']}&exp=historical&ver=v20200116&mode={row['Mode']}&ref={row['Reference']}&var={row['Variable']}&method={row['Method']}&season={row['Season']}&model={row['Model']}&runs={row['Runs']}&periods={row['Periods']}"
+                if row["MIP"] == "cmip5"
+                else None
+            )
         ),
         axis=1,
     )

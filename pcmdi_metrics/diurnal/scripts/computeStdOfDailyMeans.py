@@ -11,14 +11,11 @@
 # This version has the PMP Parser "wrapped" around it, so it can be executed with input parameters in the command line
 # ---> computeStdDailyMeansWrapped.py -i data -m7 --realization="r1i1p1" -t "sample_data_%(variable)_%(model).nc"
 
-from __future__ import print_function
-
 import datetime
 import glob
 import multiprocessing as mp
 import os
 
-import cdp
 import cftime
 import xarray as xr
 
@@ -34,6 +31,7 @@ from pcmdi_metrics.io import (
     get_longitude_key,
     xcdat_open,
 )
+from pcmdi_metrics.utils import cdp_run
 
 
 def main():
@@ -197,7 +195,7 @@ def main():
     params = [INPUT(args, name, template) for name in fileList]
     print("PARAMS:", params)
 
-    cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+    cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
 
 
 def add_one_month(t):

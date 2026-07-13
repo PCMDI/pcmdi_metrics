@@ -14,17 +14,12 @@ from typing import Union
 
 import numpy as np
 import xarray as xr
-from packaging.version import Version
 from scipy import signal
 
 from pcmdi_metrics.io import base, get_time_key, select_subset
 from pcmdi_metrics.utils import create_target_grid, regrid
 
-np_ver = Version(np.__version__)
-if np_ver > Version("1.20.0"):
-    np_float = np.float64
-else:
-    np_float = np.float
+np_float = np.float64
 
 
 def interp2commonGrid(ds, data_var, dlat, dlon=None, debug=False):

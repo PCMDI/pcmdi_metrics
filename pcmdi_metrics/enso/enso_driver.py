@@ -5,6 +5,7 @@
 import glob
 import json
 import os
+import re
 import sys
 import time
 
@@ -38,6 +39,68 @@ from pcmdi_metrics.utils import StringConstructor, sort_human
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 
 
+def _filename_tokens(path):
+    return re.split(r"[._]", os.path.basename(path))
+
+
+def _path_realm(realm):
+    if realm == "Amon":
+        return "atmos"
+    if realm == "Omon":
+        return "ocean"
+    return realm
+
+
+def _alternate_realm_paths(path, realm2):
+    replacements = []
+    if realm2 == "ocean":
+        replacements = [
+            ("_Amon_", "_Omon_"),
+            (".Amon.", ".Omon."),
+            ("/Amon/", "/Omon/"),
+            ("_atmos_", "_ocean_"),
+            (".atmos.", ".ocean."),
+            ("/atmos/", "/ocean/"),
+        ]
+    elif realm2 == "atmos":
+        replacements = [
+            ("_Omon_", "_Amon_"),
+            (".Omon.", ".Amon."),
+            ("/Omon/", "/Amon/"),
+            ("_ocean_", "_atmos_"),
+            (".ocean.", ".atmos."),
+            ("/ocean/", "/atmos/"),
+        ]
+
+    candidates = []
+    for old, new in replacements:
+        if old in path:
+            candidate = path.replace(old, new)
+            if candidate != path and candidate not in candidates:
+                candidates.append(candidate)
+    return candidates
+
+
+def _get_model_file(path, var, realm2):
+    file_name = get_file(path)
+    if file_name is not None:
+        return file_name
+
+    for path_candidate in _alternate_realm_paths(path, realm2):
+        file_name = get_file(path_candidate)
+        if file_name is not None:
+            print(
+                "PMPdriver: resolved "
+                + str(realm2)
+                + " variable "
+                + str(var)
+                + " using alternate path "
+                + str(path_candidate)
+            )
+            return file_name
+    return None
+
+
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
@@ -58,11 +121,19 @@ models = param.modnames
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
-    model_index_path = param.modpath.split("/")[-1].split(".").index("%(model)")
+    realm, _ = find_realm("ts", mip)
+    model_index_path = _filename_tokens(param.modpath).index("%(model)")
     models = [
-        p.split("/")[-1].split(".")[model_index_path]
+        _filename_tokens(p)[model_index_path]
         for p in glob.glob(
-            modpath(mip=mip, exp=exp, model="*", realization="*", variable="ts")
+            modpath(
+                mip=mip,
+                exp=exp,
+                realm=realm,
+                model="*",
+                realization="*",
+                variable="ts",
+            )
         )
     ]
     # remove duplicates
@@ -219,15 +290,18 @@ for obs in list_obs:
                         print("file_name:", file_name)
                 else:
                     file_name = param.reference_data_path[obs].replace("VAR", var0)
+
                 file_areacell = None  # temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
                 except Exception:
                     file_landmask = None
+
                 try:
                     areacell_in_file = dict_var["areacell"]["var_name"]
                 except Exception:
                     areacell_in_file = None
+
                 try:
                     landmask_in_file = dict_var["landmask"]["var_name"]
                 except Exception:
@@ -312,61 +386,44 @@ for mod in models:
 
     realm, areacell_in_file = find_realm("ts", mip)
 
+    realization_for_glob = "*" if realization in ["all", "*"] else realization
+    model_path = modpath(
+        mip=mip,
+        exp=exp,
+        realm=realm,
+        model=mod,
+        realization=realization_for_glob,
+        variable="ts",
+    )
+
     model_path_list = glob.glob(
         modpath(
             mip=mip,
             exp=exp,
             realm=realm,
             model=mod,
-            realization=realization,
+            realization=realization_for_glob,
             variable="ts",
         )
     )
 
     model_path_list = sort_human(model_path_list)
     if debug:
-        print(
-            "modpath:",
-            modpath(
-                mip=mip,
-                exp=exp,
-                realm=realm,
-                model=mod,
-                realization=realization,
-                variable="ts",
-            ),
-        )
+        print("modpath:", model_path)
         print("model_path_list:", model_path_list)
 
     # Find where run can be gripped from given filename template for modpath
     print("realization:", realization)
     try:
-        if mip == "CLIVAR_LE":
-            inline_separator = "_"
-        else:
-            inline_separator = "."
-        run_in_modpath = (
-            modpath(
-                mip=mip,
-                exp=exp,
-                realm=realm,
-                model=mod,
-                realization=realization,
-                variable="ts",
-            )
-            .split("/")[-1]
-            .split(inline_separator)
-            .index(realization)
-        )
+        run_in_modpath = _filename_tokens(model_path).index(realization_for_glob)
         print("run_in_modpath:", run_in_modpath)
         # Collect available runs
-        runs_list = [
-            model_path.split("/")[-1].split(inline_separator)[run_in_modpath]
-            for model_path in model_path_list
-        ]
+        runs_list = [_filename_tokens(path)[run_in_modpath] for path in model_path_list]
     except Exception:
         if realization not in ["all", "*"]:
             runs_list = [realization]
+        else:
+            runs_list = []
 
     if debug:
         print("runs_list:", runs_list)
@@ -394,26 +451,20 @@ for mod in models:
                     var0 = var_in_file
                 # finding variable type (atmos or ocean)
                 realm, areacell_in_file = find_realm(var0, mip)
-                if realm == "Amon":
-                    realm2 = "atmos"
-                elif realm == "Omon":
-                    realm2 = "ocean"
-                else:
-                    realm2 = realm
+                realm2 = _path_realm(realm)
                 print("var, areacell_in_file, realm:", var, areacell_in_file, realm)
                 #
                 # finding file for 'mod', 'var'
                 #
-                file_name = get_file(
-                    modpath(
-                        mip=mip,
-                        realm=realm,
-                        exp=exp,
-                        model=mod,
-                        realization=run,
-                        variable=var0,
-                    )
+                model_path = modpath(
+                    mip=mip,
+                    realm=realm,
+                    exp=exp,
+                    model=mod,
+                    realization=run,
+                    variable=var0,
                 )
+                file_name = _get_model_file(model_path, var, realm2)
                 file_areacell = get_file(
                     modpath_lf(
                         mip=mip, realm=realm2, model=mod, variable=areacell_in_file
@@ -475,20 +526,20 @@ for mod in models:
                     ) = (list(), list(), list(), list(), list())
                     for var1 in var_in_file:
                         realm, areacell_in_file = find_realm(var1, mip)
-                        modpath_tmp = get_file(
-                            modpath(
-                                mip=mip,
-                                exp=exp,
-                                realm=realm,
-                                model=mod,
-                                realization=realization,
-                                variable=var1,
-                            )
+                        realm_var1 = _path_realm(realm)
+                        path_var1 = modpath(
+                            mip=mip,
+                            exp=exp,
+                            realm=realm,
+                            model=mod,
+                            realization=run,
+                            variable=var1,
                         )
+                        modpath_tmp = _get_model_file(path_var1, var1, realm_var1)
                         file_areacell_tmp = get_file(
                             modpath_lf(
                                 mip=mip,
-                                realm=realm2,
+                                realm=realm_var1,
                                 model=mod,
                                 variable=areacell_in_file,
                             )

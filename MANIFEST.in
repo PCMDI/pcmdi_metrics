@@ -1,0 +1,4 @@
+# Ensure custom build backend and generator script are included in sdist
+recursive-include _custom_build *.py
+include share/setup_default_args.py
+include share/DefArgsCIA.json

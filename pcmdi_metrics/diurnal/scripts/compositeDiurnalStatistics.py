@@ -24,7 +24,6 @@ import glob
 import multiprocessing as mp
 import os
 
-import cdp
 import cftime
 import numpy as np
 import xarray as xr
@@ -44,6 +43,7 @@ from pcmdi_metrics.io import (
     get_time_key,
     xcdat_open,
 )
+from pcmdi_metrics.utils import cdp_run
 
 
 def main():
@@ -159,7 +159,6 @@ def main():
                     )
                     # Assumes first dimension of input ("axis#0") is time
                     avgvalues[iGMT] = np.average(concatenation[iGMT], axis=0)
-                    # stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
                     stdvalues[iGMT] = np.std(concatenation[iGMT], axis=0)
 
                 # Write output files
@@ -253,7 +252,7 @@ def main():
     print("FILES:", fileList)
     params = [INPUT(args, name, template) for name in fileList]
     print("PARAMS:", params)
-    cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+    cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
 
 
 def add_one_month(t):

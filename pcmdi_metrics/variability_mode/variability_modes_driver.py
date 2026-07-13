@@ -37,10 +37,9 @@ from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
 from pcmdi_metrics.io import fill_template, get_grid, load_regions_specs, region_subset
-from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.stats import calculate_temporal_correlation as calcTCOR
 from pcmdi_metrics.stats import mean_xy
-from pcmdi_metrics.utils import regrid, sort_human, tree
+from pcmdi_metrics.utils import pmp_parser, regrid, sort_human, tree
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
@@ -134,8 +133,13 @@ obs_var = param.varOBS
 
 # Path to model data as string template
 modpath = param.modpath
+print("modpath (from param):", modpath)
+
+modpath_lf = param.modpath_lf
 if LandMask:
-    modpath_lf = param.modpath_lf
+    print("modpath_lf (from param):", modpath_lf)
+else:
+    modpath_lf = None
 
 # Check given model option
 models = param.modnames
@@ -406,7 +410,7 @@ if obs_compare:
 
         # Set output file name for NetCDF and plot
         output_filename_obs = (
-            f"{mode}_{var}_EOF{eofn_obs}_{season}_obs_{osyear}-{oeyear}"
+            f"{mode}_{obs_var}_EOF{eofn_obs}_{season}_obs_{osyear}-{oeyear}"
         )
 
         if EofScaling:
@@ -493,6 +497,8 @@ for model in models:
     if model not in result_dict["RESULTS"]:
         result_dict["RESULTS"][model] = {}
 
+    print("modpath:", modpath)
+
     model_path_list = glob.glob(
         fill_template(
             modpath,
@@ -561,7 +567,7 @@ for model in models:
                 "target_model_eofs"
             ] = eofn_mod
 
-            if LandMask:
+            if LandMask and modpath_lf is not None:
                 model_lf_path = fill_template(modpath_lf, mip=mip, exp=exp, model=model)
             else:
                 model_lf_path = None
@@ -643,10 +649,10 @@ for model in models:
 
                     # QC
                     if var == "ts":
-                        model_timeseries_season_regrid[
-                            var
-                        ] = model_timeseries_season_regrid[var].where(
-                            model_timeseries_season_regrid[var] < 1e10
+                        model_timeseries_season_regrid[var] = (
+                            model_timeseries_season_regrid[var].where(
+                                model_timeseries_season_regrid[var] < 1e10
+                            )
                         )
 
                     # crop to subdomain
@@ -936,7 +942,7 @@ for model in models:
                             dict_head["tcor_cbf_vs_eof_pc"] = tc
 
                         # Set output file name for NetCDF and plot images
-                        output_filename = f"{mode}_{var}_EOF{n+1}_{season}_{mip}_{model}_{exp}_{run}_{fq}_{realm}_{msyear}-{meyear}"
+                        output_filename = f"{mode}_{var}_EOF{n + 1}_{season}_{mip}_{model}_{exp}_{run}_{fq}_{realm}_{msyear}-{meyear}"
                         if EofScaling:
                             output_filename += "_EOFscaled"
 
@@ -1010,7 +1016,7 @@ for model in models:
                                     pc,  # model pc
                                     frac,
                                     ref_name=obs_name,
-                                    output_file_name=f"{output_img_file}_eof{n+1}_compare_obs",
+                                    output_file_name=f"{output_img_file}_eof{n + 1}_compare_obs",
                                     debug=debug,
                                 )
 
@@ -1035,9 +1041,9 @@ for model in models:
                     dict_head["best_matching_model_eofs__rms"] = best_matching_eofs_rms
                     dict_head["best_matching_model_eofs__cor"] = best_matching_eofs_cor
                     if CBF:
-                        dict_head[
-                            "best_matching_model_eofs__tcor_cbf_vs_eof_pc"
-                        ] = best_matching_eofs_tcor
+                        dict_head["best_matching_model_eofs__tcor_cbf_vs_eof_pc"] = (
+                            best_matching_eofs_tcor
+                        )
 
                     debug_print("conventional eof end", debug)
 

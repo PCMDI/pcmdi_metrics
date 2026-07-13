@@ -1,5 +1,5 @@
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.utils import StringConstructor
+from pcmdi_metrics.utils.pmp_parser import PMPParser
 
 monthname_d = {
     1: "Jan",

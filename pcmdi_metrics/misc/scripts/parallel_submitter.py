@@ -75,9 +75,10 @@ def parallel_submitter(
             log_file = os.path.join(log_dir, logfilename_list[index])
 
         # SUBMIT PROCESS
-        with open(log_file + "_stdout.txt", "wb") as out, open(
-            log_file + "_stderr.txt", "wb"
-        ) as err:
+        with (
+            open(log_file + "_stdout.txt", "wb") as out,
+            open(log_file + "_stderr.txt", "wb") as err,
+        ):
             p = subprocess.Popen(process.split(" "), stdout=out, stderr=err)
             processes.append(p)
 

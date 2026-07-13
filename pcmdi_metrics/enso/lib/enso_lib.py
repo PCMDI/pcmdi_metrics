@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import collections
 import copy
 import datetime
@@ -9,7 +7,7 @@ import re
 from collections import defaultdict
 
 import pcmdi_metrics
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
+from pcmdi_metrics.utils.pmp_parser import PMPParser
 
 
 def AddParserArgument():

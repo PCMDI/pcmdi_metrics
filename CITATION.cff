@@ -13,23 +13,24 @@ authors:
     email: lee1043@llnl.gov
     affiliation: Lawrence Livermore National Laboratory
     orcid: 'https://orcid.org/0000-0002-0016-7199'
+  - affiliation: Lawrence Livermore National Laboratory
+    given-names: Kristin
+    family-names: Chang
   - family-names: Gleckler
     given-names: Peter
     affiliation: Lawrence Livermore National Laboratory
     orcid: 'https://orcid.org/0000-0003-2816-6224'
-  - family-names: Ordonez
-    given-names: Ana
-    affiliation: Lawrence Livermore National Laboratory
-  - given-names: Bo
-    family-names: Dong
-    affiliation: Lawrence Livermore National Laboratory
-  - affiliation: Lawrence Livermore National Laboratory
-    given-names: Kristin
-    family-names: Chang
   - given-names: Paul
     family-names: Ullrich
     affiliation: Lawrence Livermore National Laboratory and UC Davis
     orcid: 'https://orcid.org/0000-0003-4118-4590'
+  - family-names: Goodnight
+    given-names: Seth
+    affiliation: Lawrence Livermore National Laboratory
+  - given-names: Zhang
+    family-names: Shixuan
+    affiliation: Pacific Northwest National Laboratory
+    orcid: 'https://orcid.org/0000-0002-5723-9747'
 identifiers:
   - type: doi
     value: 10.5281/zenodo.592790
@@ -45,5 +46,5 @@ keywords:
   - climatology
   - climate variability
 license: BSD-3-Clause
-version: '3.9.1'
-date-released: '2025-04-10'
+version: '4.1.0'
+date-released: '2026-06-02'

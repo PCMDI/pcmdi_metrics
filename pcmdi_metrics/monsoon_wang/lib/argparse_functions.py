@@ -1,4 +1,4 @@
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
+from pcmdi_metrics.utils.pmp_parser import PMPParser
 
 
 def create_monsoon_wang_parser():

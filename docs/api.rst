@@ -8,8 +8,26 @@ APIs
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of Application Programming Interfaces (APIs) available in `pcmdi_metrics (> v3.6.1)`.
+Unless specified, the following Application Programming Interfaces (APIs) are available in `pcmdi_metrics (> v3.6.1)` or higher.
 
+Analysis & Diagnostics
+~~~~~~~~~~~~~~~~~~~~~~
+
+PMP is currently expanding its public APIs for diagnostics and metrics. This effort is intended to make more of PMP’s 
+capabilities available through a cleaner, more flexible and accessible for users and developers. As the API surface grows, 
+additional diagnostics and metric calculations will be exposed in a way that supports both programmatic use and 
+integration into workflows, while maintaining consistency with the package’s existing design and documentation conventions.
+
+The `variability_mode.eof_classification` and `sea_ice.calc_iiee_annual_cycle` APIs are available in `pcmdi_metrics` version `v4.1` and later. 
+The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` version `v4.1.1` and later.
+
+
+.. autosummary::
+    :toctree: generated/
+
+    mjo.compute_mjo_ewr_from_dataset
+    sea_ice.calc_iiee_annual_cycle
+    variability_mode.eof_classification
 
 Custom calendars
 ~~~~~~~~~~~~~~~~
@@ -110,7 +128,7 @@ Quality control (QC) and repair
     utils.check_daily_time_axis
     utils.check_monthly_time_axis
     utils.regenerate_time_axis
-    
+
 
 Miscellaneous tools
 ~~~~~~~~~~~~~~~~~~~
@@ -125,7 +143,7 @@ Miscellaneous tools
 Viewer
 ~~~~~~
 
-Viewer will be available in `pcmdi_metrics (> v3.9.1)`.
+Viewer is available in `pcmdi_metrics (> v3.9.1)` or higher.
 
 .. autosummary::
     :toctree: generated/

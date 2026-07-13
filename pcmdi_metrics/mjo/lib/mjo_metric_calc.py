@@ -1,11 +1,27 @@
+# pcmdi_metrics/mjo/lib/mjo_metric_calc.py
+"""
+MJO east-west power ratio calculation.
+
+Public API
+----------
+compute_mjo_ewr_from_dataset(ds, data_var, start_year, end_year, ...)
+    Pure computation — accepts an already-opened xarray Dataset.
+
+mjo_metric_ewr_calculation(...)
+    driver-oriented entry point (backward compatible).
+"""
+
+from __future__ import annotations
+
+import logging
 import os
 from datetime import datetime
+from typing import Any
 
 import numpy as np
 import xarray as xr
-from packaging.version import Version
 
-from pcmdi_metrics.io import get_latitude, get_longitude, get_time_key, xcdat_open
+from pcmdi_metrics.io import get_longitude, get_time_key, xcdat_open
 from pcmdi_metrics.mjo.lib import (
     calculate_ewr,
     generate_axes_and_decorate,
@@ -18,238 +34,263 @@ from pcmdi_metrics.mjo.lib import (
 )
 from pcmdi_metrics.utils import adjust_units
 
-from .debug_chk_plot import debug_chk_plot
 from .plot_wavenumber_frequency_power import plot_power
 
-np_ver = Version(np.__version__)
-if np_ver > Version("1.20.0"):
-    np_float = np.float64
-else:
-    np_float = np.float
+logger = logging.getLogger(__name__)
+
+np_float = np.float64
+
+
+# ---------------------------------------------------------------------------
+# Public API — pure computation, no file I/O, no side effects
+# ---------------------------------------------------------------------------
+
+
+def compute_mjo_ewr_from_dataset(
+    ds: xr.Dataset,
+    data_var: str,
+    start_year: int | None = None,
+    end_year: int | None = None,
+    season: str = "NDJFMA",
+    cmm_grid: bool = False,
+    deg_x: float = 2.5,
+    units_adjust: tuple[bool, str, str] | None = None,
+    segment_length: int = 180,
+) -> dict[str, Any]:
+    """Compute the MJO east-west power ratio from an open xarray Dataset.
+
+    This is the pure-computation entry point. It performs no file I/O,
+    writes no output files, and produces no plots. Suitable for use in
+    Jupyter notebooks, pipelines, and unit tests.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Daily precipitation or OLR dataset. Must be CF-compliant with
+        latitude, longitude, and a recognized time coordinate.
+    data_var : str
+        Name of the variable to analyze within ``ds`` (for example, ``"pr"``).
+    start_year : int or None, optional
+        First year of the analysis window, inclusive. Default is ``None``,
+        in which case the year is inferred from the dataset's first time step.
+    end_year : int or None, optional
+        Last year of the analysis window, inclusive. Default is ``None``,
+        in which case the year is inferred from the dataset's last time step.
+    season : {"NDJFMA", "MJJASO"}, optional
+        Season used to extract yearly segments. Default is ``"NDJFMA"``.
+    cmm_grid : bool, optional
+        If ``True``, regrid to a common ``deg_x`` x ``deg_x`` grid before
+        spectral analysis. Default is ``False``.
+    deg_x : float, optional
+        Grid spacing in degrees used when ``cmm_grid`` is ``True``.
+        Default is ``2.5``.
+    units_adjust : tuple or None, optional
+        Passed directly to :func:`pcmdi_metrics.utils.adjust_units`.
+        Default is ``None``, which skips unit conversion.
+    segment_length : int, optional
+        Number of time steps per segment. Default is ``180``, which is 180 days for daily input data.
+        Must be even.
+
+    Returns
+    -------
+    dict
+        Dictionary containing:
+        - ``east_power``: eastward power
+        - ``west_power``: westward power
+        - ``east_west_power_ratio``: east/west power ratio
+        - ``analysis_time_window_start_year``: resolved start year
+        - ``analysis_time_window_end_year``: resolved end year
+        - ``_oee``: intermediate output power spectrum object for downstream
+        plotting or diagnostics
+
+    Raises
+    ------
+    ValueError
+        If ``season`` is invalid or if the dataset does not cover the requested
+        analysis window.
+    """
+
+    if season not in {"NDJFMA", "MJJASO"}:
+        raise ValueError(f"season must be 'NDJFMA' or 'MJJASO', got {season!r}")
+
+    ds = ds.bounds.add_missing_bounds()
+    lon = get_longitude(ds)
+    time_key = get_time_key(ds)
+
+    # Resolve actual start/end years from the dataset
+    first_time = datetime(
+        ds[time_key][0].item().year,
+        ds[time_key][0].item().month,
+        ds[time_key][0].item().day,
+    )
+    last_time = datetime(
+        ds[time_key][-1].item().year,
+        ds[time_key][-1].item().month,
+        ds[time_key][-1].item().day,
+    )
+
+    if start_year is None:
+        start_year = first_time.year
+    if end_year is None:
+        end_year = last_time.year
+
+    # Validate requested window against available data
+    if season == "NDJFMA":
+        if first_time > datetime(start_year, 11, 1):
+            start_year += 1
+        if last_time < datetime(end_year, 4, 30):
+            end_year -= 1
+        mon, day = 11, 1
+        num_year = end_year - start_year
+    elif season == "MJJASO":
+        if first_time > datetime(start_year, 5, 1):
+            start_year += 1
+        if last_time < datetime(end_year, 10, 31):
+            end_year -= 1
+        mon, day = 5, 1
+        num_year = end_year - start_year + 1
+    else:
+        raise ValueError(f"season must be 'NDJFMA' or 'MJJASO', got {season!r}")
+
+    if start_year > end_year:
+        raise ValueError("Dataset does not cover the requested season/time window.")
+
+    nt = segment_length
+    nl = int(360 / deg_x) if cmm_grid else len(lon.values)
+
+    logger.debug(
+        "start_year=%d, end_year=%d, NL=%d, NT=%d", start_year, end_year, nl, nt
+    )
+
+    # ------------------------------------------------------------------
+    # Build daily seasonal cycle
+    # ------------------------------------------------------------------
+    n_lat, n_lon = ds[data_var].shape[1], ds[data_var].shape[2]
+    sea_cyc_values = np.zeros((nt, n_lat, n_lon), dtype=np_float)
+    segments: dict[int, xr.Dataset] = {}
+
+    for year in range(start_year, end_year):
+        seg = subSliceSegment(ds, year, mon, day, nt)
+        if units_adjust is not None:
+            seg[data_var] = adjust_units(seg[data_var], units_adjust)
+        segments[year] = seg
+        sea_cyc_values += seg[data_var].values / float(num_year)
+        logger.debug("Processed seasonal cycle for year %d", year)
+
+    # ------------------------------------------------------------------
+    # Remove seasonal cycle → anomalies
+    # ------------------------------------------------------------------
+    segment_ano: dict[int, xr.Dataset] = {}
+    for year in range(start_year, end_year):
+        ano = segments[year].copy()
+        if num_year > 1:
+            ano[data_var] = xr.DataArray(
+                segments[year][data_var].values - sea_cyc_values,
+                dims=segments[year][data_var].dims,
+                coords=segments[year][data_var].coords,
+            )
+        segment_ano[year] = ano
+
+    # ------------------------------------------------------------------
+    # Space-time power spectra
+    # ------------------------------------------------------------------
+    power_arr = np.zeros((num_year, nt + 1, nl + 1), dtype=np_float)
+
+    for n, year in enumerate(range(start_year, end_year)):
+        seg = segment_ano[year]
+        if cmm_grid:
+            seg = interp2commonGrid(seg, data_var, deg_x)
+        d_seg_x_ano = get_daily_ano_segment(seg, data_var)
+        power_arr[n] = space_time_spectrum(d_seg_x_ano, data_var)
+        logger.debug("Computed spectrum for year %d", year)
+
+    power_mean = np.average(power_arr, axis=0)
+    power_mean = generate_axes_and_decorate(power_mean, nt, nl)
+    oee = output_power_spectra(nl, nt, power_mean)
+
+    ewr, east_power, west_power = calculate_ewr(oee)
+    logger.info("EWR=%.4f  east=%.4f  west=%.4f", ewr, east_power, west_power)
+
+    return {
+        "east_power": east_power,
+        "west_power": west_power,
+        "east_west_power_ratio": ewr,
+        "analysis_time_window_start_year": start_year,
+        "analysis_time_window_end_year": end_year,
+        # Expose intermediate arrays so callers can do their own plotting
+        "_oee": oee,
+    }
+
+
+# ---------------------------------------------------------------------------
+# driver-oriented entry point
+# ---------------------------------------------------------------------------
 
 
 def mjo_metric_ewr_calculation(
-    mip,
-    model,
-    exp,
-    run,
-    debug,
-    plot,
-    nc_out,
-    cmmGrid,
-    degX,
+    mip: str,
+    model: str,
+    exp: str,
+    run: str,
+    debug: bool,
+    plot: bool,
+    nc_out: bool,
+    cmmGrid: bool,
+    degX: float,
     UnitsAdjust,
-    inputfile,
+    inputfile: str,
     data_var: str,
     startYear: int,
     endYear: int,
     segmentLength: int,
-    dir_paths: str,
+    dir_paths: dict[str, str],
     season: str = "NDJFMA",
-):
-    # Open file to read daily dataset
-    if debug:
-        print(f"debug: open file: {inputfile}")
+) -> dict[str, Any]:
+    """Driver-oriented wrapper — preserves the original CLI call signature.
 
+    Prefer :func:`compute_mjo_ewr_from_dataset` for library use.
+    """
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+
+    logger.debug("Opening file: %s", inputfile)
     ds = xcdat_open(inputfile)
-    ds = ds.bounds.add_missing_bounds()
 
-    lat = get_latitude(ds)
-    lon = get_longitude(ds)
-
-    # Get starting and ending year and month
-    if debug:
-        print("debug: check time")
-
-    time_key = get_time_key(ds)
-
-    # Get first time step date
-    first_time_year = ds[time_key][0].item().year
-    first_time_month = ds[time_key][0].item().month
-    first_time_day = ds[time_key][0].item().day
-    first_time = datetime(first_time_year, first_time_month, first_time_day)
-
-    # Get last time step date
-    last_time_year = ds[time_key][-1].item().year
-    last_time_month = ds[time_key][-1].item().month
-    last_time_day = ds[time_key][-1].item().day
-    last_time = datetime(last_time_year, last_time_month, last_time_day)
-
-    if season == "NDJFMA":
-        # Adjust years to consider only when continuous NDJFMA is available
-        if first_time > datetime(startYear, 11, 1):
-            startYear += 1
-        if last_time < datetime(endYear, 4, 30):
-            endYear -= 1
-
-    # Number of grids for 2d fft input
-    NL = len(lon.values)  # number of grid in x-axis (longitude)
-    if cmmGrid:
-        NL = int(360 / degX)
-    NT = segmentLength  # number of time step for each segment (need to be an even number)
-
-    if debug:
-        # endYear = startYear + 2
-        print("debug: startYear, endYear:", startYear, endYear)
-        print("debug: NL, NT:", NL, NT)
-
-    #
-    # Get daily climatology on each grid, then remove it to get anomaly
-    #
-    if season == "NDJFMA":
-        mon = 11
-        numYear = endYear - startYear
-    elif season == "MJJASO":
-        mon = 5
-        numYear = endYear - startYear + 1
-    else:
-        raise ValueError(f"Invalid season: {season}. Choose 'NDJFMA' or 'MJJASO'.")
-
-    day = 1
-
-    # Store each year's segment in a dictionary: segment[year]
-    segment = {}
-    segment_ano = {}
-
-    daSeaCyc = xr.DataArray(
-        np.zeros((NT, ds[data_var].shape[1], ds[data_var].shape[2])),
-        dims=["day", "lat", "lon"],
-        coords={"day": np.arange(NT), "lat": lat, "lon": lon},
+    result = compute_mjo_ewr_from_dataset(
+        ds=ds,
+        data_var=data_var,
+        start_year=startYear,
+        end_year=endYear,
+        season=season,
+        cmm_grid=cmmGrid,
+        deg_x=degX,
+        units_adjust=UnitsAdjust,
+        segment_length=segmentLength,
     )
-    daSeaCyc_values = daSeaCyc.values.copy()
 
-    if debug:
-        print("debug: before year loop: daSeaCyc.shape:", daSeaCyc.shape)
+    oee = result.pop("_oee")
 
-    # Loop over years
-    for year in range(startYear, endYear):
-        print(year)
-        segment[year] = subSliceSegment(ds, year, mon, day, NT)
-        # units conversion
-        segment[year][data_var] = adjust_units(segment[year][data_var], UnitsAdjust)
-        if debug:
-            print(
-                "debug: year, segment[year][data_var].shape:",
-                year,
-                segment[year][data_var].shape,
-            )
-        # Get climatology of daily seasonal cycle
-        daSeaCyc_values = (
-            segment[year][data_var].values / float(numYear)
-        ) + daSeaCyc_values
-
-    daSeaCyc.values = daSeaCyc_values
-
-    if debug:
-        print("debug: after year loop: daSeaCyc.shape:", daSeaCyc.shape)
-
-    # Remove daily seasonal cycle from each segment
-    if numYear > 1:
-        # Loop over years
-        for year in range(startYear, endYear):
-            # Remove daily Seasonal Cycle
-            segment_ano[year] = segment[year].copy()
-            segment_ano[year][data_var].values = (
-                segment[year][data_var].values - daSeaCyc.values
-            )
-    else:
-        segment_ano[year] = segment[year]
-
-    # -----------------------------------------------------------------
-    # Space-time power spectra
-    # -----------------------------------------------------------------
-    # Handle each segment (i.e. each year) separately.
-    # 1. Get daily time series (3D: time and spatial 2D)
-    # 2. Meridionally average (2D: time and spatial, i.e., longitude)
-    # 3. Get anomaly by removing time mean of the segment
-    # 4. Proceed 2-D FFT to get power.
-    # Then get multi-year averaged power after the year loop.
-    # -----------------------------------------------------------------
-
-    # Define array for archiving power from each year segment
-    Power = np.zeros((numYear, NT + 1, NL + 1), np_float)
-
-    # Year loop for space-time spectrum calculation
-    if debug:
-        print("debug: year loop start")
-    for n, year in enumerate(range(startYear, endYear)):
-        print("chk: year:", year)
-        d_seg = segment_ano[year]
-        # Regrid: interpolation to common grid
-        if cmmGrid:
-            d_seg = interp2commonGrid(d_seg, data_var, degX, debug=debug)
-        # Subregion, meridional average, and remove segment time mean
-        d_seg_x_ano = get_daily_ano_segment(d_seg, data_var)
-        # Compute space-time spectrum
-        if debug:
-            print("debug: compute space-time spectrum")
-        Power[n, :, :] = space_time_spectrum(d_seg_x_ano, data_var)
-
-    # Multi-year averaged power
-    Power = np.average(Power, axis=0)
-
-    # Generates axes for the decoration
-    Power = generate_axes_and_decorate(Power, NT, NL)
-
-    # Output for wavenumber-frequency power spectra
-    OEE = output_power_spectra(NL, NT, Power)
-
-    if debug:
-        print("OEE:", OEE)
-        print("OEE.shape:", OEE.shape)
-
-    # E/W ratio
-    ewr, eastPower, westPower = calculate_ewr(OEE)
-
-    print("ewr: ", ewr)
-    print("east power: ", eastPower)
-    print("west power: ", westPower)
-
-    # Output
-    output_filename = f"{mip}_{model}_{exp}_{run}_mjo_{startYear}-{endYear}_{season}"
+    # Build output filename (driver concern, not science concern)
+    output_stem = f"{mip}_{model}_{exp}_{run}_mjo_{startYear}-{endYear}_{season}"
     if cmmGrid:
-        output_filename += "_cmmGrid"
+        output_stem += "_cmmGrid"
 
-    # NetCDF output
     if nc_out:
         os.makedirs(dir_paths["diagnostic_results"], exist_ok=True)
-        fout = os.path.join(dir_paths["diagnostic_results"], output_filename)
-        write_netcdf_output(OEE, fout)
+        fout = os.path.join(dir_paths["diagnostic_results"], output_stem)
+        write_netcdf_output(oee, fout)
 
-    # Plot
     if plot:
         os.makedirs(dir_paths["graphics"], exist_ok=True)
-        fout = os.path.join(dir_paths["graphics"], output_filename)
-        if model == "obs":
-            title = (
-                f"OBS ({run})\n{data_var.capitalize()}, {season} {startYear}-{endYear}"
-            )
-        else:
-            title = f"{mip.upper()}: {model} ({run})\n{data_var.capitalize()}, {season} {startYear}-{endYear}"
-
+        fout = os.path.join(dir_paths["graphics"], output_stem)
+        title = (
+            f"OBS ({run})\n{data_var.capitalize()}, {season} {startYear}-{endYear}"
+            if model == "obs"
+            else f"{mip.upper()}: {model} ({run})\n{data_var.capitalize()}, {season} {startYear}-{endYear}"
+        )
         if cmmGrid:
             title += ", common grid (2.5x2.5deg)"
-        plot_power(OEE, title, fout, ewr)
-
-    # Output to JSON
-    metrics_result = {
-        "east_power": eastPower,
-        "west_power": westPower,
-        "east_west_power_ratio": ewr,
-        "analysis_time_window_start_year": startYear,
-        "analysis_time_window_end_year": endYear,
-    }
-
-    # Debug checking plot
-    if debug and plot:
-        debug_chk_plot(
-            d_seg_x_ano,
-            Power,
-            OEE,
-            segment[year][data_var],
-            daSeaCyc,
-            segment_ano[year][data_var],
-        )
+        plot_power(oee, title, fout, result["east_west_power_ratio"])
 
     ds.close()
-    return metrics_result
+    return result

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import ast
 
-from pcmdi_metrics.mean_climate.lib import pmp_parser
+from pcmdi_metrics.utils import pmp_parser
 
 
 def create_mean_climate_parser():

@@ -231,9 +231,9 @@ def save_to_netcdf_with_attributes(ds_new, ds_org, org_path, nout_mpi_obs):
         if attr not in ["history", "source"]:
             ds_new.attrs[attr] = ds_org.attrs[attr]
     # Add new global attributes
-    ds_new.attrs[
-        "history"
-    ] = f"Created by PMP {pcmdi_metrics.__version__} on {datetime.datetime.now()}"
+    ds_new.attrs["history"] = (
+        f"Created by PMP {pcmdi_metrics.__version__} on {datetime.datetime.now()}"
+    )
     ds_new.attrs["source"] = f"Created from {org_path} by PMP"
     # Save to netcdf
     ds_new.to_netcdf(nout_mpi_obs)

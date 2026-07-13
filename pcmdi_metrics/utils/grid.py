@@ -4,8 +4,10 @@ import xcdat as xc
 
 from pcmdi_metrics.io import (
     get_grid,
+    get_latitude,
     get_latitude_bounds_key,
     get_latitude_key,
+    get_longitude,
     get_longitude_bounds_key,
     get_longitude_key,
 )
@@ -200,6 +202,14 @@ def regrid(
     --------
     >>> from pcmdi_metrics.utils import regrid
     """
+
+    if "axis" not in get_latitude(ds).attrs:
+        lat_key = get_latitude_key(ds)
+        ds[lat_key].attrs["axis"] = "Y"
+
+    if "axis" not in get_longitude(ds).attrs:
+        lon_key = get_longitude_key(ds)
+        ds[lon_key].attrs["axis"] = "X"
 
     target_grid = get_grid(target_grid)  # To remove time dimension if exist
     # regrid

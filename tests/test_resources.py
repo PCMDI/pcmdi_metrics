@@ -18,10 +18,12 @@ def test_conda_env(tmpdir):
 
 
 @mock.patch("os.getcwd")
-@mock.patch("pkg_resources.resource_filename")
-def test_conda_env_no_exist(resource_filename, getcwd, tmpdir):
+@mock.patch("importlib.metadata.distribution")
+def test_conda_env_no_exist(distribution, getcwd, tmpdir):
     # Fix issue when tests are ran against an installed package
-    resource_filename.side_effect = Exception()
+    import importlib.metadata as _md
+
+    distribution.side_effect = _md.PackageNotFoundError
 
     conda_prefix = os.path.join(tmpdir, "conda")
 
@@ -37,10 +39,13 @@ def test_conda_env_no_exist(resource_filename, getcwd, tmpdir):
     assert path == os.path.join(tmpdir, "share", "pmp")
 
 
-@mock.patch("pkg_resources.Requirement.parse")
-@mock.patch("pkg_resources.resource_filename")
-def test_pkg_resources(resource_filename, parse, tmpdir):
-    resource_filename.return_value = str(tmpdir)
+@mock.patch("importlib.metadata.distribution")
+def test_pkg_resources(distribution, tmpdir):
+    class DummyDist:
+        def locate_file(self, path):
+            return str(tmpdir)
+
+    distribution.return_value = DummyDist()
 
     path = resources.resource_path()
 

@@ -249,9 +249,9 @@ def main():
     egg_pth = resources.resource_path()
     disclaimer = open(os.path.join(egg_pth, "disclaimer.txt")).read()
     metrics_dictionary["DISCLAIMER"] = disclaimer
-    metrics_dictionary[
-        "REFERENCE"
-    ] = "The statistics in this file are based on Covey et al., J Climate 2016"
+    metrics_dictionary["REFERENCE"] = (
+        "The statistics in this file are based on Covey et al., J Climate 2016"
+    )
 
     # Accumulate output from each model (or observed) data source in the
     # Python dictionary.

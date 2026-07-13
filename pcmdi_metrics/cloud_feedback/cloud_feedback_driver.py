@@ -193,9 +193,9 @@ output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
     "implied_unassessed"
 ] = assessed_cld_fbk[6]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
-    "sum_of_assessed"
-] = assessed_cld_fbk[7]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["sum_of_assessed"] = (
+    assessed_cld_fbk[7]
+)
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
     "total_cloud_feedback"
 ] = assessed_cld_fbk[8]

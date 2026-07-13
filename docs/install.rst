@@ -2,73 +2,119 @@
 
 .. _install:
 
-**********************
+************
 Installation
-**********************
+************
 
-We offer an installation for `Anaconda`_ users under linux-64 or osx-64. 
-Support for Windows is not available yet.
+The PCMDI Metrics Package (PMP) is available for **Linux-64** and **macOS-64** (including Intel and Apple Silicon via Rosetta 2). Support for Windows is currently unavailable.
 
-https://anaconda.org/conda-forge/pcmdi_metrics
+You can find the package details on `conda-forge <https://anaconda.org/conda-forge/pcmdi_metrics>`_.
 
-All Platforms System Requirements
-=================================
-  * Install the `Anaconda`_ package (we recommend installing this for each user)
-  * Alternatives include `Miniconda`_ or `Miniforge/Mambaforge`_
-  * If using Anaconda or Miniconda, we recommend also installing `mamba`_ for better performance
+System Requirements
+===================
 
-  * Make sure anaconda is in your PATH (assuming anaconda is installed in ${HOME}/anaconda
-      * ``export PATH=${HOME}/anaconda/bin:${PATH}`` # for [ba]sh
-      * ``setenv PATH ${HOME}/anaconda/bin:${PATH}`` # for [t]csh
+To use PMP, you must have a conda-based distribution installed. We recommend one of the following:
 
-Make sure you have no environment variables set from an old UV-CDAT installation in your PATH/PYTHONPATH,LD_LIBRARY_PATH etc
+* Install the `Anaconda`_ package (we recommend installing this for each user)
+* Alternatives include `Miniconda`_ or `Miniforge/Mambaforge`_
+* If using Anaconda or Miniconda, we recommend also installing `mamba`_ for better performance
 
+Ensure anaconda is in your PATH (assuming anaconda is installed in ${HOME}/anaconda
 
-Install PMP using conda/mamba
-==========================================
-You can install the PCMDI Metrics package from the PCMDI conda-forge channel. 
-For the best performance, use `mamba`_. 
-For faster installation without mamba, specify versions of python and pcmdi_metrics.
+.. code-block:: bash
 
-Create a new virtual environment and install PMP
-  * Using `mamba`_   
-      * ``mamba create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge pcmdi_metrics`` 
-  
-  * Using `conda`_
-      * ``conda create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge python=[VERSION] pcmdi_metrics=[VERSION]``  
-      * e.g. ``conda create -n pcmdi_metrics -c conda-forge python=3.10 pcmdi_metrics=3.0.1`` 
-  
-  * Using `conda`_ (alternative)
-      * ``conda create -n [YOUR_CONDA_ENVIRONMENT]``
-      * ``conda activate [YOUR_CONDA_ENVIRONMENT]``
-      * ``conda install -c conda-forge python=[VERSION] pcmdi_metrics=[VERSION]``
+   # For bash/zsh
+   export PATH="${HOME}/anaconda/bin:${PATH}"
 
-  * (Another alternative) Install PMP in the current (or existing) virtual environment
-      * Using `mamba`_: ``mamba install -c conda-forge pcmdi_metrics``
-      * or using `conda`_: ``conda install -c conda-forge pcmdi_metrics``
+   # For tcsh
+   setenv PATH "${HOME}/anaconda/bin:${PATH}"
+
+Ensure your conda distribution is in your ``PATH``. For example, if installed in your home directory:
+
+Standard Installation
+=====================
+
+We recommend creating a fresh virtual environment for PMP to avoid dependency conflicts.
+
+Using Mamba (Recommended)
+-------------------------
+.. code-block:: bash
+
+   mamba create -n pmp_env -c conda-forge pcmdi_metrics
+   conda activate pmp_env
+
+Using Conda
+-----------
+.. code-block:: bash
+
+   conda create -n pmp_env -c conda-forge pcmdi_metrics
+   conda activate pmp_env
+
+To speed up installation with conda, you can explicitly specify the Python and PMP versions.
+
+.. code-block:: bash
+
+   conda create -n pmp_env -c conda-forge python=3.10 pcmdi_metrics=4.0.2
+   conda activate pmp_env
+
+Installation in Existing Environments
+-------------------------------------
+.. code-block:: bash
+
+   mamba install -c conda-forge pcmdi_metrics
+   # OR
+   conda install -c conda-forge pcmdi_metrics
 
 To learn more about conda environments see: http://conda.pydata.org/docs/using/envs.html
+
+
+Advanced & Legacy Installation
+==============================
+
+.. admonition:: Support for Apple Silicon (M1/M2/M3)
+   :class: note
+
+   Modern versions of PMP (v3.10+) generally support ARM64 architecture natively. However, if you are installing **PMP v3.8 or lower**, you may encounter issues due to legacy dependencies (like older CDAT components). 
+
+   If native installation fails, you can force an Intel-based (x86) environment:
+
+   .. code-block:: bash
+
+      # Create the environment as an x86 architecture
+      CONDA_SUBDIR=osx-64 conda create -n pmp_legacy -c conda-forge python=3.8
+      
+      # Lock the architecture for this environment
+      conda activate pmp_legacy
+      conda config --env --set subdir osx-64
+      
+      # Install the legacy PMP version
+      mamba install -c conda-forge pcmdi_metrics=3.8.0
+
+
+Troubleshooting
+===============
+
+Environment Cleanup
+-------------------
+.. warning::
+   Ensure no environment variables from old **UV-CDAT** installations (e.g., ``PATH``, ``PYTHONPATH``, ``LD_LIBRARY_PATH``) are set, as these can cause runtime conflicts.
+
+Firewalls and SSL
+-----------------
+If your institution has strict SSL certificate inspection, you can bypass verification (at your own risk):
+
+.. code-block:: bash
+
+   conda config --set ssl_verify False
+
+.. seealso::
+   For more on managing conda environments, see the `Official Conda Documentation <http://conda.pydata.org/docs/using/envs.html>`_.
+
+
+
 
 .. _mamba: https://mamba.readthedocs.io/en/latest/installation.html
 .. _Miniforge/Mambaforge: https://github.com/conda-forge/miniforge
 .. _Miniconda: https://conda.io/miniconda.html
 .. _Anaconda: https://www.anaconda.com/products/individual#Downloads
 .. _conda: https://docs.conda.io/en/latest/
-
-Note for Apple Silicon M1 or M2:
-
-The CDAT dependency is not available for this architecture, so you will need to create an environment using x86 builds. This article from Towards Data Science has more information about managing Conda environments on Apple Silicon chips.
-
-.. code-block:: python
-
-  CONDA_SUBDIR=osx-64 conda create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge python=[VERSION]
-  conda activate [YOUR_CONDA_ENVIRONMENT]
-  conda config --env --set subdir osx-64
-  mamba install -c conda-forge pcmdi_metrics or conda install -c conda-forge pcmdi_metrics=[VERSION]
-
-
-Bypassing firewalls (optional)
-==============================
-If your institution has tight ssl certificate/security issues try before installing PMP:
-  * ``conda config --set ssl_verify False``
-  * ``binstar config --set ssl_verify False``

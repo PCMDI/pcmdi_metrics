@@ -35,6 +35,7 @@ To make it easier to run these demos, we recommend cloning the `PMP GitHub repos
    examples/Demo_5_mjo_metrics
    examples/Demo_6_ENSO
    examples/Demo_7_precip_variability
+   examples/Demo_7b_precip_distribution
    examples/Demo_8_extremes
    examples/Demo_9_seaIceExtent_ivanova
    examples/Demo_9b_seaIce_data_explore
@@ -70,10 +71,12 @@ Practical Use Cases
    examples/return_value_portrait_plot_demo
 
 
-Data analysis and support
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Data analysis and support tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. nbgallery::
 
    examples/landmask
    examples/pmp_metrics_database
+   examples/eof_classification
+   examples/sea_ice_iiee_metrics

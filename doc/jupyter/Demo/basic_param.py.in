@@ -42,8 +42,8 @@ generate_sftlf = True # if land surface type mask cannot be found, generate one
 
 # Region
 regions = {
-    "pr": ["Global"],
-    "rlut": ["Global"]
+    "pr": ["global"],
+    "rlut": ["global"]
 }
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES

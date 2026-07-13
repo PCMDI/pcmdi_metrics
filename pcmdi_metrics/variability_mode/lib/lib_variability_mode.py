@@ -12,7 +12,16 @@ import xarray as xr
 import xcdat as xc
 
 import pcmdi_metrics
-from pcmdi_metrics.io import get_time, select_subset, xcdat_open
+from pcmdi_metrics.io import (
+    get_latitude_bounds_key,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_bounds_key,
+    get_longitude_key,
+    get_time,
+    select_subset,
+    xcdat_open,
+)
 from pcmdi_metrics.utils import apply_landmask, check_monthly_time_axis
 
 
@@ -136,9 +145,9 @@ def write_nc_output(
         }
     )
     # Add global attributes
-    ds.attrs[
-        "title"
-    ] = "PCMDI Metrics Package Extratropical Modes of Variability diagnostics"
+    ds.attrs["title"] = (
+        "PCMDI Metrics Package Extratropical Modes of Variability diagnostics"
+    )
     ds.attrs["author"] = "PCMDI"
     ds.attrs["contact"] = "pcmdi-metrics@llnl.gov"
     ds.attrs["creation_date"] = strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -183,6 +192,30 @@ def read_data_in(
     # Open data file
     ds = xcdat_open(path, chunks=None)
 
+    # Standardize coordinate names
+    lat_key = get_latitude_key(ds)
+    lon_key = get_longitude_key(ds)
+    lat_bnds_key = get_latitude_bounds_key(ds)
+    lon_bnds_key = get_longitude_bounds_key(ds)
+
+    if lat_key != "lat":
+        ds = ds.rename(name_dict={lat_key: "lat"})
+
+    if lon_key != "lon":
+        ds = ds.rename(name_dict={lon_key: "lon"})
+
+    if lat_bnds_key != "lat_bnds":
+        ds = ds.rename(name_dict={lat_bnds_key: "lat_bnds"})
+        ds["lat"].attrs["bounds"] = "lat_bnds"
+
+    if lon_bnds_key != "lat_bnds":
+        ds = ds.rename(name_dict={lon_bnds_key: "lon_bnds"})
+        ds["lon"].attrs["bounds"] = "lon_bnds"
+
+    # Adjust lon axis -- make sure they are 0-360 to begin with
+    if get_longitude(ds).values.min() < 0:
+        ds = xc.swap_lon_axis(ds, (0, 360))
+
     # Data QC check -- time axis check
     check_monthly_time_axis(ds)
 
@@ -209,7 +242,11 @@ def read_data_in(
         data_timeseries = adjust_units(data_timeseries, UnitsAdjust)
 
     # Masking
-    if var_to_consider == "ts" and LandMask:
+    if (
+        (var_in_data.lower() in ["ts", "sst", "tos", "tosanom"])
+        or (var_to_consider.lower() in ["ts", "sst", "tos", "tosanom"])
+        and LandMask
+    ):
         # Replace temperature below -1.8 C to -1.8 C (sea ice)
         data_timeseries = sea_ice_adjust(data_timeseries)
 
@@ -228,6 +265,7 @@ def read_data_in(
         data_timeseries = apply_landmask(data_timeseries, landfrac=landfrac)
 
     ds_time_subsetted[var_in_data] = data_timeseries
+    # ds_time_subsetted = ds_time_subsetted.merge(data_timeseries.rename(var_in_data))  #, compat='override')
 
     return ds_time_subsetted
 

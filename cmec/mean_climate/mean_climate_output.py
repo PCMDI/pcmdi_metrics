@@ -4,6 +4,7 @@ Create and populate the output.json metadata file that
 documents the cmec-driver pipeline outputs for the
 Mean Climate metrics.
 """
+
 import json
 import os
 

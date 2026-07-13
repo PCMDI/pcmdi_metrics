@@ -219,9 +219,9 @@ class OutputMetrics(object):
                         {"custom": self.parameter.compute_custom_metrics.__doc__}
                     )
 
-            parameter_realization[
-                self.get_region_name_from_region(ref.region)
-            ] = collections.OrderedDict((k, pr_rgn[k]) for k in sorted(pr_rgn.keys()))
+            parameter_realization[self.get_region_name_from_region(ref.region)] = (
+                collections.OrderedDict((k, pr_rgn[k]) for k in sorted(pr_rgn.keys()))
+            )
 
             self.metrics_dictionary["RESULTS"][test.obs_or_model][ref.obs_or_model][
                 self.parameter.realization
@@ -319,9 +319,9 @@ class OutputMetrics(object):
             self.metrics_dictionary["RESULTS"][test.obs_or_model][
                 "InputRegionFileName"
             ] = self.sftlf[test.obs_or_model]["filename"]
-            self.metrics_dictionary["RESULTS"][test.obs_or_model][
-                "InputRegionMD5"
-            ] = self.sftlf[test.obs_or_model]["md5"]
+            self.metrics_dictionary["RESULTS"][test.obs_or_model]["InputRegionMD5"] = (
+                self.sftlf[test.obs_or_model]["md5"]
+            )
 
     def output_interpolated_model_climatologies(self, test, test_data):
         """Save the netCDF file."""
