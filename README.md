@@ -126,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v4.1.0]      | New capabilities (**ENSO Metrics, Sea Ice IIEE Metric, and EOF Classification) and technical update
 | [v4.0.4]      | Technical update
 | [v4.0.3]      | Technical update, with test release for the new `eof_classification` capability
 | [v4.0.2]      | Technical update, to better comply with newer xarray versions and reduce dependencies by migrating external legacy code (cdp)
@@ -193,6 +194,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v4.1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.1.0
 [v4.0.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.4
 [v4.0.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.3
 [v4.0.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.2

@@ -1,8 +1,6 @@
-import copy
 import os
 import warnings
 
-import matplotlib.cm
 import matplotlib.pyplot as plt
 import xarray as xr
 from matplotlib.patches import Rectangle
@@ -53,7 +51,7 @@ def plot_power(
     # plot
     plt.switch_backend("agg")  # backend plotting
     plt.figure(figsize=(8, 4))
-    cm = copy.copy(matplotlib.cm.get_cmap("jet"))
+    cm = plt.colormaps["jet"]
     cs = plt.contourf(
         x,
         y,
