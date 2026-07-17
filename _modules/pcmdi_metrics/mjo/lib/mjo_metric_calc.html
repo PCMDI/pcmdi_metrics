@@ -1,0 +1,692 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html">
+        <link rel="prefetch" href="../../../../_static/PMPLogo_500x421px_72dpi.png" as="image">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>pcmdi_metrics.mjo.lib.mjo_metric_calc - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../start.html">Getting Started</a><input aria-label="Toggle navigation of Getting Started" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../metrics.html">PMP Metrics</a><input aria-label="Toggle navigation of PMP Metrics" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../demo-notebooks.html">Demo notebooks</a><input aria-label="Toggle navigation of Demo notebooks" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/pmp_metrics_database.html">Access to online PMP output database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/eof_classification.html">Empirical Orthogonal Functions (EOF) Classification Algorithm for Arctic Atmospheric Variability Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../examples/sea_ice_iiee_metrics.html">Sea-ice Integrated Ice-Edge Error (IIEE)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset.html">pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.sea_ice.calc_iiee_annual_cycle.html">pcmdi_metrics.sea_ice.calc_iiee_annual_cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.variability_mode.eof_classification.html">pcmdi_metrics.variability_mode.eof_classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../resources.html">Resources</a><input aria-label="Toggle navigation of Resources" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../resources_legacy.html">Legacy archive</a><input aria-label="Toggle navigation of Legacy archive" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for pcmdi_metrics.mjo.lib.mjo_metric_calc</h1><div class="highlight"><pre>
+<span></span><span class="c1"># pcmdi_metrics/mjo/lib/mjo_metric_calc.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">MJO east-west power ratio calculation.</span>
+
+<span class="sd">Public API</span>
+<span class="sd">----------</span>
+<span class="sd">compute_mjo_ewr_from_dataset(ds, data_var, start_year, end_year, ...)</span>
+<span class="sd">    Pure computation — accepts an already-opened xarray Dataset.</span>
+
+<span class="sd">mjo_metric_ewr_calculation(...)</span>
+<span class="sd">    driver-oriented entry point (backward compatible).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_longitude</span><span class="p">,</span> <span class="n">get_time_key</span><span class="p">,</span> <span class="n">xcdat_open</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.mjo.lib</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">calculate_ewr</span><span class="p">,</span>
+    <span class="n">generate_axes_and_decorate</span><span class="p">,</span>
+    <span class="n">get_daily_ano_segment</span><span class="p">,</span>
+    <span class="n">interp2commonGrid</span><span class="p">,</span>
+    <span class="n">output_power_spectra</span><span class="p">,</span>
+    <span class="n">space_time_spectrum</span><span class="p">,</span>
+    <span class="n">subSliceSegment</span><span class="p">,</span>
+    <span class="n">write_netcdf_output</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">adjust_units</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.plot_wavenumber_frequency_power</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_power</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">np_float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Public API — pure computation, no file I/O, no side effects</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="compute_mjo_ewr_from_dataset">
+<a class="viewcode-back" href="../../../../generated/pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset.html#pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_mjo_ewr_from_dataset</span><span class="p">(</span>
+    <span class="n">ds</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">start_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">season</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;NDJFMA&quot;</span><span class="p">,</span>
+    <span class="n">cmm_grid</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">deg_x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.5</span><span class="p">,</span>
+    <span class="n">units_adjust</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">segment_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the MJO east-west power ratio from an open xarray Dataset.</span>
+
+<span class="sd">    This is the pure-computation entry point. It performs no file I/O,</span>
+<span class="sd">    writes no output files, and produces no plots. Suitable for use in</span>
+<span class="sd">    Jupyter notebooks, pipelines, and unit tests.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xr.Dataset</span>
+<span class="sd">        Daily precipitation or OLR dataset. Must be CF-compliant with</span>
+<span class="sd">        latitude, longitude, and a recognized time coordinate.</span>
+<span class="sd">    data_var : str</span>
+<span class="sd">        Name of the variable to analyze within ``ds`` (for example, ``&quot;pr&quot;``).</span>
+<span class="sd">    start_year : int or None, optional</span>
+<span class="sd">        First year of the analysis window, inclusive. Default is ``None``,</span>
+<span class="sd">        in which case the year is inferred from the dataset&#39;s first time step.</span>
+<span class="sd">    end_year : int or None, optional</span>
+<span class="sd">        Last year of the analysis window, inclusive. Default is ``None``,</span>
+<span class="sd">        in which case the year is inferred from the dataset&#39;s last time step.</span>
+<span class="sd">    season : {&quot;NDJFMA&quot;, &quot;MJJASO&quot;}, optional</span>
+<span class="sd">        Season used to extract yearly segments. Default is ``&quot;NDJFMA&quot;``.</span>
+<span class="sd">    cmm_grid : bool, optional</span>
+<span class="sd">        If ``True``, regrid to a common ``deg_x`` x ``deg_x`` grid before</span>
+<span class="sd">        spectral analysis. Default is ``False``.</span>
+<span class="sd">    deg_x : float, optional</span>
+<span class="sd">        Grid spacing in degrees used when ``cmm_grid`` is ``True``.</span>
+<span class="sd">        Default is ``2.5``.</span>
+<span class="sd">    units_adjust : tuple or None, optional</span>
+<span class="sd">        Passed directly to :func:`pcmdi_metrics.utils.adjust_units`.</span>
+<span class="sd">        Default is ``None``, which skips unit conversion.</span>
+<span class="sd">    segment_length : int, optional</span>
+<span class="sd">        Number of time steps per segment. Default is ``180``, which is 180 days for daily input data.</span>
+<span class="sd">        Must be even.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing:</span>
+<span class="sd">        - ``east_power``: eastward power</span>
+<span class="sd">        - ``west_power``: westward power</span>
+<span class="sd">        - ``east_west_power_ratio``: east/west power ratio</span>
+<span class="sd">        - ``analysis_time_window_start_year``: resolved start year</span>
+<span class="sd">        - ``analysis_time_window_end_year``: resolved end year</span>
+<span class="sd">        - ``_oee``: intermediate output power spectrum object for downstream</span>
+<span class="sd">        plotting or diagnostics</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``season`` is invalid or if the dataset does not cover the requested</span>
+<span class="sd">        analysis window.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">season</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;NDJFMA&quot;</span><span class="p">,</span> <span class="s2">&quot;MJJASO&quot;</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;season must be &#39;NDJFMA&#39; or &#39;MJJASO&#39;, got </span><span class="si">{</span><span class="n">season</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">add_missing_bounds</span><span class="p">()</span>
+    <span class="n">lon</span> <span class="o">=</span> <span class="n">get_longitude</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="n">time_key</span> <span class="o">=</span> <span class="n">get_time_key</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="c1"># Resolve actual start/end years from the dataset</span>
+    <span class="n">first_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">last_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">.</span><span class="n">year</span><span class="p">,</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">.</span><span class="n">day</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">start_year</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start_year</span> <span class="o">=</span> <span class="n">first_time</span><span class="o">.</span><span class="n">year</span>
+    <span class="k">if</span> <span class="n">end_year</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">end_year</span> <span class="o">=</span> <span class="n">last_time</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="c1"># Validate requested window against available data</span>
+    <span class="k">if</span> <span class="n">season</span> <span class="o">==</span> <span class="s2">&quot;NDJFMA&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">first_time</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">start_year</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">last_time</span> <span class="o">&lt;</span> <span class="n">datetime</span><span class="p">(</span><span class="n">end_year</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
+            <span class="n">end_year</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">mon</span><span class="p">,</span> <span class="n">day</span> <span class="o">=</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="n">num_year</span> <span class="o">=</span> <span class="n">end_year</span> <span class="o">-</span> <span class="n">start_year</span>
+    <span class="k">elif</span> <span class="n">season</span> <span class="o">==</span> <span class="s2">&quot;MJJASO&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">first_time</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">start_year</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">last_time</span> <span class="o">&lt;</span> <span class="n">datetime</span><span class="p">(</span><span class="n">end_year</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">31</span><span class="p">):</span>
+            <span class="n">end_year</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">mon</span><span class="p">,</span> <span class="n">day</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="n">num_year</span> <span class="o">=</span> <span class="n">end_year</span> <span class="o">-</span> <span class="n">start_year</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;season must be &#39;NDJFMA&#39; or &#39;MJJASO&#39;, got </span><span class="si">{</span><span class="n">season</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">start_year</span> <span class="o">&gt;</span> <span class="n">end_year</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset does not cover the requested season/time window.&quot;</span><span class="p">)</span>
+
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">segment_length</span>
+    <span class="n">nl</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">360</span> <span class="o">/</span> <span class="n">deg_x</span><span class="p">)</span> <span class="k">if</span> <span class="n">cmm_grid</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">lon</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="s2">&quot;start_year=</span><span class="si">%d</span><span class="s2">, end_year=</span><span class="si">%d</span><span class="s2">, NL=</span><span class="si">%d</span><span class="s2">, NT=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">,</span> <span class="n">nl</span><span class="p">,</span> <span class="n">nt</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Build daily seasonal cycle</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">sea_cyc_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np_float</span><span class="p">)</span>
+    <span class="n">segments</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">):</span>
+        <span class="n">seg</span> <span class="o">=</span> <span class="n">subSliceSegment</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">units_adjust</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seg</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">adjust_units</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="n">data_var</span><span class="p">],</span> <span class="n">units_adjust</span><span class="p">)</span>
+        <span class="n">segments</span><span class="p">[</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span>
+        <span class="n">sea_cyc_values</span> <span class="o">+=</span> <span class="n">seg</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_year</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Processed seasonal cycle for year </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Remove seasonal cycle → anomalies</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">segment_ano</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">):</span>
+        <span class="n">ano</span> <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">year</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">num_year</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ano</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+                <span class="n">segments</span><span class="p">[</span><span class="n">year</span><span class="p">][</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">sea_cyc_values</span><span class="p">,</span>
+                <span class="n">dims</span><span class="o">=</span><span class="n">segments</span><span class="p">[</span><span class="n">year</span><span class="p">][</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span><span class="p">,</span>
+                <span class="n">coords</span><span class="o">=</span><span class="n">segments</span><span class="p">[</span><span class="n">year</span><span class="p">][</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">segment_ano</span><span class="p">[</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="n">ano</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Space-time power spectra</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">power_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_year</span><span class="p">,</span> <span class="n">nt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nl</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np_float</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="p">)):</span>
+        <span class="n">seg</span> <span class="o">=</span> <span class="n">segment_ano</span><span class="p">[</span><span class="n">year</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cmm_grid</span><span class="p">:</span>
+            <span class="n">seg</span> <span class="o">=</span> <span class="n">interp2commonGrid</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">data_var</span><span class="p">,</span> <span class="n">deg_x</span><span class="p">)</span>
+        <span class="n">d_seg_x_ano</span> <span class="o">=</span> <span class="n">get_daily_ano_segment</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">data_var</span><span class="p">)</span>
+        <span class="n">power_arr</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">space_time_spectrum</span><span class="p">(</span><span class="n">d_seg_x_ano</span><span class="p">,</span> <span class="n">data_var</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Computed spectrum for year </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+
+    <span class="n">power_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">power_arr</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">power_mean</span> <span class="o">=</span> <span class="n">generate_axes_and_decorate</span><span class="p">(</span><span class="n">power_mean</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">nl</span><span class="p">)</span>
+    <span class="n">oee</span> <span class="o">=</span> <span class="n">output_power_spectra</span><span class="p">(</span><span class="n">nl</span><span class="p">,</span> <span class="n">nt</span><span class="p">,</span> <span class="n">power_mean</span><span class="p">)</span>
+
+    <span class="n">ewr</span><span class="p">,</span> <span class="n">east_power</span><span class="p">,</span> <span class="n">west_power</span> <span class="o">=</span> <span class="n">calculate_ewr</span><span class="p">(</span><span class="n">oee</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;EWR=</span><span class="si">%.4f</span><span class="s2">  east=</span><span class="si">%.4f</span><span class="s2">  west=</span><span class="si">%.4f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ewr</span><span class="p">,</span> <span class="n">east_power</span><span class="p">,</span> <span class="n">west_power</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;east_power&quot;</span><span class="p">:</span> <span class="n">east_power</span><span class="p">,</span>
+        <span class="s2">&quot;west_power&quot;</span><span class="p">:</span> <span class="n">west_power</span><span class="p">,</span>
+        <span class="s2">&quot;east_west_power_ratio&quot;</span><span class="p">:</span> <span class="n">ewr</span><span class="p">,</span>
+        <span class="s2">&quot;analysis_time_window_start_year&quot;</span><span class="p">:</span> <span class="n">start_year</span><span class="p">,</span>
+        <span class="s2">&quot;analysis_time_window_end_year&quot;</span><span class="p">:</span> <span class="n">end_year</span><span class="p">,</span>
+        <span class="c1"># Expose intermediate arrays so callers can do their own plotting</span>
+        <span class="s2">&quot;_oee&quot;</span><span class="p">:</span> <span class="n">oee</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># driver-oriented entry point</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mjo_metric_ewr_calculation</span><span class="p">(</span>
+    <span class="n">mip</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">exp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">run</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">nc_out</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">cmmGrid</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">degX</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">UnitsAdjust</span><span class="p">,</span>
+    <span class="n">inputfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">startYear</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">endYear</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">segmentLength</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">dir_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">season</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;NDJFMA&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Driver-oriented wrapper — preserves the original CLI call signature.</span>
+
+<span class="sd">    Prefer :func:`compute_mjo_ewr_from_dataset` for library use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Opening file: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inputfile</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xcdat_open</span><span class="p">(</span><span class="n">inputfile</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">compute_mjo_ewr_from_dataset</span><span class="p">(</span>
+        <span class="n">ds</span><span class="o">=</span><span class="n">ds</span><span class="p">,</span>
+        <span class="n">data_var</span><span class="o">=</span><span class="n">data_var</span><span class="p">,</span>
+        <span class="n">start_year</span><span class="o">=</span><span class="n">startYear</span><span class="p">,</span>
+        <span class="n">end_year</span><span class="o">=</span><span class="n">endYear</span><span class="p">,</span>
+        <span class="n">season</span><span class="o">=</span><span class="n">season</span><span class="p">,</span>
+        <span class="n">cmm_grid</span><span class="o">=</span><span class="n">cmmGrid</span><span class="p">,</span>
+        <span class="n">deg_x</span><span class="o">=</span><span class="n">degX</span><span class="p">,</span>
+        <span class="n">units_adjust</span><span class="o">=</span><span class="n">UnitsAdjust</span><span class="p">,</span>
+        <span class="n">segment_length</span><span class="o">=</span><span class="n">segmentLength</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">oee</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;_oee&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build output filename (driver concern, not science concern)</span>
+    <span class="n">output_stem</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mip</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">exp</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">_mjo_</span><span class="si">{</span><span class="n">startYear</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">endYear</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">season</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">cmmGrid</span><span class="p">:</span>
+        <span class="n">output_stem</span> <span class="o">+=</span> <span class="s2">&quot;_cmmGrid&quot;</span>
+
+    <span class="k">if</span> <span class="n">nc_out</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_paths</span><span class="p">[</span><span class="s2">&quot;diagnostic_results&quot;</span><span class="p">],</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">fout</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_paths</span><span class="p">[</span><span class="s2">&quot;diagnostic_results&quot;</span><span class="p">],</span> <span class="n">output_stem</span><span class="p">)</span>
+        <span class="n">write_netcdf_output</span><span class="p">(</span><span class="n">oee</span><span class="p">,</span> <span class="n">fout</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_paths</span><span class="p">[</span><span class="s2">&quot;graphics&quot;</span><span class="p">],</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">fout</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_paths</span><span class="p">[</span><span class="s2">&quot;graphics&quot;</span><span class="p">],</span> <span class="n">output_stem</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;OBS (</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="si">{</span><span class="n">data_var</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">season</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">startYear</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">endYear</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;obs&quot;</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mip</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="si">{</span><span class="n">data_var</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">season</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">startYear</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">endYear</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">cmmGrid</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">+=</span> <span class="s2">&quot;, common grid (2.5x2.5deg)&quot;</span>
+        <span class="n">plot_power</span><span class="p">(</span><span class="n">oee</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">fout</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;east_west_power_ratio&quot;</span><span class="p">])</span>
+
+    <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
