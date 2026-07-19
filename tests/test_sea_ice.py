@@ -13,6 +13,7 @@ def create_fake_sea_ice_ds():
         calendar="noleap",
         use_cftime=True,
         name="time",
+        use_cftime=True,
     )
     latd = 2
     lond = 2
