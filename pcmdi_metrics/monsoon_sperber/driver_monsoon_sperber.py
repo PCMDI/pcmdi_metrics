@@ -52,7 +52,12 @@ import xarray as xr
 import xcdat as xc
 from matplotlib import pyplot as plt
 
-from pcmdi_metrics.io import load_regions_specs, region_subset, xcdat_open
+from pcmdi_metrics.io import (
+    get_latitude_key,
+    load_regions_specs,
+    region_subset,
+    xcdat_open,
+)
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
@@ -273,7 +278,9 @@ for model in models:
             and model_lf_path is not None
             and ds_lf is not None
         ):
-            ds_lf = ds_lf.isel(lat=slice(None, None, -1))
+            ds_lf = ds_lf.isel(
+                lat=slice(None, None, -1)
+            )  # assumes "lat" is the correct name
 
         # -------------------------------------------------
         # Loop start - Realization
@@ -297,6 +304,10 @@ for model in models:
                 print("model_path = ", model_path)
 
                 ds = xcdat_open(model_path, decode_times=True)
+                lat_key = get_latitude_key(ds)
+                ds = ds.sortby(
+                    lat_key
+                )  # guarantee ascending order, no change to datasets already in ascending order
                 ds["time"].attrs["axis"] = "T"
                 ds["time"].attrs["standard_name"] = "time"
                 ds = xr.decode_cf(ds, decode_times=True)
@@ -314,8 +325,13 @@ for model in models:
                         lf_array = create_land_sea_mask(ds, method="regionmask")
                         print("land mask is estimated using regionmask method.")
 
+                    if (
+                        lf_array.name != "sftlf"
+                    ):  # default array name created by create_land_sea_mask was not "sftlf"
+                        lf_array = lf_array.rename("sftlf")
+
                     ds_lf = lf_array.to_dataset().compute()
-                    ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
+
                     if debug:
                         print("land mask is estimated.")
                         print("ds_lf:", ds_lf)
