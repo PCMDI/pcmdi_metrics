@@ -4,10 +4,11 @@
 
 import sys
 
-import const
 import numpy
 import scipy.fftpack as fftpack
 import scipy.signal as signal
+
+from . import const
 
 NA = numpy.newaxis
 pi = numpy.pi

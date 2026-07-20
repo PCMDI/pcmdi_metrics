@@ -2,7 +2,7 @@ import logging
 import sys
 import time
 
-from compute_qbo_mjo_metrics import process_qbo_mjo_metrics
+from .compute_qbo_mjo_metrics import process_qbo_mjo_metrics
 
 
 # Configure the logger
