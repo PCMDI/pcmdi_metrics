@@ -59,6 +59,7 @@ script-files = [
   "pcmdi_metrics/extremes/extremes_driver.py",
   "pcmdi_metrics/sea_ice/sea_ice_driver.py",
   "pcmdi_metrics/drcdm/drcdm_driver.py",
+  "pcmdi_metrics/atmos_blocking/atmospheric_block_driver.py",
 ]
 
 [tool.setuptools.packages.find]
