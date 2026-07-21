@@ -1,14 +1,28 @@
 #!/usr/bin/env python
+"""QBO-MJO metric computation.
 
-# QBO-MJO Metric Prototyping
+Public API
+----------
+compute_qbo_mjo_metrics(ds, ds2, varname, varname2, start, end, ...)
+    Pure computation -- accepts already-opened xarray Datasets.
+
+process_qbo_mjo_metrics(params)
+    File-path/driver-oriented entry point (backward compatible).
+"""
+
+from __future__ import annotations
 
 import json
 import os
+from typing import Any
 
 import xarray as xr
 import xcdat as xc
-from kf_filter import KFfilter
-from utils import (
+
+from pcmdi_metrics.mean_climate.lib import load_and_regrid
+
+from .kf_filter import KFfilter
+from .utils import (
     diag_plot,
     generate_target_grid,
     select_time_range,
@@ -16,8 +30,6 @@ from utils import (
     test_plot_maps,
     test_plot_time_series,
 )
-
-from pcmdi_metrics.mean_climate.lib import load_and_regrid
 
 
 def main():
@@ -70,34 +82,85 @@ def main():
     print(output_metrics)
 
 
-def process_qbo_mjo_metrics(params):
+def compute_qbo_mjo_metrics(
+    ds: xr.Dataset,
+    ds2: xr.Dataset,
+    varname: str,
+    varname2: str,
+    start: str,
+    end: str,
+    taper_to_mean: bool = True,
+    model: str = "model",
+    exp: str | None = None,
+    member: str | None = None,
+    debug: bool = False,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Compute QBO-MJO metrics from already-opened xarray Datasets.
+
+    This is the pure-computation entry point. It performs no file I/O,
+    writes no output files, and produces no plots. Suitable for use in
+    Jupyter notebooks, pipelines, and unit tests.
+
+    ``ds`` and ``ds2`` are assumed to already be on the desired grid, with
+    ``varname`` already reduced to a single vertical level if applicable --
+    any file loading, level selection, and regridding is the caller's
+    responsibility. See `process_qbo_mjo_metrics` for a file-path-based
+    wrapper that handles that before calling here.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Monthly zonal wind dataset containing ``varname`` on a
+        (time, lat, lon) grid.
+    ds2 : xr.Dataset
+        Daily OLR dataset containing ``varname2`` on a (time, lat, lon) grid.
+    varname : str
+        Zonal wind variable name in ``ds``.
+    varname2 : str
+        OLR variable name in ``ds2``.
+    start : str
+        Start of the time subset, ``"YYYY-MM"``.
+    end : str
+        End of the time subset, ``"YYYY-MM"``.
+    taper_to_mean : bool, optional
+        Passed through to the Kelvin filter's time tapering. Default is
+        ``True``.
+    model : str, optional
+        Model name, used only as a key in the returned ``output`` dict.
+        Default is ``"model"``.
+    exp : str or None, optional
+        Experiment name (kept for signature parity with
+        `process_qbo_mjo_metrics`; not used in the computation). Default is
+        ``None``.
+    member : str or None, optional
+        Ensemble member name, used only as a key in the returned ``output``
+        dict. Default is ``None``.
+    debug : bool, optional
+        If ``True``, print additional diagnostics and populate extra fields
+        (``window``, ``mjo_olr_detrended``, ``mjo_olr_tapered``) in the
+        ``olr_region`` diagnostic Dataset. Default is ``False``.
+
+    Returns
+    -------
+    output : dict
+        ``{model: {member: {"mjo_activity": float, "mjo_activity_diff":
+        float, "qbo_east_years": list, "qbo_west_years": list}}}``.
+    diagnostics : dict
+        Intermediate xarray objects useful for plotting/saving:
+
+        - ``std``: standard deviation of the smoothed QBO index
+        - ``u_index``: area-averaged U50 anomaly time series
+        - ``u_index_smoothed``: 3-month running mean of ``u_index``
+        - ``u_index_smoothed_djf``: DJF-mean of ``u_index_smoothed``
+        - ``olr_region``: OLR Dataset with ``mjo_olr`` and the
+          ``mjo_olr_stdmap*`` diagnostic fields attached
+        - ``olr_std_map``: DJF standard deviation map of MJO-filtered OLR
+        - ``olr_std_map_phase``: ``{"east": ..., "west": ...}`` std maps
+          partitioned by QBO phase
+        - ``olr_std_map_diff``: east-minus-west difference of
+          ``olr_std_map_phase``
     """
-    Process QBO-MJO Metric based on the provided parameters.
-
-    Args:
-        params (dict): A dictionary containing user-defined parameters.
-
-    Returns:
-        dict: A dictionary containing the calculated metrics.
-    """
-    output = {}
-
-    model = params["model"]
-    exp = params["exp"]
-    member = params["member"]
-    input_file = params["input_file"]
-    input_file2 = params["input_file2"]
-    varname = params["varname"]
-    level = params["level"]
-    varname2 = params["varname2"]
-    start = params["start"]
-    end = params["end"]
-    regrid = params["regrid"]
-    regrid_tool = params["regrid_tool"]
-    target_grid = params["target_grid"]
-    taper_to_mean = params["taper_to_mean"]
-    output_dir = params["output_dir"]
-    debug = params["debug"]
+    output: dict[str, Any] = {}
 
     # =======================================================================================
     # ## Part 1: U50
@@ -112,37 +175,6 @@ def process_qbo_mjo_metrics(params):
     # - calculates a 3-month running mean of these and then the standard deviation
     #   of that smoothed timeseries
     # - then, we extract and average only the DJF season
-
-    os.makedirs(output_dir, exist_ok=True)
-
-    output_file_tag = "_" + model
-    if exp is not None:
-        output_file_tag += "_" + exp
-    if member is not None:
-        output_file_tag += "_" + member
-    output_file_tag += "_" + start + "_" + end
-
-    if regrid:
-        # generate target grid
-        t_grid = generate_target_grid(target_grid)
-
-        # reads in monthly zonal wind at 50mb level
-        ds = load_and_regrid(
-            data_path=input_file,
-            varname=varname,
-            level=level,
-            t_grid=t_grid,
-            decode_times=True,
-            regrid_tool=regrid_tool,
-            debug=debug,
-        )
-
-        output_file_tag += "_" + regrid_tool + "_" + target_grid
-
-    else:
-        ds = xc.open_dataset(input_file)
-        if level is not None:
-            ds = ds.sel(plev=level * 100)  # hPa to Pa
 
     # Subset time
     ds = select_time_range(ds, start, end)
@@ -200,17 +232,6 @@ def process_qbo_mjo_metrics(params):
         print(ds_region_ano_ave_runningmean[varname].to_numpy().shape)
         print("------")
 
-        try:
-            ds_region_ano_ave_runningmean.to_netcdf(
-                os.path.join(
-                    output_dir,
-                    "ds_region_ano_ave_runningmean" + output_file_tag + ".nc",
-                )
-            )
-        except Exception as e:
-            print(e)
-            pass
-
     # standard deviation (std)
     std = float(ds_region_ano_ave_runningmean[varname].std(dim="time"))
     print(
@@ -243,49 +264,6 @@ def process_qbo_mjo_metrics(params):
         print(ds_region_ano_ave_runningmean_season_djf[varname].to_numpy().shape)
         print("------")
 
-        try:
-            ds_region_ano_ave_runningmean_season_djf.to_netcdf(
-                os.path.join(
-                    output_dir,
-                    "ds_region_ano_ave_runningmean_season_djf"
-                    + output_file_tag
-                    + ".nc",
-                )
-            )
-        except Exception as e:
-            print(e)
-            pass
-
-    # Test plots (time series)
-    if debug:
-        test_plot_time_series(
-            ds_region_ano_ave[varname],
-            output_file=os.path.join(
-                output_dir, "ds_region_ano_ave" + output_file_tag + ".png"
-            ),
-            std=std,
-            title=f"{model} ({member})",
-        )
-
-        test_plot_time_series(
-            ds_region_ano_ave_runningmean[varname],
-            output_file=os.path.join(
-                output_dir, "ds_region_ano_ave_runningmean" + output_file_tag + ".png"
-            ),
-            std=std,
-            title=f"{model} ({member})",
-        )
-
-        test_plot_time_series(
-            ds_region_ano_ave_runningmean_season_djf[varname],
-            output_file=os.path.join(
-                output_dir,
-                "ds_region_ano_ave_runningmean_season_djf" + output_file_tag + ".png",
-            ),
-            std=std,
-            title=f"{model} ({member})",
-        )
-
     # ## Part 2: OLR
     #
     # 3. we read in daily OLR for 30S-30N, again extracting the same desired time period, and calculate the mjo-filtered OLR following wheeler and kiladis 2009.
@@ -293,20 +271,6 @@ def process_qbo_mjo_metrics(params):
     # - use the criteria in the kf_filter for periods 20-100 days, waves 1 to 5, and wavetype kelvin to get the mjo filtered olr.
     # - then,  we extract only the DJF season
     # - and calculate the standard deviation of mjo-filtered olr for DJF
-
-    # we read in daily OLR for 30S-30N, again extracting the same desired time period, and calculate the mjo-filtered OLR following wheeler and kiladis 2009.
-
-    if regrid:
-        ds2 = load_and_regrid(
-            data_path=input_file2,
-            varname=varname2,
-            t_grid=t_grid,
-            decode_times=True,
-            regrid_tool=regrid_tool,
-            debug=debug,
-        )
-    else:
-        ds2 = xc.open_mfdataset(input_file2)
 
     ds2 = select_time_range(ds2, start, end)
 
@@ -409,6 +373,223 @@ def process_qbo_mjo_metrics(params):
     std2_map_diff = std2_map_phase["east"] - std2_map_phase["west"]
     ds2_region["mjo_olr_stdmap_east_minus_west"] = std2_map_diff
 
+    # ## Part 4: Metrics
+
+    # mjo olr activity (standard deviation) over all years average over the maritime continent region in our kim et al 2020 paper (50E-170E, 20S-5N)
+    metric1 = float(
+        ds2_region.spatial.average(
+            data_var="mjo_olr_stdmap", lat_bounds=(-20, 5), lon_bounds=(50, 170)
+        )["mjo_olr_stdmap"].values
+    )
+
+    # mjo olr activity difference between qboe and qbow averaged over the maritime continent region
+    metric2 = float(
+        ds2_region.spatial.average(
+            data_var="mjo_olr_stdmap_east_minus_west",
+            lat_bounds=(-20, 5),
+            lon_bounds=(50, 170),
+        )["mjo_olr_stdmap_east_minus_west"].values
+    )
+
+    print("metric1 (mjo_activity):", metric1)
+    print("metric2 (mjo_activity_diff):", metric2)
+
+    # Prepare output dictionary
+    output[model] = dict()
+    output[model][member] = dict()
+    output[model][member]["mjo_activity"] = metric1
+    output[model][member]["mjo_activity_diff"] = metric2
+    output[model][member]["qbo_east_years"] = qbo_phase_years["east"]
+    output[model][member]["qbo_west_years"] = qbo_phase_years["west"]
+
+    diagnostics = {
+        "std": std,
+        "u_index": ds_region_ano_ave,
+        "u_index_smoothed": ds_region_ano_ave_runningmean,
+        "u_index_smoothed_djf": ds_region_ano_ave_runningmean_season_djf,
+        "olr_region": ds2_region,
+        "olr_std_map": std2_map,
+        "olr_std_map_phase": std2_map_phase,
+        "olr_std_map_diff": std2_map_diff,
+    }
+
+    return output, diagnostics
+
+
+def process_qbo_mjo_metrics(params: dict[str, Any]) -> dict[str, Any]:
+    """Compute QBO-MJO metrics from input file paths.
+
+    File-path/driver-oriented entry point. Loads and, if requested,
+    regrids the input files, calls `compute_qbo_mjo_metrics` to run the
+    actual computation, then writes out the diagnostic files (NetCDF, PNG,
+    JSON) this function has always produced.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary of user-defined parameters. Required keys: ``model``,
+        ``exp``, ``member``, ``input_file``, ``input_file2``, ``varname``,
+        ``level``, ``varname2``, ``start``, ``end``, ``regrid``,
+        ``regrid_tool``, ``target_grid``, ``taper_to_mean``,
+        ``output_dir``, ``debug``.
+
+    Returns
+    -------
+    dict
+        ``{model: {member: {"mjo_activity": float, "mjo_activity_diff":
+        float, "qbo_east_years": list, "qbo_west_years": list}}}``, the
+        same dictionary written to the output JSON file.
+    """
+    model = params["model"]
+    exp = params["exp"]
+    member = params["member"]
+    input_file = params["input_file"]
+    input_file2 = params["input_file2"]
+    varname = params["varname"]
+    level = params["level"]
+    varname2 = params["varname2"]
+    start = params["start"]
+    end = params["end"]
+    regrid = params["regrid"]
+    regrid_tool = params["regrid_tool"]
+    target_grid = params["target_grid"]
+    taper_to_mean = params["taper_to_mean"]
+    output_dir = params["output_dir"]
+    debug = params["debug"]
+
+    # =======================================================================================
+    # ## Part 1: U50
+    #
+    # 1. reads in monthly U data and handles the calendar/extracts the desired time range
+    #    ( this phenomenon occurs in the recent record ~1979+)
+    #
+    # 2. calculates the DJF mean QBO index consistent with our paper.
+    # - reads in monthly zonal wind at 50mb level
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    output_file_tag = "_" + model
+    if exp is not None:
+        output_file_tag += "_" + exp
+    if member is not None:
+        output_file_tag += "_" + member
+    output_file_tag += "_" + start + "_" + end
+
+    if regrid:
+        # generate target grid
+        t_grid = generate_target_grid(target_grid)
+
+        # reads in monthly zonal wind at 50mb level
+        ds = load_and_regrid(
+            data_path=input_file,
+            varname=varname,
+            level=level,
+            t_grid=t_grid,
+            decode_times=True,
+            regrid_tool=regrid_tool,
+            debug=debug,
+        )
+
+        output_file_tag += "_" + regrid_tool + "_" + target_grid
+
+    else:
+        ds = xc.open_dataset(input_file)
+        if level is not None:
+            ds = ds.sel(plev=level * 100)  # hPa to Pa
+
+    # ## Part 2: OLR
+    #
+    # 3. we read in daily OLR for 30S-30N, again extracting the same desired time period, and calculate the mjo-filtered OLR following wheeler and kiladis 2009.
+
+    if regrid:
+        ds2 = load_and_regrid(
+            data_path=input_file2,
+            varname=varname2,
+            t_grid=t_grid,
+            decode_times=True,
+            regrid_tool=regrid_tool,
+            debug=debug,
+        )
+    else:
+        ds2 = xc.open_mfdataset(input_file2)
+
+    output, diagnostics = compute_qbo_mjo_metrics(
+        ds,
+        ds2,
+        varname,
+        varname2,
+        start,
+        end,
+        taper_to_mean=taper_to_mean,
+        model=model,
+        exp=exp,
+        member=member,
+        debug=debug,
+    )
+
+    std = diagnostics["std"]
+    ds_region_ano_ave = diagnostics["u_index"]
+    ds_region_ano_ave_runningmean = diagnostics["u_index_smoothed"]
+    ds_region_ano_ave_runningmean_season_djf = diagnostics["u_index_smoothed_djf"]
+    ds2_region = diagnostics["olr_region"]
+    std2_map = diagnostics["olr_std_map"]
+    std2_map_phase = diagnostics["olr_std_map_phase"]
+    std2_map_diff = diagnostics["olr_std_map_diff"]
+
+    if debug:
+        try:
+            ds_region_ano_ave_runningmean.to_netcdf(
+                os.path.join(
+                    output_dir,
+                    "ds_region_ano_ave_runningmean" + output_file_tag + ".nc",
+                )
+            )
+        except Exception as e:
+            print(e)
+            pass
+
+        try:
+            ds_region_ano_ave_runningmean_season_djf.to_netcdf(
+                os.path.join(
+                    output_dir,
+                    "ds_region_ano_ave_runningmean_season_djf"
+                    + output_file_tag
+                    + ".nc",
+                )
+            )
+        except Exception as e:
+            print(e)
+            pass
+
+        # Test plots (time series)
+        test_plot_time_series(
+            ds_region_ano_ave[varname],
+            output_file=os.path.join(
+                output_dir, "ds_region_ano_ave" + output_file_tag + ".png"
+            ),
+            std=std,
+            title=f"{model} ({member})",
+        )
+
+        test_plot_time_series(
+            ds_region_ano_ave_runningmean[varname],
+            output_file=os.path.join(
+                output_dir, "ds_region_ano_ave_runningmean" + output_file_tag + ".png"
+            ),
+            std=std,
+            title=f"{model} ({member})",
+        )
+
+        test_plot_time_series(
+            ds_region_ano_ave_runningmean_season_djf[varname],
+            output_file=os.path.join(
+                output_dir,
+                "ds_region_ano_ave_runningmean_season_djf" + output_file_tag + ".png",
+            ),
+            std=std,
+            title=f"{model} ({member})",
+        )
+
     if debug:
         # Save all variables
         ds2_region.to_netcdf(
@@ -452,35 +633,6 @@ def process_qbo_mjo_metrics(params):
         ),
         sub_region=(50, 170, -20, 5),
     )
-
-    # ## Part 4: Metrics
-
-    # mjo olr activity (standard deviation) over all years average over the maritime continent region in our kim et al 2020 paper (50E-170E, 20S-5N)
-    metric1 = float(
-        ds2_region.spatial.average(
-            data_var="mjo_olr_stdmap", lat_bounds=(-20, 5), lon_bounds=(50, 170)
-        )["mjo_olr_stdmap"].values
-    )
-
-    # mjo olr activity difference between qboe and qbow averaged over the maritime continent region
-    metric2 = float(
-        ds2_region.spatial.average(
-            data_var="mjo_olr_stdmap_east_minus_west",
-            lat_bounds=(-20, 5),
-            lon_bounds=(50, 170),
-        )["mjo_olr_stdmap_east_minus_west"].values
-    )
-
-    print("metric1 (mjo_activity):", metric1)
-    print("metric2 (mjo_activity_diff):", metric2)
-
-    # Prepare output dictionary
-    output[model] = dict()
-    output[model][member] = dict()
-    output[model][member]["mjo_activity"] = metric1
-    output[model][member]["mjo_activity_diff"] = metric2
-    output[model][member]["qbo_east_years"] = qbo_phase_years["east"]
-    output[model][member]["qbo_west_years"] = qbo_phase_years["west"]
 
     # Write the dictionary to the JSON file
     json_file_path = os.path.join(

@@ -18,7 +18,7 @@ capabilities available through a cleaner, more flexible and accessible for users
 additional diagnostics and metric calculations will be exposed in a way that supports both programmatic use and 
 integration into workflows, while maintaining consistency with the package’s existing design and documentation conventions.
 
-The `variability_mode.eof_classification` and `sea_ice.calc_iiee_annual_cycle` APIs are available in `pcmdi_metrics` version `v4.1` and later. 
+The `variability_mode.eof_classification` and `sea_ice.calc_iiee_annual_cycle` APIs are available in `pcmdi_metrics` version `v4.1` and later.
 The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` version `v4.1.1` and later.
 
 
@@ -26,6 +26,7 @@ The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` versi
     :toctree: generated/
 
     mjo.compute_mjo_ewr_from_dataset
+    qbo.compute_qbo_mjo_metrics
     sea_ice.calc_iiee_annual_cycle
     variability_mode.eof_classification
 

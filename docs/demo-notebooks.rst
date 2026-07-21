@@ -39,6 +39,7 @@ To make it easier to run these demos, we recommend cloning the `PMP GitHub repos
    examples/Demo_8_extremes
    examples/Demo_9_seaIceExtent_ivanova
    examples/Demo_9b_seaIce_data_explore
+   examples/Demo_10_qbo_mjo
 
 
 Plots

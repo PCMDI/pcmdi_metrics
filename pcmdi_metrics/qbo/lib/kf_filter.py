@@ -4,10 +4,11 @@
 
 import sys
 
-import const
 import numpy
 import scipy.fftpack as fftpack
 import scipy.signal as signal
+
+from . import const
 
 NA = numpy.newaxis
 pi = numpy.pi
@@ -17,20 +18,54 @@ beta = 2.0 * const.omega_earth / const.radius_earth
 
 
 class KFfilter:
-    """class for wavenumber-frequency filtering for WK99 and WKH00"""
+    """Wavenumber-frequency filtering following Wheeler and Kiladis (1999)
+    and Wheeler, Kiladis and Hendon (2000).
+
+    Detrends and tapers the input data in time, then Fourier-transforms it
+    in time and longitude. The `kfmask`/`wavefilter` methods and the
+    named per-wave-type filters (`kelvinfilter`, `erfilter`, `igfilter`,
+    `eig0filter`, `mrgfilter`, `tdfilter`) mask out all wavenumber-frequency
+    content outside a given domain and inverse-transform back to physical
+    space.
+
+    Attributes
+    ----------
+    detrended : numpy.ndarray
+        Input data with the along-time linear trend removed.
+    window : numpy.ndarray
+        1-D time-tapering window applied to `detrended`.
+    tapered : numpy.ndarray
+        `detrended` after the time-tapering window has been applied.
+    fftdata : numpy.ndarray
+        2-D (time, longitude) FFT of `tapered`, shape (frequency,
+        latitude, wavenumber).
+    knum : numpy.ndarray
+        Zonal wavenumber at each (frequency, wavenumber) FFT bin.
+    freq : numpy.ndarray
+        Absolute frequency (cycles per day) at each (frequency,
+        wavenumber) FFT bin.
+    wavenumber : numpy.ndarray
+        1-D zonal wavenumber axis.
+    frequency : numpy.ndarray
+        1-D frequency axis (cycles per day).
+    """
 
     def __init__(self, datain, spd, tim_taper=0.1, taper_to_mean=False):
-        """Arguments:
-
-        'datain'    -- numpy array, the data to be filtered. dimension must be (time, lat, lon)
-
-        'spd'       -- int, samples per day
-
-        'tim_taper' -- float, tapering ratio by cos. applay tapering first and last tim_taper%
-                       samples. default is cos20 tapering
-
-        'taper_to_mean' -- bool, taper to mean. default is False (taper to zero)
-
+        """
+        Parameters
+        ----------
+        datain : numpy.ndarray
+            Data to be filtered, with dimensions ``(time, lat, lon)``.
+        spd : int
+            Samples per day.
+        tim_taper : float or {"hann"}, optional
+            Tapering ratio applied by a cosine taper to the first and last
+            ``tim_taper`` fraction of samples (default is cos20 tapering).
+            If ``"hann"``, a Hann window is applied instead. Default is
+            ``0.1``.
+        taper_to_mean : bool, optional
+            If ``True``, taper toward the time-mean instead of toward
+            zero. Default is ``False``.
         """
         ntim, nlat, nlon = datain.shape
 
@@ -92,7 +127,11 @@ class KFfilter:
         self.frequency = frequency
 
     def decompose_antisymm(self):
-        """decompose attribute data to sym and antisym component"""
+        """Decompose `fftdata` into symmetric and antisymmetric components about the equator.
+
+        Replaces `fftdata` in place with the antisymmetric component
+        stacked on the symmetric component along the latitude axis.
+        """
         fftdata = self.fftdata
         nf, nlat, nk = fftdata.shape
         symm = 0.5 * (
@@ -103,13 +142,28 @@ class KFfilter:
         self.fftdata = numpy.concatenate([anti, symm], axis=1)
 
     def kfmask(self, fmin=None, fmax=None, kmin=None, kmax=None):
-        """return wavenumber-frequency mask for wavefilter method
+        """Build a rectangular wavenumber-frequency mask for `wavefilter`.
 
-        Arguments:
+        Parameters
+        ----------
+        fmin : float or None, optional
+            Minimum frequency to keep, cycles per day. Default is ``None``
+            (no lower bound).
+        fmax : float or None, optional
+            Maximum frequency to keep, cycles per day. Default is ``None``
+            (no upper bound).
+        kmin : float or None, optional
+            Minimum zonal wavenumber to keep. Default is ``None`` (no
+            lower bound).
+        kmax : float or None, optional
+            Maximum zonal wavenumber to keep. Default is ``None`` (no
+            upper bound).
 
-           'fmin/fmax' --
-
-           'kmin/kmax' --
+        Returns
+        -------
+        numpy.ndarray
+            Boolean mask of shape ``(frequency, wavenumber)``. ``True``
+            marks bins to be zeroed out (i.e. filtered away).
         """
         nf, nlat, nk = self.fftdata.shape
         knum = self.knum
@@ -131,12 +185,20 @@ class KFfilter:
         return mask
 
     def wavefilter(self, mask):
-        """apply wavenumber-frequency filtering by original mask.
+        """Apply a wavenumber-frequency mask and inverse-transform to physical space.
 
-        Arguments:
+        Parameters
+        ----------
+        mask : numpy.ndarray
+            2-D boolean array of shape ``(frequency, wavenumber)``, e.g.
+            from `kfmask`. ``True`` bins are zeroed out; ``False`` bins are
+            kept.
 
-           'mask' -- 2D boolean array (wavenumber, frequency).domain to be filterd
-                     is False (True member to be zero)
+        Returns
+        -------
+        numpy.ndarray
+            Filtered data, real part of the inverse FFT, same shape as the
+            original ``datain``.
         """
         # wavenumber = self.wavenumber
         # frequency = self.frequency
@@ -156,15 +218,29 @@ class KFfilter:
 
     # filter
     def kelvinfilter(self, fmin=0.05, fmax=0.4, kmin=None, kmax=14, hmin=8, hmax=90):
-        """kelvin wave filter
+        """Filter for equatorial Kelvin waves.
 
-        Arguments:
+        Parameters
+        ----------
+        fmin : float or None, optional
+            Minimum frequency, cycles per day. Default is ``0.05``.
+        fmax : float or None, optional
+            Maximum frequency, cycles per day. Default is ``0.4``.
+        kmin : float or None, optional
+            Minimum zonal wavenumber. Default is ``None`` (no lower
+            bound).
+        kmax : float or None, optional
+            Maximum zonal wavenumber. Default is ``14``.
+        hmin : float or None, optional
+            Minimum equivalent depth, meters. Default is ``8``.
+        hmax : float or None, optional
+            Maximum equivalent depth, meters. Default is ``90``.
 
-           'fmin/fmax' -- unit is cycle per day
-
-           'kmin/kmax' -- zonal wave number
-
-           'hmin/hmax' --equivalent depth
+        Returns
+        -------
+        numpy.ndarray
+            Kelvin-wave-filtered data, same shape as the original
+            ``datain``.
         """
 
         fftdata = self.fftdata.copy()
@@ -209,17 +285,32 @@ class KFfilter:
         return filterd.real
 
     def erfilter(self, fmin=None, fmax=None, kmin=-10, kmax=-1, hmin=8, hmax=90, n=1):
-        """equatorial wave filter
+        """Filter for equatorial Rossby (ER) waves.
 
-        Arguments:
+        Parameters
+        ----------
+        fmin : float or None, optional
+            Minimum frequency, cycles per day. Default is ``None`` (no
+            lower bound).
+        fmax : float or None, optional
+            Maximum frequency, cycles per day. Default is ``None`` (no
+            upper bound).
+        kmin : float or None, optional
+            Minimum zonal wavenumber. Default is ``-10``.
+        kmax : float or None, optional
+            Maximum zonal wavenumber. Default is ``-1``.
+        hmin : float or None, optional
+            Minimum equivalent depth, meters. Default is ``8``.
+        hmax : float or None, optional
+            Maximum equivalent depth, meters. Default is ``90``.
+        n : int, optional
+            Meridional mode number, must be a positive integer. Default is
+            ``1``.
 
-           'fmin/fmax' -- unit is cycle per day
-
-           'kmin/kmax' -- zonal wave number
-
-           'hmin/hmax' -- equivalent depth
-
-           'n'         -- meridional mode number
+        Returns
+        -------
+        numpy.ndarray
+            ER-wave-filtered data, same shape as the original ``datain``.
         """
 
         if n <= 0 or n % 1 != 0:
@@ -268,18 +359,36 @@ class KFfilter:
         return filterd.real
 
     def igfilter(self, fmin=None, fmax=None, kmin=-15, kmax=-1, hmin=12, hmax=90, n=1):
-        """n>=1 inertio gravirt wave filter. default is n=1 WIG.
+        """Filter for n>=1 inertio-gravity waves. Default is n=1 (westward IG, WIG).
 
-        Arguments:
+        For n=0 eastward inertio-gravity waves, use `eig0filter` instead.
 
-           'fmin/fmax' -- unit is cycle per day
+        Parameters
+        ----------
+        fmin : float or None, optional
+            Minimum frequency, cycles per day. Default is ``None`` (no
+            lower bound).
+        fmax : float or None, optional
+            Maximum frequency, cycles per day. Default is ``None`` (no
+            upper bound).
+        kmin : float or None, optional
+            Minimum zonal wavenumber; negative is westward, positive is
+            eastward. Default is ``-15``.
+        kmax : float or None, optional
+            Maximum zonal wavenumber. Default is ``-1``.
+        hmin : float or None, optional
+            Minimum equivalent depth, meters. Default is ``12``.
+        hmax : float or None, optional
+            Maximum equivalent depth, meters. Default is ``90``.
+        n : int, optional
+            Meridional mode number, must be a positive integer. Default is
+            ``1``.
 
-           'kmin/kmax' -- zonal wave number. negative is westward, positive is
-                          eastward
-
-           'hmin/hmax' -- equivalent depth
-
-           'n'         -- meridional mode number
+        Returns
+        -------
+        numpy.ndarray
+            Inertio-gravity-wave-filtered data, same shape as the original
+            ``datain``.
         """
         if n <= 0 or n % 1 != 0:
             print("n must be n>=1 integer. for n=0 EIG you must use eig0filter method.")
@@ -326,16 +435,30 @@ class KFfilter:
         return filterd.real
 
     def eig0filter(self, fmin=None, fmax=0.55, kmin=0, kmax=15, hmin=12, hmax=50):
-        """n>=0 eastward inertio gravirt wave filter.
+        """Filter for n=0 eastward inertio-gravity (EIG0) waves.
 
-        Arguments:
+        Parameters
+        ----------
+        fmin : float or None, optional
+            Minimum frequency, cycles per day. Default is ``None`` (no
+            lower bound).
+        fmax : float or None, optional
+            Maximum frequency, cycles per day. Default is ``0.55``.
+        kmin : float or None, optional
+            Minimum zonal wavenumber; must be non-negative (negative ``k``
+            for this mode is the mixed Rossby-gravity wave -- see
+            `mrgfilter`). Default is ``0``.
+        kmax : float or None, optional
+            Maximum zonal wavenumber. Default is ``15``.
+        hmin : float or None, optional
+            Minimum equivalent depth, meters. Default is ``12``.
+        hmax : float or None, optional
+            Maximum equivalent depth, meters. Default is ``50``.
 
-           'fmin/fmax' -- unit is cycle per day
-
-           'kmin/kmax' -- zonal wave number. negative is westward, positive is
-                          eastward
-
-           'hmin/hmax' -- equivalent depth
+        Returns
+        -------
+        numpy.ndarray
+            EIG0-wave-filtered data, same shape as the original ``datain``.
         """
         if kmin < 0:
             print("kmin must be positive. if k < 0, this mode is MRG")
@@ -382,16 +505,32 @@ class KFfilter:
         return filterd.real
 
     def mrgfilter(self, fmin=None, fmax=None, kmin=-10, kmax=-1, hmin=8, hmax=90):
-        """mixed Rossby gravity wave
+        """Filter for mixed Rossby-gravity (MRG) waves.
 
-        Arguments:
+        Parameters
+        ----------
+        fmin : float or None, optional
+            Minimum frequency, cycles per day. Default is ``None`` (no
+            lower bound).
+        fmax : float or None, optional
+            Maximum frequency, cycles per day. Default is ``None`` (no
+            upper bound).
+        kmin : float or None, optional
+            Minimum zonal wavenumber; negative is westward, positive is
+            eastward. Default is ``-10``.
+        kmax : float or None, optional
+            Maximum zonal wavenumber; must be non-positive (positive ``k``
+            for this mode is the n=0 eastward inertio-gravity wave -- see
+            `eig0filter`). Default is ``-1``.
+        hmin : float or None, optional
+            Minimum equivalent depth, meters. Default is ``8``.
+        hmax : float or None, optional
+            Maximum equivalent depth, meters. Default is ``90``.
 
-           'fmin/fmax' -- unit is cycle per day
-
-           'kmin/kmax' -- zonal wave number. negative is westward, positive is
-                          eastward
-
-           'hmin/hmax' -- equivalent depth
+        Returns
+        -------
+        numpy.ndarray
+            MRG-wave-filtered data, same shape as the original ``datain``.
         """
         if kmax > 0:
             print("kmax must be negative. if k > 0, this mode is the same as n=0 EIG")
@@ -438,14 +577,30 @@ class KFfilter:
         return filterd.real
 
     def tdfilter(self, fmin=None, fmax=None, kmin=-20, kmax=-6):
-        """KTH05 TD-type filter.
+        """Filter for tropical-depression-type (TD-type) disturbances, following KTH05.
 
-        Arguments:
+        Unlike the other filters, this uses a fixed dispersion-curve
+        boundary (not an equivalent-depth range) to isolate the TD-type
+        band.
 
-           'fmin/fmax' -- unit is cycle per day
+        Parameters
+        ----------
+        fmin : float or None, optional
+            Minimum frequency, cycles per day. Default is ``None`` (no
+            lower bound).
+        fmax : float or None, optional
+            Maximum frequency, cycles per day. Default is ``None`` (no
+            upper bound).
+        kmin : float or None, optional
+            Minimum zonal wavenumber; negative is westward, positive is
+            eastward. Default is ``-20``.
+        kmax : float or None, optional
+            Maximum zonal wavenumber. Default is ``-6``.
 
-           'kmin/kmax' -- zonal wave number. negative is westward, positive is
-                          eastward
+        Returns
+        -------
+        numpy.ndarray
+            TD-type-filtered data, same shape as the original ``datain``.
         """
         fftdata = self.fftdata.copy()
         knum = self.knum
