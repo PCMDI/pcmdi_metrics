@@ -1,9 +1,20 @@
 #!/usr/bin/env python
+"""QBO-MJO metric computation.
 
-# QBO-MJO Metric Prototyping
+Public API
+----------
+compute_qbo_mjo_metrics(ds, ds2, varname, varname2, start, end, ...)
+    Pure computation -- accepts already-opened xarray Datasets.
+
+process_qbo_mjo_metrics(params)
+    File-path/driver-oriented entry point (backward compatible).
+"""
+
+from __future__ import annotations
 
 import json
 import os
+from typing import Any
 
 import xarray as xr
 import xcdat as xc
@@ -72,56 +83,84 @@ def main():
 
 
 def compute_qbo_mjo_metrics(
-    ds,
-    ds2,
-    varname,
-    varname2,
-    start,
-    end,
-    taper_to_mean=True,
-    model="model",
-    exp=None,
-    member=None,
-    debug=False,
-):
-    """
-    Compute QBO-MJO metrics from pre-loaded xarray Datasets.
+    ds: xr.Dataset,
+    ds2: xr.Dataset,
+    varname: str,
+    varname2: str,
+    start: str,
+    end: str,
+    taper_to_mean: bool = True,
+    model: str = "model",
+    exp: str | None = None,
+    member: str | None = None,
+    debug: bool = False,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Compute QBO-MJO metrics from already-opened xarray Datasets.
 
-    `ds` and `ds2` are assumed to already be on the desired grid, with
-    `varname` already reduced to a single vertical level if applicable --
+    This is the pure-computation entry point. It performs no file I/O,
+    writes no output files, and produces no plots. Suitable for use in
+    Jupyter notebooks, pipelines, and unit tests.
+
+    ``ds`` and ``ds2`` are assumed to already be on the desired grid, with
+    ``varname`` already reduced to a single vertical level if applicable --
     any file loading, level selection, and regridding is the caller's
-    responsibility (see `process_qbo_mjo_metrics` for a file-path-based
-    wrapper that handles this before calling here). This function performs
-    no file or plot I/O.
+    responsibility. See `process_qbo_mjo_metrics` for a file-path-based
+    wrapper that handles that before calling here.
 
-    Args:
-        ds (xarray.Dataset): Monthly zonal wind dataset containing `varname`
-            on a (time, lat, lon) grid.
-        ds2 (xarray.Dataset): Daily OLR dataset containing `varname2` on a
-            (time, lat, lon) grid.
-        varname (str): Zonal wind variable name in `ds`.
-        varname2 (str): OLR variable name in `ds2`.
-        start (str): Start of the time subset, "YYYY-MM".
-        end (str): End of the time subset, "YYYY-MM".
-        taper_to_mean (bool): Passed through to the KF filter tapering.
-        model (str): Model name, used only as a key in the returned `output` dict.
-        exp (str, optional): Experiment name (unused beyond documentation parity with `process_qbo_mjo_metrics`).
-        member (str, optional): Ensemble member name, used only as a key in the returned `output` dict.
-        debug (bool): If True, print additional diagnostics and populate extra
-            fields (window, mjo_olr_detrended, mjo_olr_tapered) in the
-            `olr_region` diagnostic Dataset.
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Monthly zonal wind dataset containing ``varname`` on a
+        (time, lat, lon) grid.
+    ds2 : xr.Dataset
+        Daily OLR dataset containing ``varname2`` on a (time, lat, lon) grid.
+    varname : str
+        Zonal wind variable name in ``ds``.
+    varname2 : str
+        OLR variable name in ``ds2``.
+    start : str
+        Start of the time subset, ``"YYYY-MM"``.
+    end : str
+        End of the time subset, ``"YYYY-MM"``.
+    taper_to_mean : bool, optional
+        Passed through to the Kelvin filter's time tapering. Default is
+        ``True``.
+    model : str, optional
+        Model name, used only as a key in the returned ``output`` dict.
+        Default is ``"model"``.
+    exp : str or None, optional
+        Experiment name (kept for signature parity with
+        `process_qbo_mjo_metrics`; not used in the computation). Default is
+        ``None``.
+    member : str or None, optional
+        Ensemble member name, used only as a key in the returned ``output``
+        dict. Default is ``None``.
+    debug : bool, optional
+        If ``True``, print additional diagnostics and populate extra fields
+        (``window``, ``mjo_olr_detrended``, ``mjo_olr_tapered``) in the
+        ``olr_region`` diagnostic Dataset. Default is ``False``.
 
-    Returns:
-        tuple:
-            output (dict): ``{model: {member: {"mjo_activity": float,
-                "mjo_activity_diff": float, "qbo_east_years": list,
-                "qbo_west_years": list}}}``
-            diagnostics (dict): intermediate xarray objects useful for
-                plotting/saving -- "std", "u_index", "u_index_smoothed",
-                "u_index_smoothed_djf", "olr_region", "olr_std_map",
-                "olr_std_map_phase", "olr_std_map_diff".
+    Returns
+    -------
+    output : dict
+        ``{model: {member: {"mjo_activity": float, "mjo_activity_diff":
+        float, "qbo_east_years": list, "qbo_west_years": list}}}``.
+    diagnostics : dict
+        Intermediate xarray objects useful for plotting/saving:
+
+        - ``std``: standard deviation of the smoothed QBO index
+        - ``u_index``: area-averaged U50 anomaly time series
+        - ``u_index_smoothed``: 3-month running mean of ``u_index``
+        - ``u_index_smoothed_djf``: DJF-mean of ``u_index_smoothed``
+        - ``olr_region``: OLR Dataset with ``mjo_olr`` and the
+          ``mjo_olr_stdmap*`` diagnostic fields attached
+        - ``olr_std_map``: DJF standard deviation map of MJO-filtered OLR
+        - ``olr_std_map_phase``: ``{"east": ..., "west": ...}`` std maps
+          partitioned by QBO phase
+        - ``olr_std_map_diff``: east-minus-west difference of
+          ``olr_std_map_phase``
     """
-    output = {}
+    output: dict[str, Any] = {}
 
     # =======================================================================================
     # ## Part 1: U50
@@ -377,19 +416,29 @@ def compute_qbo_mjo_metrics(
     return output, diagnostics
 
 
-def process_qbo_mjo_metrics(params):
-    """
-    Process QBO-MJO Metric based on the provided parameters.
+def process_qbo_mjo_metrics(params: dict[str, Any]) -> dict[str, Any]:
+    """Compute QBO-MJO metrics from input file paths.
 
-    Loads/regrids the input files, calls `compute_qbo_mjo_metrics` to run
-    the actual computation, then writes out the same diagnostic files
-    (NetCDF, PNG, JSON) that this function has always produced.
+    File-path/driver-oriented entry point. Loads and, if requested,
+    regrids the input files, calls `compute_qbo_mjo_metrics` to run the
+    actual computation, then writes out the diagnostic files (NetCDF, PNG,
+    JSON) this function has always produced.
 
-    Args:
-        params (dict): A dictionary containing user-defined parameters.
+    Parameters
+    ----------
+    params : dict
+        Dictionary of user-defined parameters. Required keys: ``model``,
+        ``exp``, ``member``, ``input_file``, ``input_file2``, ``varname``,
+        ``level``, ``varname2``, ``start``, ``end``, ``regrid``,
+        ``regrid_tool``, ``target_grid``, ``taper_to_mean``,
+        ``output_dir``, ``debug``.
 
-    Returns:
-        dict: A dictionary containing the calculated metrics.
+    Returns
+    -------
+    dict
+        ``{model: {member: {"mjo_activity": float, "mjo_activity_diff":
+        float, "qbo_east_years": list, "qbo_west_years": list}}}``, the
+        same dictionary written to the output JSON file.
     """
     model = params["model"]
     exp = params["exp"]

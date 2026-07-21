@@ -8,17 +8,19 @@ import xcdat as xc
 
 
 def generate_target_grid(target_grid):
-    """Generate common grid for interpolation
+    """Generate a uniform lat/lon grid for interpolation.
 
     Parameters
     ----------
     target_grid : str
-        For example, "2.5x2.5"
+        Target grid resolution as ``"<lat_res>x<lon_res>"`` in degrees,
+        for example ``"2.5x2.5"``.
 
     Returns
     -------
-    xcdat grid
-        _description_
+    xr.Dataset
+        Uniform grid Dataset spanning -90 to 90 in latitude and 0 to 360
+        in longitude, suitable for use as an xcdat regridding target.
     """
 
     # generate target grid
@@ -37,21 +39,21 @@ def generate_target_grid(target_grid):
 
 
 def select_time_range(ds, start, end):
-    """Subset time range
+    """Subset a Dataset's time axis to a given start/end month.
 
     Parameters
     ----------
-    ds : xarray dataset
-        dataset to subset
+    ds : xr.Dataset
+        Dataset with a ``time`` coordinate to subset.
     start : str
-        Starting year and month in format of "yyyy-mm"
+        Start year and month, ``"yyyy-mm"``.
     end : str
-        Ending year and month in format of "yyyy-mm"
+        End year and month, ``"yyyy-mm"``.
 
     Returns
     -------
-    xarray.Dataset
-        subsetted dataset
+    xr.Dataset
+        Dataset subset to the inclusive ``[start, end]`` time range.
     """
 
     # USER DEFINED PERIOD
@@ -95,19 +97,26 @@ def select_time_range(ds, start, end):
     return ds
 
 
-def test_plot_time_series(da, output_file, std=None, title=None):
-    """Plot time series to visualize interim output
+def test_plot_time_series(da, output_file=None, std=None, title=None):
+    """Plot a time series to visualize an interim QBO index.
+
+    If ``std`` is given, the ``+/-0.5*std`` QBO phase thresholds are drawn
+    as dashed horizontal lines, and the time series is shaded red where it
+    exceeds the westerly threshold and blue where it falls below the
+    easterly threshold.
 
     Parameters
     ----------
-    da : DataArray
-        DataArray to plot time series
-    output_file : str
-        file path and name for saving image
+    da : xr.DataArray
+        Time series to plot.
+    output_file : str, optional
+        Path to save the figure to. Default is ``None``, in which case the
+        figure is not saved to disk.
     std : float, optional
-        standard deviation used for the threshold
+        Standard deviation used for the QBO phase threshold. Default is
+        ``None``, in which case no threshold lines are drawn.
     title : str, optional
-        optional title, by default None
+        Plot title. Default is ``None``.
     """
 
     fig, ax = plt.subplots()
@@ -143,18 +152,29 @@ def test_plot_time_series(da, output_file, std=None, title=None):
     if title is not None:
         ax.set_title(title)
 
-    fig.savefig(output_file)
+    if output_file is not None:
+        fig.savefig(output_file)
 
 
 def test_plot_maps(std2_map, std2_map_phase, fig_title=None, output_file=None):
-    """_summary_
+    """Plot maps of DJF MJO-filtered OLR standard deviation, by QBO phase.
+
+    Draws a 4-panel figure: the all-years standard deviation map, the
+    QBO-east and QBO-west standard deviation maps, and their difference
+    (east minus west).
 
     Parameters
     ----------
-    std2_map : xarray DataArray
-        _description_
+    std2_map : xr.DataArray
+        All-years DJF standard deviation map of MJO-filtered OLR.
     std2_map_phase : dict
-        _description_
+        ``{"east": xr.DataArray, "west": xr.DataArray}`` DJF standard
+        deviation maps of MJO-filtered OLR, partitioned by QBO phase.
+    fig_title : str, optional
+        Figure title. Default is ``None``.
+    output_file : str, optional
+        Path to save the figure to. Default is ``None``, in which case the
+        figure is not saved to disk.
     """
 
     proj_setup = ccrs.PlateCarree(central_longitude=180)
@@ -217,6 +237,19 @@ def test_plot_maps(std2_map, std2_map_phase, fig_title=None, output_file=None):
 
 
 def standardize_lat_lon_name_in_dataset(ds):
+    """Rename latitude/longitude coordinates to "lat"/"lon" and sort ascending.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset whose latitude/longitude coordinate keys may not already
+        be named ``"lat"``/``"lon"``, and/or may be in descending order.
+
+    Returns
+    -------
+    xr.Dataset
+        Dataset with ``lat``/``lon`` coordinate names and ascending order.
+    """
     for coord in ("lat", "lon"):
         coord_key_in_file = find_coord_key(ds, coord)
 
@@ -236,6 +269,23 @@ def standardize_lat_lon_name_in_dataset(ds):
 
 
 def find_coord_key(ds, coord):
+    """Find the coordinate key in a Dataset that matches a coordinate name.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset to search.
+    coord : str
+        Coordinate name to match against, case-insensitively, as a
+        substring of each coordinate key (for example ``"lat"`` matches
+        ``"latitude"``).
+
+    Returns
+    -------
+    str or None
+        The matching coordinate key, or ``None`` if no coordinate key
+        contains ``coord``.
+    """
     for coord_key in list(ds.coords.keys()):
         if coord in coord_key.lower():
             return coord_key
@@ -244,14 +294,30 @@ def find_coord_key(ds, coord):
 def diag_plot(
     std2_map, std2_map_diff, fig_title=None, output_file=None, sub_region=None
 ):
-    """_summary_
+    """Plot the QBO-MJO diagnostic figure used for the primary metric.
+
+    Draws grey contour lines of the all-years DJF MJO-filtered OLR standard
+    deviation, overlaid with filled color contours of the QBO east-minus-west
+    standard deviation difference.
 
     Parameters
     ----------
-    std2_map : xarray DataArray
-        _description_
-    std2_map_diff : xarray DataArray
-        _description_
+    std2_map : xr.DataArray
+        All-years DJF standard deviation map of MJO-filtered OLR, drawn as
+        grey contour lines.
+    std2_map_diff : xr.DataArray
+        QBO east-minus-west standard deviation difference map, drawn as
+        filled color contours.
+    fig_title : str, optional
+        Figure title. Default is ``None``.
+    output_file : str, optional
+        Path to save the figure to. Default is ``None``, in which case the
+        figure is not saved to disk.
+    sub_region : tuple, optional
+        ``(lon_min, lon_max, lat_min, lat_max)`` bounding box drawn as a
+        dashed rectangle, e.g. the maritime continent region used for the
+        metric average. Default is ``None``, in which case no rectangle is
+        drawn.
     """
 
     proj_setup = ccrs.PlateCarree(central_longitude=180)
@@ -336,11 +402,12 @@ def diag_plot(
 
 
 def mycolormap():
-    """Combine two colormap to generate a new colormap for blue-white(middle)-yellow-red
+    """Combine two colormaps into a blue-white(middle)-yellow-red diverging colormap.
 
     Returns
     -------
-    matplotlib colormap
+    matplotlib.colors.LinearSegmentedColormap
+        Diverging colormap running blue (low) - white (middle) - red (high).
     """
     # Adjust colormap
 
