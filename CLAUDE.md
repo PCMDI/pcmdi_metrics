@@ -22,7 +22,7 @@ The PCMDI Metrics Package (PMP) is a scientific Python package for evaluating Ea
 
 **DO NOT break existing workflows, especially driver scripts.**
 
-**Important Context**: Driver scripts (e.g., `mean_climate_driver.py`, `enso_driver.py`, `variability_modes_driver.py`) are **legacy interfaces** that many research groups and operational workflows depend on. While they are not required for new development, existing driver scripts must maintain consistent behavior for backward compatibility.
+**Important Context**: Driver scripts (e.g., `mean_climate_driver.py`, `enso_driver.py`, `variability_modes_driver.py`) are **legacy interfaces** that many research groups and operational workflows depend on. While they are not required for new development, existing driver scripts and corresponding parameter files (e.g., `mean_climate/param/basic_param.py`) must maintain consistent behavior for backward compatibility.
 
 **Requirements**:
 - **Preserve existing command-line interfaces**: Do not change required arguments, remove options, or alter default behavior
