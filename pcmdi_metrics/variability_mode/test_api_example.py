@@ -4,8 +4,6 @@ Example script to test the new variability mode API.
 This demonstrates how to use the new standard API without running the full driver.
 """
 
-import os
-import sys
 
 # Example usage (requires actual data and proper environment)
 def example_usage():
@@ -16,41 +14,41 @@ def example_usage():
     and data files to be available.
     """
     import xarray as xr
-    from pcmdi_metrics.variability_mode import (
-        NAM, NAO, SAM, PNA, NPO, PSA1, PSA2,
-        PDO, NPGO, AMO
-    )
+
+    from pcmdi_metrics.variability_mode import NAM, NAO, PDO, SAM
 
     # Example 1: Simple NAM computation without reference
     print("Example 1: Computing NAM without reference data")
-    model_ds = xr.open_dataset('path/to/model_psl.nc')
-    results = NAM(model_ds, seasons=['DJF'])
+    model_ds = xr.open_dataset("path/to/model_psl.nc")
+    results = NAM(model_ds, seasons=["DJF"])
 
     print(f"NAM DJF variance fraction: {results['DJF']['diagnostics']['frac']}")
     print(f"NAM DJF PC stdv: {results['DJF']['diagnostics']['stdv_pc']}")
 
     # Example 2: NAO with reference data and metrics
     print("\nExample 2: Computing NAO with reference data")
-    obs_ds = xr.open_dataset('path/to/obs_psl.nc')
-    results = NAO(model_ds, reference_ds=obs_ds, seasons=['DJF', 'JJA'])
+    obs_ds = xr.open_dataset("path/to/obs_psl.nc")
+    results = NAO(model_ds, reference_ds=obs_ds, seasons=["DJF", "JJA"])
 
     print(f"NAO DJF correlation: {results['DJF']['metrics']['cor']}")
     print(f"NAO DJF RMS: {results['DJF']['metrics']['rms']}")
 
     # Example 3: PDO using SST data (defaults to monthly analysis)
     print("\nExample 3: Computing PDO with SST data")
-    model_sst = xr.open_dataset('path/to/model_ts.nc')
-    results = PDO(model_sst, data_var='ts')  # Defaults to seasons=['monthly']
+    model_sst = xr.open_dataset("path/to/model_ts.nc")
+    results = PDO(model_sst, data_var="ts")  # Defaults to seasons=['monthly']
     print(f"PDO monthly variance fraction: {results['monthly']['diagnostics']['frac']}")
 
     # Example 4: CBF method
     print("\nExample 4: Computing NAM using CBF method")
-    results = NAM(model_ds, reference_ds=obs_ds, method='cbf', seasons=['DJF'])
-    print(f"NAM CBF pattern shape: {results['DJF']['diagnostics']['cbf_pattern'].shape}")
+    results = NAM(model_ds, reference_ds=obs_ds, method="cbf", seasons=["DJF"])
+    print(
+        f"NAM CBF pattern shape: {results['DJF']['diagnostics']['cbf_pattern'].shape}"
+    )
 
     # Example 5: Time subsetting
     print("\nExample 5: Computing SAM for specific time period")
-    results = SAM(model_ds, start_year=1950, end_year=2000, seasons=['DJF'])
+    results = SAM(model_ds, start_year=1950, end_year=2000, seasons=["DJF"])
 
 
 def print_api_info():

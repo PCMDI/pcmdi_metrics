@@ -26,12 +26,10 @@ from typing import Dict, List, Optional, Union
 import xarray as xr
 
 # Import utilities from pcmdi_metrics.io
-from pcmdi_metrics.io import (
-    get_grid,  # Get grid information from dataset
-    get_time_key,  # Get time coordinate key name
-    load_regions_specs,  # Load predefined geographic regions
-    region_subset,  # Subset dataset by region
-)
+from pcmdi_metrics.io import get_grid  # Get grid information from dataset
+from pcmdi_metrics.io import get_time_key  # Get time coordinate key name
+from pcmdi_metrics.io import load_regions_specs  # Load predefined geographic regions
+from pcmdi_metrics.io import region_subset  # Subset dataset by region
 
 # Import utilities from pcmdi_metrics.utils
 from pcmdi_metrics.utils import regrid  # Regrid dataset to target grid
@@ -40,14 +38,23 @@ from pcmdi_metrics.utils import regrid  # Regrid dataset to target grid
 # These functions contain the core EOF/CBF analysis logic
 from pcmdi_metrics.variability_mode.lib import (
     adjust_timeseries,  # Remove annual cycle and domain mean
+)
+from pcmdi_metrics.variability_mode.lib import (
     calc_stats_save_dict,  # Calculate comparison statistics
-    calcSTD,  # Calculate standard deviation
+)
+from pcmdi_metrics.variability_mode.lib import calcSTD  # Calculate standard deviation
+from pcmdi_metrics.variability_mode.lib import (
     eof_analysis_get_variance_mode,  # Perform EOF analysis
+)
+from pcmdi_metrics.variability_mode.lib import (
     gain_pcs_fraction,  # Calculate variance fraction for CBF
+)
+from pcmdi_metrics.variability_mode.lib import (
     gain_pseudo_pcs,  # Project data onto reference EOFs
+)
+from pcmdi_metrics.variability_mode.lib import (
     linear_regression_on_globe_for_teleconnection,  # Linear regression for teleconnection patterns
 )
-
 
 # Mapping of modes to their properties
 _MODE_CONFIG = {
@@ -64,7 +71,9 @@ _MODE_CONFIG = {
 }
 
 
-def _validate_dataset(ds: xr.Dataset, data_var: str, dataset_name: str = "dataset") -> None:
+def _validate_dataset(
+    ds: xr.Dataset, data_var: str, dataset_name: str = "dataset"
+) -> None:
     """
     Validate that dataset contains required variable and dimensions.
 
@@ -203,7 +212,9 @@ def _compute_variability_mode(
     """
     # Validate inputs
     if mode not in _MODE_CONFIG:
-        raise ValueError(f"Unknown mode: {mode}. Supported modes: {list(_MODE_CONFIG.keys())}")
+        raise ValueError(
+            f"Unknown mode: {mode}. Supported modes: {list(_MODE_CONFIG.keys())}"
+        )
 
     if method not in ["eof", "cbf"]:
         raise ValueError(f"Method must be 'eof' or 'cbf', got: {method}")
