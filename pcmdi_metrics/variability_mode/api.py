@@ -25,15 +25,11 @@ from typing import Dict, List, Optional, Union
 
 import xarray as xr
 
-# Import utilities from pcmdi_metrics.io
 from pcmdi_metrics.io import get_grid  # Get grid information from dataset
 from pcmdi_metrics.io import get_time_key  # Get time coordinate key name
 from pcmdi_metrics.io import load_regions_specs  # Load predefined geographic regions
 from pcmdi_metrics.io import region_subset  # Subset dataset by region
-# Import utilities from pcmdi_metrics.utils
 from pcmdi_metrics.utils import regrid  # Regrid dataset to target grid
-# Import computation functions from variability_mode.lib
-# These functions contain the core EOF/CBF analysis logic
 from pcmdi_metrics.variability_mode.lib import (
     adjust_timeseries,  # Remove annual cycle and domain mean
 )
@@ -222,7 +218,6 @@ def _compute_variability_mode(
 
     # Get mode configuration
     eofn = _MODE_CONFIG[mode]["eof_number"]
-    expected_var = _MODE_CONFIG[mode]["variable"]
 
     # Validate datasets using helper function
     _validate_dataset(model_ds, data_var, "model_ds")
