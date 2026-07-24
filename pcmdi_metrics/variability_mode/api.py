@@ -29,6 +29,7 @@ from pcmdi_metrics.io import get_grid  # Get grid information from dataset
 from pcmdi_metrics.io import get_time_key  # Get time coordinate key name
 from pcmdi_metrics.io import load_regions_specs  # Load predefined geographic regions
 from pcmdi_metrics.io import region_subset  # Subset dataset by region
+from pcmdi_metrics.utils import apply_landmask  # Apply land-sea mask
 from pcmdi_metrics.utils import regrid  # Regrid dataset to target grid
 from pcmdi_metrics.variability_mode.lib import (
     adjust_timeseries,  # Remove annual cycle and domain mean
@@ -155,7 +156,9 @@ def _compute_variability_mode(
     start_year: Optional[int],
     end_year: Optional[int],
     EofScaling: bool = False,
-    RmDomainMean: bool = True,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Core computation function for variability modes.
@@ -180,8 +183,16 @@ def _compute_variability_mode(
         End year for analysis.
     EofScaling : bool, optional
         If True, apply EOF scaling (unit variance). Default is False.
-    RmDomainMean : bool, optional
-        If True, remove domain mean at each time step. Default is True.
+    remove_domain_mean : bool, optional
+        If True, remove domain mean at each time step (detrending). Default is True.
+        This removes the spatial mean from each time step to focus on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions for SST-based modes (PDO, NPGO, AMO).
+        Default is False. If True but landfrac_ds is not provided, a land-sea mask
+        will be generated automatically.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction data (variable 'sftlf'). If not provided
+        and land_mask is True, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -224,6 +235,32 @@ def _compute_variability_mode(
     if reference_ds is not None:
         _validate_dataset(reference_ds, data_var, "reference_ds")
 
+    # Apply land masking if requested for SST-based modes
+    if land_mask:
+        # Extract land fraction if provided
+        landfrac = None
+        if landfrac_ds is not None:
+            if "sftlf" in landfrac_ds.data_vars:
+                landfrac = landfrac_ds["sftlf"]
+            else:
+                raise ValueError(
+                    "landfrac_ds must contain 'sftlf' variable. "
+                    f"Available variables: {list(landfrac_ds.data_vars.keys())}"
+                )
+
+        # Apply mask to model data
+        model_ds = model_ds.copy(deep=True)
+        model_ds[data_var] = apply_landmask(
+            model_ds[data_var], landfrac=landfrac, keep_over="ocean"
+        )
+
+        # Apply mask to reference data if provided
+        if reference_ds is not None:
+            reference_ds = reference_ds.copy(deep=True)
+            reference_ds[data_var] = apply_landmask(
+                reference_ds[data_var], landfrac=landfrac, keep_over="ocean"
+            )
+
     # Load region specifications
     regions_specs = load_regions_specs()
 
@@ -250,7 +287,7 @@ def _compute_variability_mode(
         for season in seasons:
             # Adjust reference timeseries
             ref_timeseries_season = adjust_timeseries(
-                reference_ds, data_var, mode, season, regions_specs, RmDomainMean
+                reference_ds, data_var, mode, season, regions_specs, remove_domain_mean
             )
 
             # Extract subdomain
@@ -286,7 +323,7 @@ def _compute_variability_mode(
                 ref_timeseries_season,
                 data_var,
                 stdv_pc_obs[season],
-                RmDomainMean,
+                remove_domain_mean,
                 EofScaling,
             )
 
@@ -297,7 +334,7 @@ def _compute_variability_mode(
     for season in seasons:
         # Adjust model timeseries
         model_timeseries_season = adjust_timeseries(
-            model_ds, data_var, mode, season, regions_specs, RmDomainMean
+            model_ds, data_var, mode, season, regions_specs, remove_domain_mean
         )
 
         # Extract subdomain
@@ -337,7 +374,7 @@ def _compute_variability_mode(
                 model_timeseries_season,
                 data_var,
                 stdv_pc_model,
-                RmDomainMean,
+                remove_domain_mean,
                 EofScaling,
             )
 
@@ -415,7 +452,7 @@ def _compute_variability_mode(
                 model_timeseries_season,
                 data_var,
                 stdv_cbf_pc,
-                RmDomainMean,
+                remove_domain_mean,
                 EofScaling,
             )
 
@@ -477,6 +514,9 @@ def NAO(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute North Atlantic Oscillation (NAO) diagnostics and metrics.
@@ -499,6 +539,14 @@ def NAO(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -525,7 +573,17 @@ def NAO(
     >>> print(results['DJF']['diagnostics']['frac'])
     """
     return _compute_variability_mode(
-        "NAO", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "NAO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -537,6 +595,9 @@ def NAM(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Northern Annular Mode (NAM) diagnostics and metrics.
@@ -559,6 +620,14 @@ def NAM(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -571,7 +640,17 @@ def NAM(
     >>> results = NAM(model_ds, reference_ds=obs_ds)
     """
     return _compute_variability_mode(
-        "NAM", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "NAM",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -583,6 +662,9 @@ def SAM(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Southern Annular Mode (SAM) diagnostics and metrics.
@@ -605,6 +687,14 @@ def SAM(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -617,7 +707,17 @@ def SAM(
     >>> results = SAM(model_ds)
     """
     return _compute_variability_mode(
-        "SAM", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "SAM",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -629,6 +729,9 @@ def PNA(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific North American Pattern (PNA) diagnostics and metrics.
@@ -651,6 +754,14 @@ def PNA(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -663,7 +774,17 @@ def PNA(
     >>> results = PNA(model_ds)
     """
     return _compute_variability_mode(
-        "PNA", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "PNA",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -675,6 +796,9 @@ def NPO(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute North Pacific Oscillation (NPO) diagnostics and metrics.
@@ -697,6 +821,14 @@ def NPO(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -709,7 +841,17 @@ def NPO(
     >>> results = NPO(model_ds)
     """
     return _compute_variability_mode(
-        "NPO", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "NPO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -721,6 +863,9 @@ def PDO(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific Decadal Oscillation (PDO) diagnostics and metrics.
@@ -743,6 +888,14 @@ def PDO(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -757,7 +910,17 @@ def PDO(
     >>> print(results['monthly']['diagnostics']['frac'])
     """
     return _compute_variability_mode(
-        "PDO", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "PDO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -769,6 +932,9 @@ def NPGO(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute North Pacific Gyre Oscillation (NPGO) diagnostics and metrics.
@@ -791,6 +957,14 @@ def NPGO(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -805,7 +979,17 @@ def NPGO(
     >>> print(results['monthly']['diagnostics']['frac'])
     """
     return _compute_variability_mode(
-        "NPGO", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "NPGO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -817,6 +1001,9 @@ def AMO(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Atlantic Multidecadal Oscillation (AMO) diagnostics and metrics.
@@ -839,6 +1026,14 @@ def AMO(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -853,7 +1048,17 @@ def AMO(
     >>> print(results['yearly']['diagnostics']['frac'])
     """
     return _compute_variability_mode(
-        "AMO", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "AMO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -865,6 +1070,9 @@ def PSA1(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific-South American Pattern 1 (PSA1) diagnostics and metrics.
@@ -887,6 +1095,14 @@ def PSA1(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -900,7 +1116,17 @@ def PSA1(
     >>> print(results['DJF']['diagnostics']['frac'])
     """
     return _compute_variability_mode(
-        "PSA1", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "PSA1",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
 
 
@@ -912,6 +1138,9 @@ def PSA2(
     method: str = "eof",
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific-South American Pattern 2 (PSA2) diagnostics and metrics.
@@ -934,6 +1163,14 @@ def PSA2(
         Start year for analysis. Default is None (use all data).
     end_year : int, optional
         End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
 
     Returns
     -------
@@ -947,5 +1184,15 @@ def PSA2(
     >>> print(results['DJF']['diagnostics']['frac'])
     """
     return _compute_variability_mode(
-        "PSA2", model_ds, data_var, seasons, reference_ds, method, start_year, end_year
+        "PSA2",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
     )
