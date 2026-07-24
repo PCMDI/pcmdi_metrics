@@ -125,6 +125,34 @@ print(results['yearly']['diagnostics']['frac'])
 results = PDO(model_sst, seasons=['DJF', 'JJA'])  # Compute specific seasons instead
 ```
 
+### Advanced Options: Detrending and Land Masking
+
+```python
+# Control detrending behavior
+# Default (True): removes domain mean at each time step (recommended)
+results = NAO(model_ds, remove_domain_mean=True)
+
+# Skip detrending (matches driver behavior when RemoveDomainMean=False)
+results = NAO(model_ds, remove_domain_mean=False)
+
+# Apply land masking for SST-based modes (PDO, NPGO, AMO)
+# Automatic mask generation (default)
+results = PDO(model_sst, data_var='ts', land_mask=True)
+
+# Provide land fraction data explicitly
+landfrac_ds = xr.open_dataset('sftlf.nc')  # Contains 'sftlf' variable
+results = PDO(model_sst, data_var='ts', land_mask=True, landfrac_ds=landfrac_ds)
+
+# Combined: land masking with specific time period
+results = NPGO(
+    model_sst,
+    data_var='ts',
+    land_mask=True,
+    start_year=1980,
+    end_year=2010
+)
+```
+
 ## Function Parameters
 
 All functions share the same signature:
@@ -138,6 +166,9 @@ def MODE_NAME(
     method: str = 'eof',
     start_year: Optional[int] = None,
     end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
 ) -> Dict
 ```
 
@@ -145,7 +176,7 @@ def MODE_NAME(
 
 - **model_ds** (required): xarray Dataset containing the variable to analyze
 - **data_var** (optional): Variable name in the dataset
-  - Default: `'psl'` for atmospheric modes (NAO, NAM, SAM, PNA, NPO)
+  - Default: `'psl'` for atmospheric modes (NAO, NAM, SAM, PNA, NPO, PSA1, PSA2)
   - Default: `'ts'` for SST-based modes (PDO, NPGO, AMO)
 - **seasons** (optional): List of seasons to compute
   - Default for atmospheric modes: `['DJF', 'MAM', 'JJA', 'SON']` (all four seasons)
@@ -162,6 +193,19 @@ def MODE_NAME(
   - Default: None (use all available data)
 - **end_year** (optional): End year for time subsetting
   - Default: None (use all available data)
+- **remove_domain_mean** (optional): Whether to remove domain mean at each time step
+  - Default: True (recommended)
+  - This detrends the data by subtracting the spatial mean from each time step
+  - Focuses analysis on spatial patterns rather than domain-average trends
+  - Set to False to skip this step (matches driver behavior when RemoveDomainMean=False)
+- **land_mask** (optional): Whether to mask out land regions
+  - Default: False
+  - Recommended for SST-based modes (PDO, NPGO, AMO) to focus on ocean variability
+  - If True but landfrac_ds not provided, a land-sea mask will be generated automatically
+- **landfrac_ds** (optional): xarray Dataset containing land fraction data
+  - Variable name should be 'sftlf' (standard CF convention)
+  - Only used when land_mask=True
+  - If not provided, mask is generated automatically using coastline detection
 
 ## Return Structure
 

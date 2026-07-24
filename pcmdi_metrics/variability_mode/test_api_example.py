@@ -50,6 +50,19 @@ def example_usage():
     print("\nExample 5: Computing SAM for specific time period")
     results = SAM(model_ds, start_year=1950, end_year=2000, seasons=["DJF"])
 
+    # Example 6: Detrending control
+    print("\nExample 6: Computing NAO without removing domain mean")
+    results = NAO(model_ds, remove_domain_mean=False, seasons=["DJF"])
+
+    # Example 7: Land masking for SST-based modes
+    print("\nExample 7: Computing PDO with land masking")
+    results = PDO(model_sst, data_var="ts", land_mask=True)
+
+    # Example 8: Land masking with provided land fraction
+    print("\nExample 8: Computing NPGO with explicit land fraction data")
+    landfrac_ds = xr.open_dataset("path/to/sftlf.nc")
+    results = PDO(model_sst, data_var="ts", land_mask=True, landfrac_ds=landfrac_ds)
+
 
 def print_api_info():
     """Print information about the API."""
@@ -79,6 +92,12 @@ def print_api_info():
     print("  - method: 'eof' or 'cbf' (default: 'eof')")
     print("  - start_year: int (optional)")
     print("  - end_year: int (optional)")
+    print("  - remove_domain_mean: bool (default: True)")
+    print("    * Removes spatial mean at each time step (detrending)")
+    print("  - land_mask: bool (default: False)")
+    print("    * Masks out land regions (recommended for SST modes)")
+    print("  - landfrac_ds: xarray.Dataset (optional)")
+    print("    * Explicit land fraction data (contains 'sftlf' variable)")
 
     print("\nReturn structure:")
     print("  {")
