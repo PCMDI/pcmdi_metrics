@@ -33,11 +33,16 @@ def example_usage():
     print(f"NAO DJF correlation: {results['DJF']['metrics']['cor']}")
     print(f"NAO DJF RMS: {results['DJF']['metrics']['rms']}")
 
-    # Example 3: PDO using SST data (defaults to monthly analysis)
-    print("\nExample 3: Computing PDO with SST data")
+    # Example 3: PDO with reference data (model vs observations)
+    print("\nExample 3: Computing PDO with model and reference data")
     model_sst = xr.open_dataset("path/to/model_ts.nc")
-    results = PDO(model_sst, data_var="ts")  # Defaults to seasons=['monthly']
+    obs_sst = xr.open_dataset("path/to/obs_ts.nc")
+    results = PDO(
+        model_sst, data_var="ts", reference_ds=obs_sst, land_mask=True
+    )  # Defaults to seasons=['monthly']
     print(f"PDO monthly variance fraction: {results['monthly']['diagnostics']['frac']}")
+    print(f"PDO monthly correlation: {results['monthly']['metrics']['cor']}")
+    print(f"PDO monthly RMS error: {results['monthly']['metrics']['rms']}")
 
     # Example 4: CBF method
     print("\nExample 4: Computing NAM using CBF method")
@@ -54,14 +59,21 @@ def example_usage():
     print("\nExample 6: Computing NAO without removing domain mean")
     results = NAO(model_ds, remove_domain_mean=False, seasons=["DJF"])
 
-    # Example 7: Land masking for SST-based modes
-    print("\nExample 7: Computing PDO with land masking")
-    results = PDO(model_sst, data_var="ts", land_mask=True)
+    # Example 7: NPGO (2nd EOF) with reference data
+    print("\nExample 7: Computing NPGO with model and reference data")
+    results = NPGO(
+        model_sst, data_var="ts", reference_ds=obs_sst, land_mask=True
+    )  # 2nd EOF
+    print(f"NPGO monthly variance fraction: {results['monthly']['diagnostics']['frac']}")
+    print(f"NPGO monthly correlation: {results['monthly']['metrics']['cor']}")
 
-    # Example 8: Land masking with provided land fraction
-    print("\nExample 8: Computing NPGO with explicit land fraction data")
-    landfrac_ds = xr.open_dataset("path/to/sftlf.nc")
-    results = PDO(model_sst, data_var="ts", land_mask=True, landfrac_ds=landfrac_ds)
+    # Example 8: AMO (yearly analysis) with reference data
+    print("\nExample 8: Computing AMO with model and reference data")
+    results = AMO(
+        model_sst, data_var="ts", reference_ds=obs_sst, land_mask=True
+    )  # Defaults to yearly
+    print(f"AMO yearly variance fraction: {results['yearly']['diagnostics']['frac']}")
+    print(f"AMO yearly correlation: {results['yearly']['metrics']['cor']}")
 
     # Example 9: Unit conversion (Pa to hPa)
     print("\nExample 9: Computing NAO with unit conversion (Pa to hPa)")
