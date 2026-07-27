@@ -34,6 +34,7 @@ from pcmdi_metrics.utils import regrid  # Regrid dataset to target grid
 from pcmdi_metrics.variability_mode.lib import (
     adjust_timeseries,  # Remove annual cycle and domain mean
 )
+from pcmdi_metrics.variability_mode.lib import adjust_units  # Adjust variable units
 from pcmdi_metrics.variability_mode.lib import (
     calc_stats_save_dict,  # Calculate comparison statistics
 )
@@ -159,6 +160,8 @@ def _compute_variability_mode(
     remove_domain_mean: bool = True,
     land_mask: bool = False,
     landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Core computation function for variability modes.
@@ -193,6 +196,13 @@ def _compute_variability_mode(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction data (variable 'sftlf'). If not provided
         and land_mask is True, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Tuple for unit conversion: (enable, operation, value).
+        Example: (True, 'divide', 100.0) converts Pa to hPa.
+        Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -234,6 +244,17 @@ def _compute_variability_mode(
     _validate_dataset(model_ds, data_var, "model_ds")
     if reference_ds is not None:
         _validate_dataset(reference_ds, data_var, "reference_ds")
+
+    # Apply units adjustment if provided
+    if units_adjust is not None:
+        model_ds = model_ds.copy(deep=True)
+        model_ds[data_var] = adjust_units(model_ds[data_var], units_adjust)
+
+    if reference_units_adjust is not None and reference_ds is not None:
+        reference_ds = reference_ds.copy(deep=True)
+        reference_ds[data_var] = adjust_units(
+            reference_ds[data_var], reference_units_adjust
+        )
 
     # Apply land masking if requested for SST-based modes
     if land_mask:
@@ -516,7 +537,9 @@ def NAO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute North Atlantic Oscillation (NAO) diagnostics and metrics.
@@ -547,6 +570,12 @@ def NAO(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -584,6 +613,8 @@ def NAO(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -597,7 +628,9 @@ def NAM(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Northern Annular Mode (NAM) diagnostics and metrics.
@@ -628,6 +661,12 @@ def NAM(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -651,6 +690,8 @@ def NAM(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -664,7 +705,9 @@ def SAM(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Southern Annular Mode (SAM) diagnostics and metrics.
@@ -695,6 +738,12 @@ def SAM(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -718,6 +767,8 @@ def SAM(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -731,7 +782,9 @@ def PNA(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific North American Pattern (PNA) diagnostics and metrics.
@@ -762,6 +815,12 @@ def PNA(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -785,6 +844,8 @@ def PNA(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -798,7 +859,9 @@ def NPO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute North Pacific Oscillation (NPO) diagnostics and metrics.
@@ -829,6 +892,12 @@ def NPO(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -852,6 +921,8 @@ def NPO(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -865,7 +936,9 @@ def PDO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific Decadal Oscillation (PDO) diagnostics and metrics.
@@ -896,6 +969,12 @@ def PDO(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -921,6 +1000,8 @@ def PDO(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -934,7 +1015,9 @@ def NPGO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute North Pacific Gyre Oscillation (NPGO) diagnostics and metrics.
@@ -965,6 +1048,12 @@ def NPGO(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -990,6 +1079,8 @@ def NPGO(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -1003,7 +1094,9 @@ def AMO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Atlantic Multidecadal Oscillation (AMO) diagnostics and metrics.
@@ -1034,6 +1127,12 @@ def AMO(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -1059,6 +1158,8 @@ def AMO(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -1072,7 +1173,9 @@ def PSA1(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific-South American Pattern 1 (PSA1) diagnostics and metrics.
@@ -1103,6 +1206,12 @@ def PSA1(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -1127,6 +1236,8 @@ def PSA1(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
 
 
@@ -1140,7 +1251,9 @@ def PSA2(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,
+    landfrac_ds: Optional[xr.Dataset] = None,,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
     """
     Compute Pacific-South American Pattern 2 (PSA2) diagnostics and metrics.
@@ -1171,6 +1284,12 @@ def PSA2(
     landfrac_ds : xr.Dataset, optional
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
 
     Returns
     -------
@@ -1195,4 +1314,6 @@ def PSA2(
         remove_domain_mean=remove_domain_mean,
         land_mask=land_mask,
         landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
     )
