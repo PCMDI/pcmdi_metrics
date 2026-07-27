@@ -35,6 +35,7 @@ from pcmdi_metrics.variability_mode.lib import (
     adjust_timeseries,  # Remove annual cycle and domain mean
 )
 from pcmdi_metrics.variability_mode.lib import adjust_units  # Adjust variable units
+from pcmdi_metrics.variability_mode.lib import sea_ice_adjust  # Adjust sea ice values
 from pcmdi_metrics.variability_mode.lib import (
     calc_stats_save_dict,  # Calculate comparison statistics
 )
@@ -204,6 +205,13 @@ def _compute_variability_mode(
     reference_units_adjust : tuple, optional
         Same as units_adjust but for reference dataset. Default is None.
 
+    Notes
+    -----
+    For SST-based variables (ts, sst, tos, tosanom), the API automatically applies
+    sea ice adjustment, replacing temperatures below -1.8°C with -1.8°C (the
+    approximate freezing point of seawater). This matches the driver script behavior
+    and prevents unrealistic cold values from affecting the EOF analysis.
+
     Returns
     -------
     dict
@@ -255,6 +263,16 @@ def _compute_variability_mode(
         reference_ds[data_var] = adjust_units(
             reference_ds[data_var], reference_units_adjust
         )
+
+    # Apply sea ice adjustment for SST-based variables
+    # Replace temperature below -1.8°C with -1.8°C (freezing point)
+    if data_var.lower() in ["ts", "sst", "tos", "tosanom"]:
+        model_ds = model_ds.copy(deep=True)
+        model_ds[data_var] = sea_ice_adjust(model_ds[data_var])
+
+        if reference_ds is not None:
+            reference_ds = reference_ds.copy(deep=True)
+            reference_ds[data_var] = sea_ice_adjust(reference_ds[data_var])
 
     # Apply land masking if requested for SST-based modes
     if land_mask:
