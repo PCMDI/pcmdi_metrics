@@ -63,6 +63,20 @@ def example_usage():
     landfrac_ds = xr.open_dataset("path/to/sftlf.nc")
     results = PDO(model_sst, data_var="ts", land_mask=True, landfrac_ds=landfrac_ds)
 
+    # Example 9: Unit conversion (Pa to hPa)
+    print("\nExample 9: Computing NAO with unit conversion (Pa to hPa)")
+    results = NAO(model_ds, data_var="psl", units_adjust=(True, "divide", 100.0))
+
+    # Example 10: Unit conversion for both model and reference data
+    print("\nExample 10: Computing NAM with unit conversion for model and reference")
+    results = NAM(
+        model_ds,
+        reference_ds=obs_ds,
+        data_var="psl",
+        units_adjust=(True, "divide", 100.0),
+        reference_units_adjust=(True, "divide", 100.0),
+    )
+
 
 def print_api_info():
     """Print information about the API."""
@@ -98,6 +112,11 @@ def print_api_info():
     print("    * Masks out land regions (recommended for SST modes)")
     print("  - landfrac_ds: xarray.Dataset (optional)")
     print("    * Explicit land fraction data (contains 'sftlf' variable)")
+    print("  - units_adjust: tuple (optional)")
+    print("    * Unit conversion: (enable, operation, value)")
+    print("    * Example: (True, 'divide', 100.0) for Pa to hPa")
+    print("  - reference_units_adjust: tuple (optional)")
+    print("    * Same as units_adjust but for reference dataset")
 
     print("\nReturn structure:")
     print("  {")

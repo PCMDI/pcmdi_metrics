@@ -153,6 +153,32 @@ results = NPGO(
 )
 ```
 
+### Unit Conversion (Pa to hPa)
+
+```python
+# If your model data is in Pa (Pascals), convert to hPa (hectopascals)
+# This is common for CMIP models where PSL is often in Pa
+results = NAO(
+    model_ds,
+    data_var='psl',
+    units_adjust=(True, 'divide', 100.0)  # Convert Pa to hPa
+)
+
+# If reference data also needs conversion
+results = NAO(
+    model_ds,
+    data_var='psl',
+    reference_ds=obs_ds,
+    units_adjust=(True, 'divide', 100.0),          # Model: Pa → hPa
+    reference_units_adjust=(True, 'divide', 100.0)  # Reference: Pa → hPa
+)
+
+# Other operations available
+# Multiply: (True, 'multiply', 1000.0)
+# Add: (True, 'add', 273.15)  # e.g., Celsius to Kelvin
+# Subtract: (True, 'subtract', 273.15)  # e.g., Kelvin to Celsius
+```
+
 ## Function Parameters
 
 All functions share the same signature:
@@ -169,6 +195,8 @@ def MODE_NAME(
     remove_domain_mean: bool = True,
     land_mask: bool = False,
     landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
 ) -> Dict
 ```
 
@@ -206,6 +234,13 @@ def MODE_NAME(
   - Variable name should be 'sftlf' (standard CF convention)
   - Only used when land_mask=True
   - If not provided, mask is generated automatically using coastline detection
+- **units_adjust** (optional): Tuple for unit conversion: `(enable, operation, value)`
+  - Example: `(True, 'divide', 100.0)` converts Pa to hPa
+  - Operations: `'multiply'`, `'divide'`, `'add'`, `'subtract'`
+  - Default: None (no conversion)
+  - Common use: Converting pressure from Pa to hPa
+- **reference_units_adjust** (optional): Same as units_adjust but for reference dataset
+  - Default: None
 
 ## Return Structure
 
