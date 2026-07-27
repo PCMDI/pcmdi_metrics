@@ -537,7 +537,7 @@ def NAO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -628,7 +628,7 @@ def NAM(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -705,7 +705,7 @@ def SAM(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -782,7 +782,7 @@ def PNA(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -859,7 +859,7 @@ def NPO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -936,7 +936,7 @@ def PDO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -1015,7 +1015,7 @@ def NPGO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -1094,7 +1094,7 @@ def AMO(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -1173,7 +1173,7 @@ def PSA1(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
@@ -1251,7 +1251,7 @@ def PSA2(
     end_year: Optional[int] = None,
     remove_domain_mean: bool = True,
     land_mask: bool = False,
-    landfrac_ds: Optional[xr.Dataset] = None,,
+    landfrac_ds: Optional[xr.Dataset] = None,
     units_adjust: Optional[tuple] = None,
     reference_units_adjust: Optional[tuple] = None,
 ) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
