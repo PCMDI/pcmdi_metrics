@@ -223,7 +223,9 @@ def regrid(
         )
 
     if fill_zero:
-        ds_regridded = ds_regridded.fillna(0)
+        # Only fill NaN in data variables, not coordinates (to avoid dtype issues)
+        for var in ds_regridded.data_vars:
+            ds_regridded[var] = ds_regridded[var].fillna(0)
 
     ds_regridded = ds_regridded.bounds.add_missing_bounds()  # just in case
     return ds_regridded

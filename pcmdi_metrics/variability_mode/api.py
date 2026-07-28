@@ -988,8 +988,8 @@ def PDO(
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
     units_adjust : tuple, optional
-        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
-        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'subtract', -273.15)
+        converts K to C. Operations: 'multiply', 'divide', 'add', 'subtract'.
         Default is None (no conversion).
     reference_units_adjust : tuple, optional
         Same as units_adjust but for reference dataset. Default is None.
@@ -1067,8 +1067,8 @@ def NPGO(
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
     units_adjust : tuple, optional
-        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
-        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'subtract', -273.15)
+        converts K to C. Operations: 'multiply', 'divide', 'add', 'subtract'.
         Default is None (no conversion).
     reference_units_adjust : tuple, optional
         Same as units_adjust but for reference dataset. Default is None.
@@ -1146,8 +1146,8 @@ def AMO(
         Dataset containing land fraction ('sftlf'). If land_mask is True but this
         is not provided, a land-sea mask will be generated automatically.
     units_adjust : tuple, optional
-        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
-        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'subtract', -273.15)
+        converts K to C. Operations: 'multiply', 'divide', 'add', 'subtract'.
         Default is None (no conversion).
     reference_units_adjust : tuple, optional
         Same as units_adjust but for reference dataset. Default is None.
