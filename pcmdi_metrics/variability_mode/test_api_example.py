@@ -138,6 +138,8 @@ def print_api_info():
     print("        'pc_timeseries': xr.DataArray,")
     print("        'frac': float,")
     print("        'stdv_pc': float,")
+    print("        'mean': float,")
+    print("        'mean_glo': float,")
     print("      },")
     print("      'metrics': {...}  # only if reference_ds provided")
     print("    }")
@@ -150,6 +152,8 @@ def print_api_info():
     print("  model_ds = xr.open_dataset('model_psl.nc')")
     print("  results = NAO(model_ds)")
     print("  print(results['DJF']['diagnostics']['frac'])")
+    print("  print(results['DJF']['diagnostics']['mean'])")
+    print("  print(results['DJF']['diagnostics']['mean_glo'])")
 
     print("\nWith reference data:")
     print("  obs_ds = xr.open_dataset('obs_psl.nc')")

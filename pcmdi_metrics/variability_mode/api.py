@@ -29,6 +29,7 @@ from pcmdi_metrics.io import get_grid  # Get grid information from dataset
 from pcmdi_metrics.io import get_time_key  # Get time coordinate key name
 from pcmdi_metrics.io import load_regions_specs  # Load predefined geographic regions
 from pcmdi_metrics.io import region_subset  # Subset dataset by region
+from pcmdi_metrics.stats import mean_xy  # Calculate spatial mean
 from pcmdi_metrics.utils import apply_landmask  # Apply land-sea mask
 from pcmdi_metrics.utils import regrid  # Regrid dataset to target grid
 from pcmdi_metrics.variability_mode.lib import (
@@ -419,11 +420,20 @@ def _compute_variability_mode(
 
             model_timeseries_season["eof_lr"] = eof_lr_model
 
+            # Calculate mean values for diagnostics
+            eof_subdomain = region_subset(
+                model_timeseries_season, mode, regions_specs=regions_specs
+            )["eof_lr"]
+            mean_subdomain = mean_xy(eof_subdomain)
+            mean_global = mean_xy(eof_lr_model)
+
             # Store diagnostics
             season_results["diagnostics"]["eof_pattern"] = eof_lr_model
             season_results["diagnostics"]["pc_timeseries"] = pc_model
             season_results["diagnostics"]["frac"] = float(frac_model)
             season_results["diagnostics"]["stdv_pc"] = float(stdv_pc_model)
+            season_results["diagnostics"]["mean"] = float(mean_subdomain)
+            season_results["diagnostics"]["mean_glo"] = float(mean_global)
 
             # Compute metrics if reference provided
             if reference_ds is not None:
@@ -511,11 +521,18 @@ def _compute_variability_mode(
                 cbf_pc / stdv_cbf_pc,
             )
 
+            # Calculate mean values for diagnostics
+            cbf_subdomain = model_timeseries_season_subdomain["eof_lr_cbf"]
+            mean_subdomain = mean_xy(cbf_subdomain)
+            mean_global = mean_xy(eof_lr_cbf)
+
             # Store diagnostics
             season_results["diagnostics"]["cbf_pattern"] = eof_lr_cbf
             season_results["diagnostics"]["pc_timeseries"] = cbf_pc
             season_results["diagnostics"]["frac"] = float(frac_cbf)
             season_results["diagnostics"]["stdv_pc"] = float(stdv_cbf_pc)
+            season_results["diagnostics"]["mean"] = float(mean_subdomain)
+            season_results["diagnostics"]["mean_glo"] = float(mean_global)
 
             # Compute metrics
             dict_head = {}

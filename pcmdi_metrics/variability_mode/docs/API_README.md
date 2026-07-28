@@ -254,6 +254,8 @@ The function returns a nested dictionary:
             'pc_timeseries': xr.DataArray,    # PC time series
             'frac': float,                     # Variance fraction
             'stdv_pc': float,                  # PC standard deviation
+            'mean': float,                     # Spatial mean (subdomain)
+            'mean_glo': float,                 # Spatial mean (global)
             # If method='cbf':
             'cbf_pattern': xr.DataArray,      # CBF spatial pattern
         },
