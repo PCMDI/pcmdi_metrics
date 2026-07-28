@@ -46,7 +46,9 @@ The PCMDI Metrics Package (PMP) is a scientific Python package for evaluating Ea
 - Do not introduce any new CDAT dependencies or use CDAT-specific APIs.
 
 ### JSON Output Structure
-Metrics saved as JSON with nested structure: DIMENSIONS (metadata about structure), RESULTS (nested by model/reference/region/statistic/season), PROVENANCE (tracking). See existing outputs for schema.
+- Metrics saved as JSON with nested structure: DIMENSIONS (metadata about structure), RESULTS (nested by model/reference/region/statistic/season), PROVENANCE (tracking). See existing outputs for schema.
+- Use `pcmdi_metrics.resources.resource_path()` for package data
+- Maintain provenance tracking via `generateProvenance()` when adding new metrics
 
 ## Development Process
 
@@ -54,6 +56,9 @@ Metrics saved as JSON with nested structure: DIMENSIONS (metadata about structur
 - Test driver scripts with sample parameter files to ensure backward compatibility.
 - For expensive computations, test on a data slice (temporal subset or coarser grid) appropriate to the metric's science.
 - Always run pytest before committing changes.
+- Tests are defined in ./share/test_data_files.txt.
+- Use @pytest.mark.parameterize for testing multiple configurations.
+- Legacy tests in ./tests/deprecated/ (exclude from test runs).
 - Always run `pre-commit run --all-files` before committing changes.
 
 ## Git Workflow
@@ -64,6 +69,8 @@ Metrics saved as JSON with nested structure: DIMENSIONS (metadata about structur
 
 ## Common Pitfalls (gotchas)
 - **Changing existing logic**: If changes are needed, describe the issue, show current vs proposed behavior, and wait for explicit approval before proceeding.
+- **CMEC compatibility**: Preserve CMEC (Climate Model Evaluation Collective) output format when modifying existing metrics that support it.
+- **Helper functions**: Only create when the same logic is used in 3+ places
 
 **Avoid**:
 - Single-use helper functions
