@@ -35,7 +35,6 @@ from pcmdi_metrics.variability_mode.lib import (
     adjust_timeseries,  # Remove annual cycle and domain mean
 )
 from pcmdi_metrics.variability_mode.lib import adjust_units  # Adjust variable units
-from pcmdi_metrics.variability_mode.lib import sea_ice_adjust  # Adjust sea ice values
 from pcmdi_metrics.variability_mode.lib import (
     calc_stats_save_dict,  # Calculate comparison statistics
 )
@@ -52,6 +51,7 @@ from pcmdi_metrics.variability_mode.lib import (
 from pcmdi_metrics.variability_mode.lib import (
     linear_regression_on_globe_for_teleconnection,  # Linear regression for teleconnection patterns
 )
+from pcmdi_metrics.variability_mode.lib import sea_ice_adjust  # Adjust sea ice values
 
 # Mapping of modes to their properties
 _MODE_CONFIG = {
