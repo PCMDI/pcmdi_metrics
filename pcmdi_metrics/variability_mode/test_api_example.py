@@ -15,7 +15,7 @@ def example_usage():
     """
     import xarray as xr
 
-    from pcmdi_metrics.variability_mode import NAM, NAO, PDO, SAM
+    from pcmdi_metrics.variability_mode import AMO, NAM, NAO, NPGO, PDO, SAM
 
     # Example 1: Simple NAM computation without reference
     print("Example 1: Computing NAM without reference data")
@@ -64,7 +64,9 @@ def example_usage():
     results = NPGO(
         model_sst, data_var="ts", reference_ds=obs_sst, land_mask=True
     )  # 2nd EOF
-    print(f"NPGO monthly variance fraction: {results['monthly']['diagnostics']['frac']}")
+    print(
+        f"NPGO monthly variance fraction: {results['monthly']['diagnostics']['frac']}"
+    )
     print(f"NPGO monthly correlation: {results['monthly']['metrics']['cor']}")
 
     # Example 8: AMO (yearly analysis) with reference data
