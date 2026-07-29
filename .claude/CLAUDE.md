@@ -44,6 +44,7 @@ The PCMDI Metrics Package (PMP) is a scientific Python package for evaluating Ea
 ### Key Dependencies
 - All CDAT functionality has been transitioned to **xCDAT** (imported as `xcdat`).
 - Do not introduce any new CDAT dependencies or use CDAT-specific APIs.
+- Use **xarray** as the primary data structure for N-dimensional arrays.
 
 ### JSON Output Structure
 - Metrics saved as JSON with nested structure: DIMENSIONS (metadata about structure), RESULTS (nested by model/reference/region/statistic/season), PROVENANCE (tracking). See existing outputs for schema.
