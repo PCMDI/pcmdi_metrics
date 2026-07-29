@@ -260,10 +260,7 @@ The function returns a nested dictionary:
             'cbf_pattern': xr.DataArray,      # CBF spatial pattern
         },
         'metrics': {  # Only present if reference_ds provided
-            'frac': float,
-            'stdv_pc': float,
-            'mean': float,
-            'mean_glo': float,
+            # Comparison metrics (model vs reference)
             'cor': float,                      # Spatial correlation
             'cor_glo': float,                  # Global correlation
             'rms': float,                      # RMS error
@@ -278,6 +275,10 @@ The function returns a nested dictionary:
     # ... for each season
 }
 ```
+
+**Note:** Diagnostic statistics (`frac`, `stdv_pc`, `mean`, `mean_glo`) are only in the
+`diagnostics` section. The `metrics` section contains only comparison statistics against
+the reference dataset.
 
 ## Input Data Requirements
 

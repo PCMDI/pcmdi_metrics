@@ -446,7 +446,14 @@ def _compute_variability_mode(
                     obs_compare=True,
                     method="eof",
                 )
-                season_results["metrics"] = dict_head
+
+                # Remove duplicated fields that are already in diagnostics
+                metrics = {
+                    k: v
+                    for k, v in dict_head.items()
+                    if k not in ["frac", "stdv_pc", "mean", "mean_glo"]
+                }
+                season_results["metrics"] = metrics
             else:
                 # Without reference: only compute mean values for diagnostics
                 dict_head, _ = calc_stats_save_dict(
@@ -550,7 +557,13 @@ def _compute_variability_mode(
                 method="cbf",
             )
 
-            season_results["metrics"] = dict_head
+            # Remove duplicated fields that are already in diagnostics
+            metrics = {
+                k: v
+                for k, v in dict_head.items()
+                if k not in ["frac", "stdv_pc", "mean", "mean_glo"]
+            }
+            season_results["metrics"] = metrics
 
             # Store diagnostics
             season_results["diagnostics"]["cbf_pattern"] = eof_lr_cbf
@@ -634,9 +647,14 @@ def NAO(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -742,9 +760,14 @@ def NAM(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -847,9 +870,14 @@ def SAM(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -949,9 +977,14 @@ def PNA(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -1051,9 +1084,14 @@ def NPO(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -1153,9 +1191,14 @@ def PDO(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -1257,9 +1300,14 @@ def NPGO(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -1361,9 +1409,14 @@ def AMO(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -1465,9 +1518,14 @@ def PSA1(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
@@ -1568,9 +1626,14 @@ def PSA2(
                 },
                 'metrics': {  # Only present if reference_ds provided
                     'cor': float,  # Spatial correlation
+                    'cor_glo': float,  # Global correlation
                     'rms': float,  # RMS error
+                    'rms_glo': float,  # Global RMS error
+                    'rmsc': float,  # Centered RMS error
+                    'rmsc_glo': float,  # Global centered RMS
                     'bias': float,  # Bias
-                    ...
+                    'bias_glo': float,  # Global bias
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
         }
