@@ -582,7 +582,10 @@ def NAO(
     """
     Compute North Atlantic Oscillation (NAO) diagnostics and metrics.
 
-    NAO is the leading EOF of sea level pressure over the North Atlantic (20-80N, 90W-40E).
+    The NAO is the leading EOF of sea level pressure over the North Atlantic
+    (20-80N, 90W-40E). This function performs EOF analysis on model data and
+    optionally compares against reference data using spatial correlation, RMS
+    differences, and other statistics.
 
     Parameters
     ----------
@@ -622,12 +625,19 @@ def NAO(
         {
             'SEASON': {
                 'diagnostics': {
-                    'eof_pattern': xr.DataArray,
-                    'pc_timeseries': xr.DataArray,
-                    'frac': float,
-                    'stdv_pc': float,
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
                 },
-                'metrics': {...}  # only if reference_ds provided
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
             }
         }
 
@@ -638,6 +648,13 @@ def NAO(
     >>> model_ds = xr.open_dataset('model_psl.nc')
     >>> results = NAO(model_ds)
     >>> print(results['DJF']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "NAO",
@@ -673,7 +690,10 @@ def NAM(
     """
     Compute Northern Annular Mode (NAM) diagnostics and metrics.
 
-    NAM is the leading EOF of sea level pressure over the Northern Hemisphere (20-90N).
+    The NAM is the leading EOF of sea level pressure over the Northern
+    Hemisphere (20-90N). This function performs EOF analysis on model data and
+    optionally compares against reference data using spatial correlation, RMS
+    differences, and other statistics.
 
     Parameters
     ----------
@@ -709,12 +729,37 @@ def NAM(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
     >>> from pcmdi_metrics.variability_mode import NAM
     >>> results = NAM(model_ds, reference_ds=obs_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "NAM",
@@ -750,7 +795,10 @@ def SAM(
     """
     Compute Southern Annular Mode (SAM) diagnostics and metrics.
 
-    SAM is the leading EOF of sea level pressure over the Southern Hemisphere (90S-20S).
+    The SAM is the leading EOF of sea level pressure over the Southern
+    Hemisphere (90S-20S). This function performs EOF analysis on model data and
+    optionally compares against reference data using spatial correlation, RMS
+    differences, and other statistics.
 
     Parameters
     ----------
@@ -786,12 +834,37 @@ def SAM(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
     >>> from pcmdi_metrics.variability_mode import SAM
     >>> results = SAM(model_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "SAM",
@@ -863,12 +936,37 @@ def PNA(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
     >>> from pcmdi_metrics.variability_mode import PNA
     >>> results = PNA(model_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "PNA",
@@ -940,12 +1038,37 @@ def NPO(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
     >>> from pcmdi_metrics.variability_mode import NPO
     >>> results = NPO(model_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "NPO",
@@ -1017,7 +1140,25 @@ def PDO(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
@@ -1025,6 +1166,13 @@ def PDO(
     >>> results = PDO(model_ds, data_var='ts')
     >>> # PDO defaults to monthly analysis
     >>> print(results['monthly']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "PDO",
@@ -1096,7 +1244,25 @@ def NPGO(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
@@ -1104,6 +1270,13 @@ def NPGO(
     >>> results = NPGO(model_ds, data_var='ts')
     >>> # NPGO defaults to monthly analysis
     >>> print(results['monthly']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "NPGO",
@@ -1175,7 +1348,25 @@ def AMO(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
@@ -1183,6 +1374,13 @@ def AMO(
     >>> results = AMO(model_ds, data_var='ts')
     >>> # AMO defaults to yearly analysis
     >>> print(results['yearly']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "AMO",
@@ -1254,13 +1452,38 @@ def PSA1(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
     >>> from pcmdi_metrics.variability_mode import PSA1
     >>> results = PSA1(model_ds)
     >>> print(results['DJF']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "PSA1",
@@ -1332,13 +1555,38 @@ def PSA2(
     Returns
     -------
     dict
-        Results dictionary with diagnostics and metrics (if reference provided).
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation
+                    'rms': float,  # RMS error
+                    'bias': float,  # Bias
+                    ...
+                }
+            }
+        }
 
     Examples
     --------
     >>> from pcmdi_metrics.variability_mode import PSA2
     >>> results = PSA2(model_ds)
     >>> print(results['DJF']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
     """
     return _compute_variability_mode(
         "PSA2",
