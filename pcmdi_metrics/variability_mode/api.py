@@ -646,14 +646,14 @@ def NAO(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -759,14 +759,14 @@ def NAM(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -869,14 +869,14 @@ def SAM(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -976,14 +976,14 @@ def PNA(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -1083,14 +1083,14 @@ def NPO(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -1190,14 +1190,14 @@ def PDO(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -1299,14 +1299,14 @@ def NPGO(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -1408,14 +1408,14 @@ def AMO(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -1517,14 +1517,14 @@ def PSA1(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }
@@ -1625,14 +1625,14 @@ def PSA2(
                     'mean_glo': float,  # Spatial mean (global)
                 },
                 'metrics': {  # Only present if reference_ds provided
-                    'cor': float,  # Spatial correlation
-                    'cor_glo': float,  # Global correlation
-                    'rms': float,  # RMS error
-                    'rms_glo': float,  # Global RMS error
-                    'rmsc': float,  # Centered RMS error
-                    'rmsc_glo': float,  # Global centered RMS
-                    'bias': float,  # Bias
-                    'bias_glo': float,  # Global bias
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
                     'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
                 }
             }

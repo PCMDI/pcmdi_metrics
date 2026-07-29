@@ -261,14 +261,16 @@ The function returns a nested dictionary:
         },
         'metrics': {  # Only present if reference_ds provided
             # Comparison metrics (model vs reference)
-            'cor': float,                      # Spatial correlation
-            'cor_glo': float,                  # Global correlation
-            'rms': float,                      # RMS error
-            'rms_glo': float,                  # Global RMS error
-            'rmsc': float,                     # Centered RMS error
-            'rmsc_glo': float,                 # Global centered RMS error
-            'bias': float,                     # Bias
-            'bias_glo': float,                 # Global bias
+            # Metrics without '_glo' are calculated over the EOF subdomain
+            # Metrics with '_glo' are calculated over global teleconnection patterns
+            'cor': float,                      # Spatial correlation (subdomain)
+            'cor_glo': float,                  # Correlation (global teleconnection)
+            'rms': float,                      # RMS error (subdomain)
+            'rms_glo': float,                  # RMS error (global teleconnection)
+            'rmsc': float,                     # Centered RMS error (subdomain)
+            'rmsc_glo': float,                 # Centered RMS (global teleconnection)
+            'bias': float,                     # Bias (subdomain)
+            'bias_glo': float,                 # Bias (global teleconnection)
             'stdv_pc_ratio_to_obs': float,    # PC stdv ratio
         }
     },
@@ -276,9 +278,13 @@ The function returns a nested dictionary:
 }
 ```
 
-**Note:** Diagnostic statistics (`frac`, `stdv_pc`, `mean`, `mean_glo`) are only in the
-`diagnostics` section. The `metrics` section contains only comparison statistics against
-the reference dataset.
+**Notes:**
+- Diagnostic statistics (`frac`, `stdv_pc`, `mean`, `mean_glo`) are only in the
+  `diagnostics` section. The `metrics` section contains only comparison statistics.
+- Metrics without `_glo` suffix are calculated over the EOF subdomain (e.g., NAO: 20-80N, 90W-40E).
+- Metrics with `_glo` suffix are calculated using the global teleconnection patterns obtained
+  from linear regression of PC time series onto the global field. These capture the mode's
+  influence beyond the EOF domain.
 
 ## Input Data Requirements
 
