@@ -30,6 +30,8 @@ The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` versi
     variability_mode.NAO
     variability_mode.NAM
     variability_mode.SAM
+    variability_mode.PSA1
+    variability_mode.PSA2
     variability_mode.PNA
     variability_mode.NPO
     variability_mode.PDO
