@@ -4,6 +4,7 @@ import os
 import numpy as np
 import xarray as xr
 import xcdat as xc
+from joblib import Parallel, delayed
 from numdifftools.core import Hessian
 from scipy.optimize import minimize
 from scipy.stats import genextreme
@@ -225,7 +226,90 @@ def compute_rv_for_model(
     return meta
 
 
-def get_dataset_rv(ds, cov_filepath, cov_varname, return_period=20, maxes=True):
+def fit_cell(
+    b,
+    covariate,
+    scale_factor,
+    return_period,
+    maxes,
+):
+    b = np.asarray(b)
+
+    # Preserve the original time positions
+    valid = np.isfinite(b)
+
+    if covariate is not None:
+        covariate = np.asarray(covariate)
+        valid &= np.isfinite(covariate)
+
+    if valid.sum() < 10:
+        if covariate is None:
+            return np.nan, np.nan
+
+        return (
+            np.full(b.shape, np.nan),
+            np.full(b.shape, np.nan),
+        )
+
+    b_valid = b[valid]
+
+    if np.all(b_valid == b_valid[0]):
+        if covariate is None:
+            return np.nan, np.nan
+
+        return (
+            np.full(b.shape, np.nan),
+            np.full(b.shape, np.nan),
+        )
+
+    cov_valid = None if covariate is None else covariate[valid]
+
+    try:
+        rv_tmp, se_tmp = calc_rv_py(
+            b_valid,
+            cov_valid,
+            return_period,
+            nreplicates=1,
+            maxes=maxes,
+        )
+    except Exception:
+        if covariate is None:
+            return np.nan, np.nan
+
+        return (
+            np.full(b.shape, np.nan),
+            np.full(b.shape, np.nan),
+        )
+
+    if rv_tmp is None:
+        if covariate is None:
+            return np.nan, np.nan
+
+        return (
+            np.full(b.shape, np.nan),
+            np.full(b.shape, np.nan),
+        )
+
+    # Stationary result: one value per grid cell
+    if covariate is None:
+        return (
+            rv_tmp * scale_factor,
+            se_tmp * scale_factor,
+        )
+
+    # Nonstationary result: one value per valid time
+    rv_out = np.full(b.shape, np.nan)
+    se_out = np.full(b.shape, np.nan)
+
+    rv_out[valid] = np.asarray(rv_tmp) * scale_factor
+    se_out[valid] = np.asarray(se_tmp) * scale_factor
+
+    return rv_out, se_out
+
+
+def get_dataset_rv(
+    ds, cov_filepath, cov_varname, return_period=20, maxes=True, n_jobs=-1
+):
     # Get the return value for a single model & realization
     # Set cov_filepath and cov_varname to None for stationary GEV.
     # Arguments:
@@ -234,6 +318,13 @@ def get_dataset_rv(ds, cov_filepath, cov_varname, return_period=20, maxes=True):
     #   cov_varname: string
     #   return_period: int
     #   maxes: bool
+
+    slurm_cpus = os.environ.get("SLURM_CPUS_PER_TASK")
+
+    if (
+        slurm_cpus is not None
+    ):  # If we are in a SLURM environment, default to SLURM setting
+        n_jobs = int(slurm_cpus)
 
     dec_mode = str(ds.attrs["december_mode"])
     drop_incomplete_djf = ds.attrs["drop_incomplete_djf"]
@@ -294,9 +385,9 @@ def get_dataset_rv(ds, cov_filepath, cov_varname, return_period=20, maxes=True):
 
         if season == "DJF" and dec_mode == "DJF" and drop_incomplete_djf:
             # Step first time index to skip all-nan block
-            i1 = 1
+            t_ind = 1
         else:
-            i1 = 0
+            t_ind = 0
 
         data = np.reshape(data, (time, dim2))
         if nonstationary:
@@ -306,41 +397,57 @@ def get_dataset_rv(ds, cov_filepath, cov_varname, return_period=20, maxes=True):
         se_array = rv_array.copy()
 
         # Turn nans to zeros
-        data = np.nan_to_num(data)
 
         if nonstationary:
-            cov_slice = cov_ds[i1:]
+            cov_slice = cov_ds[t_ind:]
         else:
             cov_slice = None
 
-        for j in range(0, dim2):
-            b = data[i1:, j]
-            if np.sum(b) == 0:
-                continue
-            elif np.isnan(np.sum(b)):
-                continue
-            rv_tmp, se_tmp = calc_rv_py(
-                data[i1:, j].squeeze(), cov_slice, return_period, 1, maxes
+        results = Parallel(n_jobs=n_jobs, prefer="processes")(
+            delayed(fit_cell)(
+                data[t_ind:, j], cov_slice, scale_factor, return_period, maxes
             )
-            if rv_tmp is not None:
-                if nonstationary:
-                    rv_array[i1:, j] = rv_tmp * scale_factor
-                    se_array[i1:, j] = se_tmp * scale_factor
-                else:
-                    rv_array[j] = rv_tmp * scale_factor
-                    se_array[j] = se_tmp * scale_factor
+            for j in range(dim2)
+        )
+        rv_results, se_results = zip(*results)
 
         if nonstationary:
-            rv_array = np.reshape(rv_array, (time, lat, lon))
-            se_array = np.reshape(se_array, (time, lat, lon))
-            return_value[season] = (("time", "lat", "lon"), rv_array)
-            standard_error[season] = (("time", "lat", "lon"), se_array)
+            # Each result has shape (time - t_ind,)
+            rv_fit = np.stack(rv_results, axis=1)
+            se_fit = np.stack(se_results, axis=1)
+
+            # Keep the skipped first DJF index as NaN
+            rv_array = np.full((time, dim2), np.nan)
+            se_array = np.full((time, dim2), np.nan)
+
+            rv_array[t_ind:, :] = rv_fit
+            se_array[t_ind:, :] = se_fit
+
+            rv_array = rv_array.reshape(time, lat, lon)
+            se_array = se_array.reshape(time, lat, lon)
+
+            return_value[season] = (
+                ("time", "lat", "lon"),
+                rv_array,
+            )
+            standard_error[season] = (
+                ("time", "lat", "lon"),
+                se_array,
+            )
 
         else:
-            rv_array = np.reshape(rv_array, (lat, lon))
-            se_array = np.reshape(se_array, (lat, lon))
-            return_value[season] = (("lat", "lon"), rv_array)
-            standard_error[season] = (("lat", "lon"), se_array)
+            # Each result is a scalar
+            rv_array = np.asarray(rv_results).reshape(lat, lon)
+            se_array = np.asarray(se_results).reshape(lat, lon)
+
+            return_value[season] = (
+                ("lat", "lon"),
+                rv_array,
+            )
+            standard_error[season] = (
+                ("lat", "lon"),
+                se_array,
+            )
 
     return_value.attrs["description"] = "{0}-year return value".format(return_period)
     standard_error.attrs["description"] = "standard error"
