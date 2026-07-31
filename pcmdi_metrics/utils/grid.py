@@ -264,7 +264,16 @@ def regrid(
         print("Regridding done.")
 
     if fill_zero:
-        ds_regridded = ds_regridded.fillna(0)
+        # Fill NaN in data variables using numpy to avoid xarray dtype promotion issues
+        # xarray's fillna tries to align coordinates which can cause datetime dtype conflicts
+        import numpy as np
+
+        for var in ds_regridded.data_vars:
+            da = ds_regridded[var]
+            # Use numpy's nan_to_num to avoid dtype promotion with coordinates
+            filled_values = np.nan_to_num(da.values, nan=0.0)
+            # Assign back preserving dimensions and attributes
+            ds_regridded[var] = (da.dims, filled_values, da.attrs)
 
     # Add missing bounds, just in case
     ds_regridded = ds_regridded.bounds.add_missing_bounds()
