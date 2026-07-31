@@ -1,3 +1,5 @@
+import warnings
+
 import cartopy.crs as ccrs
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
@@ -5,6 +7,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
+
+# Suppress the specific Shapely warning about invalid values in collections
+warnings.filterwarnings(
+    "ignore", message="invalid value encountered in create_collection"
+)
 
 
 def map_plotter(domain, title, ds, save_path=None):

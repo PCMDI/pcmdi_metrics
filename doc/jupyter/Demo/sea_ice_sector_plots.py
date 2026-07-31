@@ -11,13 +11,20 @@ from pcmdi_metrics.utils import create_land_sea_mask
 
 logging.getLogger("xcdat").setLevel(logging.ERROR)
 
+OBS_FILE_NH = (
+    "demo_data/misc_demo_data/ocn/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
+)
+OBS_FILE_SH = (
+    "demo_data/misc_demo_data/ocn/ice_conc_sh_ease2-250_cdr-v3p0_198801-202012.nc"
+)
+
+
 # ----------
 # Arctic
 # ----------
 print("Creating Arctic map")
 # Load and process data
-obs_file = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
-obs = xc.open_dataset(obs_file)
+obs = xc.open_dataset(OBS_FILE_NH)
 obs = obs.mean("time")
 mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
 obs["ice_conc"] = obs["ice_conc"].where(mask < 1)
@@ -89,8 +96,7 @@ obs.close()
 # ----------
 print("Creating Antarctic map")
 # Load and process data
-f_os_s = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_sh_ease2-250_cdr-v3p0_198801-202012.nc"
-obs = xc.open_dataset(f_os_s)
+obs = xc.open_dataset(OBS_FILE_SH)
 obs = obs.mean("time")
 mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
 obs["ice_conc"] = obs["ice_conc"].where(mask < 1)

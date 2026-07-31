@@ -4,8 +4,10 @@ import xcdat as xc
 
 from pcmdi_metrics.io import (
     get_grid,
+    get_latitude,
     get_latitude_bounds_key,
     get_latitude_key,
+    get_longitude,
     get_longitude_bounds_key,
     get_longitude_key,
 )
@@ -201,6 +203,14 @@ def regrid(
     >>> from pcmdi_metrics.utils import regrid
     """
 
+    if "axis" not in get_latitude(ds).attrs:
+        lat_key = get_latitude_key(ds)
+        ds[lat_key].attrs["axis"] = "Y"
+
+    if "axis" not in get_longitude(ds).attrs:
+        lon_key = get_longitude_key(ds)
+        ds[lon_key].attrs["axis"] = "X"
+
     target_grid = get_grid(target_grid)  # To remove time dimension if exist
     # regrid
     if regrid_tool == "regrid2":
@@ -213,7 +223,16 @@ def regrid(
         )
 
     if fill_zero:
-        ds_regridded = ds_regridded.fillna(0)
+        # Fill NaN in data variables using numpy to avoid xarray dtype promotion issues
+        # xarray's fillna tries to align coordinates which can cause datetime dtype conflicts
+        import numpy as np
+
+        for var in ds_regridded.data_vars:
+            da = ds_regridded[var]
+            # Use numpy's nan_to_num to avoid dtype promotion with coordinates
+            filled_values = np.nan_to_num(da.values, nan=0.0)
+            # Assign back preserving dimensions and attributes
+            ds_regridded[var] = (da.dims, filled_values, da.attrs)
 
     ds_regridded = ds_regridded.bounds.add_missing_bounds()  # just in case
     return ds_regridded

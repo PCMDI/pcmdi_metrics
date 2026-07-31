@@ -1,6 +1,5 @@
 import os
-
-import pkg_resources
+from importlib import metadata
 
 
 def resource_path():
@@ -13,11 +12,11 @@ def resource_path():
             return res_path
 
     try:
-        res_path = pkg_resources.resource_filename(
-            pkg_resources.Requirement.parse("pcmdi_metrics"),
-            "share/pmp",
-        )
-    except Exception:
+        dist = metadata.distribution("pcmdi_metrics")
+        # Use importlib.metadata to locate data-files installed with the
+        # distribution
+        res_path = str(dist.locate_file("share/pmp"))
+    except metadata.PackageNotFoundError:
         res_path = os.path.join(os.getcwd(), "share", "pmp")
 
     # Should never fail this

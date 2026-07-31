@@ -89,7 +89,7 @@ def fill_template(template: str, **kwargs) -> str:
 
     Examples
     --------
-    >>> from pcmdi_metrics.utils import fill_template
+    >>> from pcmdi_metrics.io import fill_template
     >>> template = "This is a %(adjective) %(noun) that %(verb)."
     >>> filled_string = fill_template(template, adjective="great", noun="example", verb="works")
     >>> print(filled_string)  # It will print "This is a great example that works."

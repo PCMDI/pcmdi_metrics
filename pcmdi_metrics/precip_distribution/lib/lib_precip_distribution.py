@@ -1078,7 +1078,23 @@ def CalcMetricsDomain3Clust(
             if shape[1] == 1:
                 polygons.append(Polygon(shape[0]["coordinates"][0]))
 
-        mpolygons.append(MultiPolygon(polygons).simplify(3, preserve_topology=False))
+        # Shapely >=2 may return Polygon or GeometryCollection after simplify;
+        # coerce to MultiPolygon comprised of polygonal parts only.
+        simplified = MultiPolygon(polygons).simplify(3, preserve_topology=False)
+        if isinstance(simplified, MultiPolygon):
+            mpolygons.append(simplified)
+        elif isinstance(simplified, Polygon):
+            mpolygons.append(MultiPolygon([simplified]))
+        else:
+            # GeometryCollection or other: extract polygonal geometries when available
+            if hasattr(simplified, "geoms"):
+                polys = [g for g in simplified.geoms if isinstance(g, Polygon)]
+                mpolygons.append(
+                    MultiPolygon(polys) if len(polys) > 0 else MultiPolygon([])
+                )
+            else:
+                # Fallback to unsimplified geometry if simplify produced a non-multipart type
+                mpolygons.append(MultiPolygon(polygons))
 
     region = regionmask.Regions(
         mpolygons,
@@ -1379,6 +1395,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 [-130, 50],
                 [-125.3, 40],
             ]
+            # r1, r2 are coordinate lists; wrap each once to Polygon, then MultiPolygon
             vertices = MultiPolygon([Polygon(r1), Polygon(r2)])
         elif reg == "NWPO":
             vertices = Polygon([[139.5, 0], [132, 5], [132, 20], [180, 25], [180, 0]])
@@ -1393,7 +1410,8 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         elif reg == "SWPO":
             r1 = Polygon([[155, -30], [155, -10], [139.5, 0], [180, 0], [180, -30]])
             r2 = Polygon([[-180, -30], [-180, 0], [-135, -10], [-135, -30]])
-            vertices = MultiPolygon([Polygon(r1), Polygon(r2)])
+            # r1 and r2 are already Polygon objects; build a MultiPolygon directly
+            vertices = MultiPolygon([r1, r2])
         elif reg == "SEPO":
             vertices = Polygon(
                 [
@@ -2083,7 +2101,19 @@ def MedDomain3Clust(d, months, debug=False):
             if shape[1] == 1:
                 polygons.append(Polygon(shape[0]["coordinates"][0]))
 
-        mpolygons.append(MultiPolygon(polygons).simplify(3, preserve_topology=False))
+        simplified = MultiPolygon(polygons).simplify(3, preserve_topology=False)
+        if isinstance(simplified, MultiPolygon):
+            mpolygons.append(simplified)
+        elif isinstance(simplified, Polygon):
+            mpolygons.append(MultiPolygon([simplified]))
+        else:
+            if hasattr(simplified, "geoms"):
+                polys = [g for g in simplified.geoms if isinstance(g, Polygon)]
+                mpolygons.append(
+                    MultiPolygon(polys) if len(polys) > 0 else MultiPolygon([])
+                )
+            else:
+                mpolygons.append(MultiPolygon(polygons))
 
     region = regionmask.Regions(
         mpolygons,
@@ -2266,7 +2296,7 @@ def MedDomainAR6(d, months):
         elif reg == "SWPO":
             r1 = Polygon([[155, -30], [155, -10], [139.5, 0], [180, 0], [180, -30]])
             r2 = Polygon([[-180, -30], [-180, 0], [-135, -10], [-135, -30]])
-            vertices = MultiPolygon([Polygon(r1), Polygon(r2)])
+            vertices = MultiPolygon([r1, r2])
         elif reg == "SEPO":
             vertices = Polygon(
                 [

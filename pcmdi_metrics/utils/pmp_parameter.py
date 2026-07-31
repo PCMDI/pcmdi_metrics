@@ -1,10 +1,10 @@
 import logging
 import os
 
-import cdp.cdp_parameter
-
+import pcmdi_metrics.utils as cdp
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.utils import StringConstructor
+
+from .string_constructor import StringConstructor
 
 try:
     basestring  # noqa

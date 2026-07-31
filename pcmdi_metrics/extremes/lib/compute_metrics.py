@@ -102,13 +102,14 @@ class SeasonalAverager:
 
             # Only use data from that year - start on Jan 5 avg
             date_range = [
-                xr.cftime_range(
+                xr.date_range(
                     start=cftime.datetime(year, 1, 5, hour=hr, calendar=cal)
                     - self.del0d,
                     end=cftime.datetime(year + 1, 1, 1, hour=hr, calendar=cal)
                     - self.del1d,
                     freq="D",
                     calendar=cal,
+                    use_cftime=True,
                 )
                 for year in year_range
             ]
@@ -190,37 +191,40 @@ class SeasonalAverager:
             if self.annual_strict and pentad:
                 # Only use data from that year - start on Jan 5 avg
                 date_range_1 = [
-                    xr.cftime_range(
+                    xr.date_range(
                         start=cftime.datetime(year, 1, 5, hour=hr, calendar=cal)
                         - self.del0d,
                         end=cftime.datetime(year, 3, 1, hour=hr, calendar=cal)
                         - self.del1d,
                         freq="D",
                         calendar=cal,
+                        use_cftime=True,
                     )
                     for year in year_range
                 ]
             else:
                 date_range_1 = [
-                    xr.cftime_range(
+                    xr.date_range(
                         start=cftime.datetime(year, 1, 1, hour=hr, calendar=cal)
                         - self.del0d,
                         end=cftime.datetime(year, 3, 1, hour=hr, calendar=cal)
                         - self.del1d,
                         freq="D",
                         calendar=cal,
+                        use_cftime=True,
                     )
                     for year in year_range
                 ]
             date_range_1 = [item for sublist in date_range_1 for item in sublist]
             date_range_2 = [
-                xr.cftime_range(
+                xr.date_range(
                     start=cftime.datetime(year, 12, 1, hour=hr, calendar=cal)
                     - self.del0d,
                     end=cftime.datetime(year + 1, 1, 1, hour=hr, calendar=cal)
                     - self.del1d,
                     freq="D",
                     calendar=cal,
+                    use_cftime=True,
                 )
                 for year in year_range
             ]
@@ -255,13 +259,14 @@ class SeasonalAverager:
             cal = self.TSD.calendar
 
             date_range = [
-                xr.cftime_range(
+                xr.date_range(
                     start=cftime.datetime(year, mo_st, day_st, hour=hr, calendar=cal)
                     - self.del0d,
                     end=cftime.datetime(year, mo_en, day_en, hour=hr, calendar=cal)
                     - self.del1d,
                     freq="D",
                     calendar=cal,
+                    use_cftime=True,
                 )
                 for year in year_range
             ]

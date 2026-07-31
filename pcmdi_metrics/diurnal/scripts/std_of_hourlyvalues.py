@@ -21,8 +21,6 @@ import json
 import multiprocessing as mp
 import os
 
-import cdp
-
 import pcmdi_metrics
 from pcmdi_metrics import resources
 from pcmdi_metrics.diurnal import compute_area_weighted_rms
@@ -33,6 +31,7 @@ from pcmdi_metrics.diurnal.common import (
     populateStringConstructor,
 )
 from pcmdi_metrics.io import get_latitude_key, get_longitude_key, xcdat_open
+from pcmdi_metrics.utils import cdp_run
 
 
 def main():
@@ -172,7 +171,7 @@ def main():
     params = [INPUT(args, name, template) for name in files]
     print("PARAMS:", params)
 
-    results = cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+    results = cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
 
     for r in results:
         m, region, res = r

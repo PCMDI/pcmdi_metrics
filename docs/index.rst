@@ -87,13 +87,13 @@ BSD 3-Clause License. See `LICENSE <https://github.com/PCMDI/pcmdi_metrics/blob/
    start
    metrics
    demo-notebooks
+   api
 
 .. toctree::
    :maxdepth: 1
    :hidden:
    :caption: For developers/contributors
 
-   api
    contributing
    resources
    team

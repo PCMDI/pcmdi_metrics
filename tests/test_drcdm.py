@@ -7,11 +7,12 @@ from pcmdi_metrics.drcdm.lib import compute_metrics
 
 def create_random_precip(years, max_val=None, min_val=None):
     # Returns array of precip along with sftlf
-    times = xr.cftime_range(
+    times = xr.date_range(
         start="{0}-01-01".format(years[0]),
         end="{0}-12-31".format(years[1]),
         freq="D",
         calendar="noleap",
+        use_cftime=True,
         name="time",
     )
     latd = 2
@@ -36,6 +37,7 @@ def create_random_precip(years, max_val=None, min_val=None):
 
     fake_ds["time"].encoding["calendar"] = "noleap"
     fake_ds["time"].encoding["units"] = "days since 0000-01-01"
+    fake_ds["lat"].attrs["units"] = "degrees_north"
     fake_ds = fake_ds.bounds.add_missing_bounds()
 
     if max_val is not None:
@@ -55,6 +57,7 @@ def create_random_precip(years, max_val=None, min_val=None):
             )
         }
     )
+    sftlf["lat"].attrs["units"] = "degrees_north"
     sftlf = sftlf.bounds.add_missing_bounds(["X", "Y"])
 
     return fake_ds, sftlf
@@ -66,11 +69,12 @@ def create_seasonal_precip(season):
     mos = sd[season]
 
     years = [1980, 1981]
-    times = xr.cftime_range(
+    times = xr.date_range(
         start="{0}-01-01".format(years[0]),
         end="{0}-12-31".format(years[1]),
         freq="D",
         calendar="noleap",
+        use_cftime=True,
         name="time",
     )
     latd = 2
@@ -99,6 +103,7 @@ def create_seasonal_precip(season):
     )
     fake_ds["time"].encoding["calendar"] = "noleap"
     fake_ds["time"].encoding["units"] = "days since 0000-01-01"
+    fake_ds["lat"].attrs["units"] = "degrees_north"
     fake_ds = fake_ds.bounds.add_missing_bounds()
 
     sftlf_arr = np.ones((latd, lond))
@@ -113,6 +118,7 @@ def create_seasonal_precip(season):
             )
         }
     )
+    sftlf["lat"].attrs["units"] = "degrees_north"
     sftlf = sftlf.bounds.add_missing_bounds(["X", "Y"])
 
     return fake_ds, sftlf
