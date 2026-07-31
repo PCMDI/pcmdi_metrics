@@ -11,6 +11,8 @@ from scipy.stats import genextreme
 
 from pcmdi_metrics.extremes.lib import utilities
 
+SEASONS = ["ANN", "DJF", "MAM", "JJA", "SON"]
+
 
 def compute_rv_from_file(
     filelist, cov_filepath, cov_name, outdir, return_period, meta, maxes=True
@@ -125,7 +127,7 @@ def compute_rv_for_model(
     standard_error = xr.zeros_like(return_value)
     ds.close()
 
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+    for season in SEASONS:
         print("*****\n", season, "\n*****")
         if season == "DJF" and dec_mode == "DJF" and drop_incomplete_djf:
             # Step first time index to skip all-nan block
@@ -190,14 +192,14 @@ def compute_rv_for_model(
 
     return_value.attrs["description"] = "{0}-year return value".format(return_period)
     standard_error.attrs["description"] = "standard error"
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+    for season in SEASONS:
         return_value[season].attrs["units"] = units
         standard_error[season].attrs["units"] = units
 
     # Update attributes
     return_value.attrs["description"] = "{0}-year return value".format(return_period)
     standard_error.attrs["description"] = "standard error"
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+    for season in SEASONS:
         return_value[season].attrs["units"] = units
         standard_error[season].attrs["units"] = units
 
@@ -206,11 +208,11 @@ def compute_rv_for_model(
 
     # Set descriptions for metadata
     if nonstationary:
-        desc1 = "Return value from stationary GEV fit for multiple realizations"
-        desc2 = "Standard error for return value from stationary fit for multiple realizations"
-    else:
         desc1 = "Return value from nonstationary GEV fit for multiple realizations"
         desc2 = "Standard error for return value from nonstationary fit for multiple realizations"
+    else:
+        desc1 = "Return value from stationary GEV fit for multiple realizations"
+        desc2 = "Standard error for return value from stationary fit for multiple realizations"
 
     fname = os.path.basename(filelist[0])
     real = fname.split("_")[1]
@@ -227,84 +229,66 @@ def compute_rv_for_model(
 
 
 def fit_cell(
-    b,
+    data,
     covariate,
     scale_factor,
     return_period,
     maxes,
 ):
-    b = np.asarray(b)
+    """Fit a stationary or nonstationary GEV at one grid cell."""
 
-    # Preserve the original time positions
-    valid = np.isfinite(b)
+    data = np.asarray(data)
 
-    if covariate is not None:
+    nonstationary = covariate is not None
+
+    if nonstationary:
         covariate = np.asarray(covariate)
-        valid &= np.isfinite(covariate)
-
-    if valid.sum() < 10:
-        if covariate is None:
-            return np.nan, np.nan
-
-        return (
-            np.full(b.shape, np.nan),
-            np.full(b.shape, np.nan),
+        valid = np.isfinite(data) & np.isfinite(covariate)
+        empty_result = (
+            np.full(data.shape, np.nan),
+            np.full(data.shape, np.nan),
         )
+    else:
+        valid = np.isfinite(data)
+        empty_result = (np.nan, np.nan)
 
-    b_valid = b[valid]
+    data_valid = data[valid]
 
-    if np.all(b_valid == b_valid[0]):
-        if covariate is None:
-            return np.nan, np.nan
+    if data_valid.size < 10:
+        return empty_result
 
-        return (
-            np.full(b.shape, np.nan),
-            np.full(b.shape, np.nan),
-        )
+    if np.all(data_valid == data_valid[0]):
+        return empty_result
 
-    cov_valid = None if covariate is None else covariate[valid]
+    covariate_valid = covariate[valid] if nonstationary else None
 
     try:
-        rv_tmp, se_tmp = calc_rv_py(
-            b_valid,
-            cov_valid,
-            return_period,
+        rv, se = calc_rv_py(
+            x=data_valid,
+            covariate=covariate_valid,
+            return_period=return_period,
             nreplicates=1,
             maxes=maxes,
         )
     except Exception:
-        if covariate is None:
-            return np.nan, np.nan
+        return empty_result
 
+    if rv is None:
+        return empty_result
+
+    if not nonstationary:
         return (
-            np.full(b.shape, np.nan),
-            np.full(b.shape, np.nan),
+            rv * scale_factor,
+            se * scale_factor,
         )
 
-    if rv_tmp is None:
-        if covariate is None:
-            return np.nan, np.nan
+    rv_output = np.full(data.shape, np.nan)
+    se_output = np.full(data.shape, np.nan)
 
-        return (
-            np.full(b.shape, np.nan),
-            np.full(b.shape, np.nan),
-        )
+    rv_output[valid] = np.asarray(rv) * scale_factor
+    se_output[valid] = np.asarray(se) * scale_factor
 
-    # Stationary result: one value per grid cell
-    if covariate is None:
-        return (
-            rv_tmp * scale_factor,
-            se_tmp * scale_factor,
-        )
-
-    # Nonstationary result: one value per valid time
-    rv_out = np.full(b.shape, np.nan)
-    se_out = np.full(b.shape, np.nan)
-
-    rv_out[valid] = np.asarray(rv_tmp) * scale_factor
-    se_out[valid] = np.asarray(se_tmp) * scale_factor
-
-    return rv_out, se_out
+    return rv_output, se_output
 
 
 def get_dataset_rv(
@@ -327,22 +311,14 @@ def get_dataset_rv(
         n_jobs = int(slurm_cpus)
 
     dec_mode = str(ds.attrs["december_mode"])
-    drop_incomplete_djf = ds.attrs["drop_incomplete_djf"]
-    if drop_incomplete_djf == "False":
-        drop_incomplete_djf = False
-    else:
-        drop_incomplete_djf = True
+    drop_incomplete_djf = ds.attrs["drop_incomplete_djf"] != "False"
     units = ds.ANN.attrs["units"]
 
     print(
         "Return value for single realization",
     )
-    if cov_filepath is not None:
-        nonstationary = True
-        print("Nonstationary case")
-    else:
-        nonstationary = False
-        print("Stationary case")
+
+    nonstationary = cov_filepath is not None
 
     if nonstationary:
         cov_ds = utilities.load_dataset([cov_filepath])
@@ -362,10 +338,10 @@ def get_dataset_rv(
         # To numpy array
         cov_ds = cov_ds[cov_varname].data.squeeze()
 
-    lat = len(ds["lat"])
-    lon = len(ds["lon"])
-    time = len(ds["time"])
-    dim2 = lat * lon
+    n_lat = len(ds["lat"])
+    n_lon = len(ds["lon"])
+    n_time = len(ds["time"])
+    n_cells = n_lat * n_lon
 
     if nonstationary:
         return_value = xr.zeros_like(ds)
@@ -376,8 +352,9 @@ def get_dataset_rv(
         ["lon_bnds", "lat_bnds", "time_bnds"], errors="ignore"
     )
     standard_error = return_value.copy()
+    # type_code = return_value.copy()
 
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+    for season in SEASONS:
         data = ds[season].data
         # Scale x to be around magnitude 1
         scale_factor = np.abs(np.nanmean(data))
@@ -389,11 +366,11 @@ def get_dataset_rv(
         else:
             t_ind = 0
 
-        data = np.reshape(data, (time, dim2))
+        data = np.reshape(data, (n_time, n_cells))
         if nonstationary:
             rv_array = np.ones(np.shape(data)) * np.nan
         else:
-            rv_array = np.ones((dim2)) * np.nan
+            rv_array = np.ones((n_cells)) * np.nan
         se_array = rv_array.copy()
 
         # Turn nans to zeros
@@ -407,7 +384,7 @@ def get_dataset_rv(
             delayed(fit_cell)(
                 data[t_ind:, j], cov_slice, scale_factor, return_period, maxes
             )
-            for j in range(dim2)
+            for j in range(n_cells)
         )
         rv_results, se_results = zip(*results)
 
@@ -417,14 +394,14 @@ def get_dataset_rv(
             se_fit = np.stack(se_results, axis=1)
 
             # Keep the skipped first DJF index as NaN
-            rv_array = np.full((time, dim2), np.nan)
-            se_array = np.full((time, dim2), np.nan)
+            rv_array = np.full((n_time, n_cells), np.nan)
+            se_array = np.full((n_time, n_cells), np.nan)
 
             rv_array[t_ind:, :] = rv_fit
             se_array[t_ind:, :] = se_fit
 
-            rv_array = rv_array.reshape(time, lat, lon)
-            se_array = se_array.reshape(time, lat, lon)
+            rv_array = rv_array.reshape(n_time, n_lat, n_lon)
+            se_array = se_array.reshape(n_time, n_lat, n_lon)
 
             return_value[season] = (
                 ("time", "lat", "lon"),
@@ -437,8 +414,8 @@ def get_dataset_rv(
 
         else:
             # Each result is a scalar
-            rv_array = np.asarray(rv_results).reshape(lat, lon)
-            se_array = np.asarray(se_results).reshape(lat, lon)
+            rv_array = np.asarray(rv_results).reshape(n_lat, n_lon)
+            se_array = np.asarray(se_results).reshape(n_lat, n_lon)
 
             return_value[season] = (
                 ("lat", "lon"),
@@ -451,7 +428,7 @@ def get_dataset_rv(
 
     return_value.attrs["description"] = "{0}-year return value".format(return_period)
     standard_error.attrs["description"] = "standard error"
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+    for season in SEASONS:
         return_value[season].attrs["units"] = units
         standard_error[season].attrs["units"] = units
 
@@ -470,7 +447,7 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
     #   nreplicates: int
     #   return_period: int
     #   maxes: bool
-
+    x = np.asarray(x, dtype=float).squeeze()  # Ensure numpy array
     if maxes:
         mins = False
     else:
@@ -488,8 +465,8 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
         covariate_tiled = covariate
 
     # Use the stationary gev to make initial parameter guess
-    fit = genextreme.fit(x)
-    shape, loc, scale = fit
+    scipy_shape, loc, scale = genextreme.fit(x)
+    shape = -scipy_shape  # Convention
 
     def ll(params):
         # Negative Log liklihood function to minimize for GEV
@@ -506,16 +483,22 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
             scale = params[1]
             shape = params[2]
 
-        if np.allclose(np.array(shape), np.array(0)):
+        if not np.isfinite(scale) or scale <= 0:
+            return 1e10
+
+        if abs(shape) < 1e-6:
             shape = 0
             y = (x - location) / scale
-            result = np.sum(n * np.log(scale) + y + np.exp(-y))
+            # result = np.sum(n * np.log(scale) + y + np.exp(-y)) # Incorrect (scales with n^2 instead of n)
+            result = n * np.log(scale) + np.sum(
+                y + np.exp(-y)
+            )  # Corrected summation implementation
         else:
             # This value must be > 0, Coles 2001
             y = 1 + shape * (x - location) / scale
-            check = [True for item in y if item <= 0]
-            if len(check) > 0:
+            if np.any(y <= 0):
                 return 1e10
+
             result = np.sum(
                 np.log(scale) + y ** (-1 / shape) + np.log(y) * (1 / shape + 1)
             )
@@ -545,7 +528,7 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
     for time in range(0, len(covariate)):
         if nonstationary:
             location = params[0] + params[1] * covariate[time]
-        rv = genextreme.isf(1 / return_period, shape, location, scale)
+        rv = genextreme.isf(1 / return_period, -shape, location, scale)
         return_value[time] = np.squeeze(np.where(success == 1, rv, np.nan))
     if mins:
         return_value = -1 * return_value
@@ -567,25 +550,39 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
         if nonstationary:
             cov = covariate
             y = -np.log(1 - 1 / return_period)
-            if shape == 0:
-                grad = np.array([1, -np.log(y)])
+            log_y = np.log(y)
+
+            if abs(shape) < 1e-6:
+                grad = np.array(
+                    [
+                        np.ones(len(covariate)),
+                        covariate,
+                        np.full(len(covariate), -log_y),
+                        np.full(len(covariate), 0.5 * scale * log_y**2),
+                    ]
+                )
             else:
                 db1 = np.ones(len(cov))
                 db2 = cov
                 dsh = np.ones(len(cov)) * (-1 / shape) * (1 - y ** (-shape))
                 dsc = np.ones(len(cov)) * scale * (shape**-2) * (1 - y**-shape) - (
-                    scale / shape * (y**-shape) * np.log(y)
+                    scale / shape * (y**-shape) * log_y
                 )
                 grad = np.array([db1, db2, dsh, dsc])
-        else:
+        else:  # stationary
             y = -np.log(1 - 1 / return_period)
-            if shape == 0:
-                grad = np.array([1, -np.log(y)])
+            log_y = np.log(y)
+
+            if abs(shape) < 1e-6:
+                # grad = np.array([1, -np.log(y)])
+                grad = np.array(
+                    [1.0, -log_y, 0.5 * scale * log_y**2]
+                )  # Gumbel limit gradients, Coles (2001)
             else:
                 db1 = 1
                 dsh = (-1 / shape) * (1 - y ** (-shape))
                 dsc = scale * (shape**-2) * (1 - y**-shape) - (
-                    scale / shape * (y**-shape) * np.log(y)
+                    scale / shape * (y**-shape) * log_y
                 )
                 grad = np.array([db1, dsh, dsc])
                 grad = np.expand_dims(grad, axis=1)
