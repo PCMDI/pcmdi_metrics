@@ -152,6 +152,9 @@ def calc_stats_save_dict(
         dict_head["stdv_pc_ratio_to_obs"] = stdv_pc / stdv_pc_obs
 
         return dict_head, eof_lr
+    else:
+        # When obs_compare=False, still return dict_head with mean values
+        return dict_head, eof_lr
 
 
 def calcSTD(a):

@@ -22,13 +22,14 @@ from .eof_analysis import (  # noqa
     linear_regression_on_globe_for_teleconnection,
 )
 from .lib_variability_mode import (  # noqa
-    search_paths,
+    adjust_units,
     check_start_end_year,
     debug_print,
-    get_eof_numbers,
     get_domain_range,
+    get_eof_numbers,
     read_data_in,
     sea_ice_adjust,
+    search_paths,
     sort_human,
     tree,
     variability_metrics_to_json,

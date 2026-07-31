@@ -32,6 +32,7 @@ To make it easier to run these demos, we recommend cloning the `PMP GitHub repos
    examples/Demo_2b_monsoon_sperber
    examples/Demo_3_diurnal_cycle
    examples/Demo_4_modes_of_variability
+   examples/Demo_4b_modes_of_variability_API
    examples/Demo_5_mjo_metrics
    examples/Demo_6_ENSO
    examples/Demo_7_precip_variability
