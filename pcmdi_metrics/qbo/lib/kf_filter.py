@@ -100,7 +100,6 @@ class KFfilter:
                 data = data * window[:, NA, NA]
             else:
                 mean = data.mean(axis=0)
-                print("mean:", mean)
                 data = (data - mean) * window[:, NA, NA] + mean
 
         self.window = window
@@ -628,19 +627,3 @@ class KFfilter:
 
         filterd = fftpack.ifft2(fftdata, axes=(0, 2))
         return filterd.real
-
-
-"""
-# test #############################################
-import matplotlib.pyplot as plt
-from scipy.fftpack import fftshift
-x = fftshift(self.wavenumber)
-y = fftshift(self.frequency)
-power = numpy.abs(fftshift(fftdata[:,10,:], axes=(0,1)))**2
-z = power
-CF=plt.contourf(x,y,z,[0,0.5,1],extend='max')
-plt.axis([-17,17,-0.5,0.5])
-plt.colorbar(CF)
-plt.show()
-sys.exit()
-"""

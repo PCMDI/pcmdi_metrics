@@ -32,56 +32,6 @@ from .utils import (
 )
 
 
-def main():
-    # model = "CESM2"
-    model = "ERA5"
-
-    if model == "CESM2":
-        # User-defining parameters
-        params = {
-            "model": "CESM2",
-            "exp": "historical",
-            "member": "r1i1p1f1",
-            "input_file": "sample_data/ua_Amon_CESM2_historical_r1i1p1f1_gn_185001-201412.nc",
-            "input_file2": "sample_data/rlut_day_CESM2_historical_r1i1p1f1_gn_19800101-19891231.nc",
-            "varname": "ua",
-            "level": 50,  # hPa (=mb)
-            "varname2": "rlut",
-            "start": "1981-01",
-            "end": "1988-12",
-            "regrid": False,
-            "regrid_tool": "xesmf",
-            "target_grid": "2x2",
-            "taper_to_mean": True,
-            "output_dir": "./output_data",
-            "debug": False,
-        }
-    elif model == "ERA5":
-        # User-defining parameters for ERA5
-        params = {
-            "model": "ERA5",
-            "exp": None,
-            "member": None,
-            "input_file": "/work/lee1043/DATA/ERA5/ERA5_u50_monthly_1979-2021_rewrite.nc",
-            "input_file2": "/work/lee1043/DATA/ERA5/ERA5_olr_daily_40s40n_1979-2021_rewrite.nc",
-            "varname": "u50",
-            "level": None,  # hPa (=mb)
-            "varname2": "olr",
-            "start": "1979-01",
-            # "end": "2014-12",
-            "end": "2010-12",
-            "regrid": True,
-            "regrid_tool": "xesmf",
-            "target_grid": "2x2",
-            "taper_to_mean": True,
-            "output_dir": "./output_data",
-            "debug": False,
-        }
-
-    output_metrics = process_qbo_mjo_metrics(params)
-    print(output_metrics)
-
-
 def compute_qbo_mjo_metrics(
     ds: xr.Dataset,
     ds2: xr.Dataset,
@@ -221,9 +171,11 @@ def compute_qbo_mjo_metrics(
         .mean("window")
         .isel(time=slice(1, -1))
     )
-    ds_region_ano_ave_runningmean["time_bnds"] = ds_region_ano_ave["time_bnds"].isel(
-        time=slice(1, -1)
-    )  # re-add missed time bnds from the above line step
+    # Verify if time_bnds needs manual reassignment or if it's preserved
+    if "time_bnds" not in ds_region_ano_ave_runningmean.data_vars:
+        ds_region_ano_ave_runningmean["time_bnds"] = ds_region_ano_ave[
+            "time_bnds"
+        ].isel(time=slice(1, -1))
 
     if debug:
         print("u range with seasonal smoothing")

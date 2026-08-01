@@ -63,13 +63,7 @@ def select_time_range(ds, start, end):
     end_yr = int(end.split("-")[0])
     end_mo = int(end.split("-")[1])
 
-    print("end_yr:", end_yr)
-    print("end_mo:", end_mo)
-
     ds_tmp = ds.time.dt.days_in_month.sel(time=(ds.time.dt.year == end_yr))
-    # end_da = int(
-    #    ds_tmp.time.dt.days_in_month.sel(time=(ds_tmp.time.dt.month == end_mo))[-1]
-    # )
     end_da = int(ds_tmp.time[-1].dt.day)
 
     start_yr_str = str(start_yr).zfill(4)
@@ -86,13 +80,6 @@ def select_time_range(ds, start, end):
             end_yr_str + "-" + end_mo_str + "-" + end_da_str + " 23:59:59",
         )
     )
-
-    print("start_yr_str is ", start_yr_str)
-    print("start_mo_str is ", start_mo_str)
-    print("start_da is ", start_da)
-    print("end_yr_str is ", end_yr_str)
-    print("end_mo_str is ", end_mo_str)
-    print("end_da is", end_da)
 
     return ds
 
@@ -282,13 +269,20 @@ def find_coord_key(ds, coord):
 
     Returns
     -------
-    str or None
-        The matching coordinate key, or ``None`` if no coordinate key
-        contains ``coord``.
+    str
+        The matching coordinate key.
+
+    Raises
+    ------
+    ValueError
+        If no coordinate key contains ``coord``.
     """
     for coord_key in list(ds.coords.keys()):
         if coord in coord_key.lower():
             return coord_key
+    raise ValueError(
+        f"Coordinate '{coord}' not found in dataset. Available coordinates: {list(ds.coords.keys())}"
+    )
 
 
 def diag_plot(
