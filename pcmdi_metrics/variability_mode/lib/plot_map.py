@@ -17,6 +17,11 @@ from pcmdi_metrics.variability_mode.lib import debug_print
 
 faulthandler.enable()
 
+# Suppress the specific Shapely warning about invalid values in collections
+warnings.filterwarnings(
+    "ignore", message="invalid value encountered in create_collection"
+)
+
 # -----------------------
 # Main plotting functions
 # -----------------------

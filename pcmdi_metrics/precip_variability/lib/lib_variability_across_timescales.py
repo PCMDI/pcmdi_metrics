@@ -339,7 +339,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
     anom = np.reshape(anom, (d.shape[0], d.shape[1], d.shape[2]))
 
     climtime = pd.period_range(
-        start="0001-01-01", periods=clim.shape[0], freq=str(24 / ntd) + "H"
+        start="0001-01-01", periods=clim.shape[0], freq=str(int(24 / ntd)) + "h"
     )
     clim = xr.DataArray(
         clim, coords=[climtime, d.coords[d.dims[1]], d.coords[d.dims[2]]], dims=d.dims
@@ -623,5 +623,5 @@ def prdday_to_frqidx(prdday, frequency, ntd):
     - idx: frequency index
     """
     frq = 1.0 / (float(prdday) * ntd)
-    idx = (np.abs(frequency - frq)).argmin()
+    idx = np.abs(frequency - frq).values.argmin()
     return int(idx)

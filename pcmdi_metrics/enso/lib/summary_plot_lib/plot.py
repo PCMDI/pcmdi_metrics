@@ -27,6 +27,17 @@ from numpy.ma import zeros as NUMPYma__zeros
 # ENSO_metrics functions
 from .EnsoPlotLib import plot_param
 
+# Colors (hex) and alpha for each of the four metric-type groups used in
+# highlighted portrait-plot labels and border lines.
+# Index 0 = met_o1 (background biases), 1 = met_o2 (ENSO characteristics),
+# 2 = met_o3 (teleconnections), 3 = met_o4 (processes / feedbacks).
+_METRIC_TYPE_COLORS = [
+    ("#66c2a5", 0.45),  # teal / sea-green   (102, 194, 165)
+    ("#8da0cb", 0.45),  # muted blue / lavender-blue (141, 160, 203)
+    ("#fc8d62", 0.45),  # soft orange / coral        (252, 141,  98)
+    ("#e78ac3", 0.45),  # pink / orchid              (231, 138, 195)
+]
+
 # ---------------------------------------------------#
 # Main
 # ---------------------------------------------------#
@@ -762,7 +773,7 @@ def get_reference(metric_collection, metric):
 
 def my_colorbar(mini=-1.0, maxi=1.0, nbins=20):
     """
-    Modifies cmo.balance colobar (removes the darkest blue and red)
+    Builds a truncated RdBu_r colormap (removes the darkest blue and red ends)
 
     Inputs:
     ------
@@ -782,7 +793,6 @@ def my_colorbar(mini=-1.0, maxi=1.0, nbins=20):
         Normalize, a class which can normalize data into the [0.0, 1.0] interval.
     """
     levels = MaxNLocator(nbins=nbins).tick_values(mini, maxi)
-    # cmap = plt.get_cmap("cmo.balance")
     cmap = plt.get_cmap("RdBu_r")
     newcmp1 = cmap(NUMPYlinspace(0.15, 0.85, 256))
     newcmp2 = cmap(NUMPYlinspace(0.0, 1.0, 256))
@@ -868,15 +878,17 @@ def multiportraitplot(
         ax.set_xticklabels([] * len(ticks))
         for ll, txt in enumerate(x_names[kk]):
             if highlight is True:
-                # find the metric color
-                if txt in met_o1 or txt + "_1" in met_o1 or txt + "_2" in met_o1:
-                    cc = "yellowgreen"
-                elif txt in met_o2 or txt + "_1" in met_o2 or txt + "_2" in met_o2:
-                    cc = "plum"
-                elif txt in met_o3 or txt + "_1" in met_o3 or txt + "_2" in met_o3:
-                    cc = "gold"
-                else:
-                    cc = "turquoise"
+                # find the metric color from the module-level constant
+                _met_type_lists = [met_o1, met_o2, met_o3, met_o4]
+                met_type_idx = next(
+                    (
+                        i
+                        for i, tt in enumerate(_met_type_lists)
+                        if txt in tt or txt + "_1" in tt or txt + "_2" in tt
+                    ),
+                    3,  # default: met_o4 color
+                )
+                cc, alpha = _METRIC_TYPE_COLORS[met_type_idx]
                 # write highlighted metric name
                 ax.text(
                     ll + 0.5,
@@ -887,8 +899,9 @@ def multiportraitplot(
                     va="top",
                     rotation=45,
                     color="k",
-                    bbox=dict(lw=0, facecolor=cc, pad=3, alpha=1),
+                    bbox=dict(lw=0, facecolor=cc, pad=3, alpha=alpha),
                 )
+
             else:
                 # write metric name in black
                 ax.text(
@@ -924,7 +937,7 @@ def multiportraitplot(
                 ax.add_line(line)
             # draw horizontal colored lines to indicate metric types
             nn = 0
-            lic, lix = list(), list()
+            lic, lix, lia = list(), list(), list()
             for uu, tt in enumerate(tmp1):
                 tmp2 = [
                     txt
@@ -932,35 +945,41 @@ def multiportraitplot(
                     if txt in tt or txt + "_1" in tt or txt + "_2" in tt
                 ]
                 if len(tmp2) > 0:
-                    if uu == 0:
-                        cc = "yellowgreen"
-                    elif uu == 1:
-                        cc = "plum"
-                    elif uu == 2:
-                        cc = "gold"
-                    else:
-                        cc = "turquoise"
+                    cc, alpha = _METRIC_TYPE_COLORS[uu]
                     lic += [cc, cc]
+                    lia += [alpha, alpha]
                     if nn > 0:
                         lix += [[nn + 0.2, nn + len(tmp2)], [nn + 0.2, nn + len(tmp2)]]
                     else:
                         lix += [[nn, nn + len(tmp2)], [nn, nn + len(tmp2)]]
                     nn += len(tmp2)
-                    del cc
+                    del cc, alpha
                 del tmp2
             liy = [[len(tab[0]), len(tab[0])], [0, 0]] * int(float(len(lix)) / 2)
             lis = ["-"] * len(lix)
-            for mm, (lc, ls, lx, ly) in enumerate(zip(lic, lis, lix, liy)):
+            for mm, (lc, ls, lx, ly, la) in enumerate(zip(lic, lis, lix, liy, lia)):
                 if mm < 2:
                     line = Line2D(
-                        [lx[0] + 0.05, lx[1]], ly, c=lc, lw=10, ls=ls, zorder=10
+                        [lx[0] + 0.05, lx[1]],
+                        ly,
+                        c=lc,
+                        lw=10,
+                        ls=ls,
+                        alpha=la,
+                        zorder=10,
                     )
                 elif mm > len(lis) - 3:
                     line = Line2D(
-                        [lx[0], lx[1] - 0.05], ly, c=lc, lw=10, ls=ls, zorder=10
+                        [lx[0], lx[1] - 0.05],
+                        ly,
+                        c=lc,
+                        lw=10,
+                        ls=ls,
+                        alpha=la,
+                        zorder=10,
                     )
                 else:
-                    line = Line2D(lx, ly, c=lc, lw=10, ls=ls, zorder=10)
+                    line = Line2D(lx, ly, c=lc, lw=10, ls=ls, alpha=la, zorder=10)
                 line.set_clip_on(False)
                 ax.add_line(line)
         # y axis
@@ -1016,7 +1035,7 @@ def multiportraitplot(
         aspect=40,
     )
     cbar.ax.set_yticklabels(
-        ["-2 $\sigma$", "-1", "MMV", "1", "2 $\sigma$"], fontdict=fontdict  # noqa
+        [r"-2 $\sigma$", "-1", "MMV", "1", r"2 $\sigma$"], fontdict=fontdict  # noqa
     )
     dict_arrow = dict(facecolor="k", width=8, headwidth=40, headlength=40, shrink=0.0)
     dict_txt = dict(fontsize=40, rotation="vertical", ha="center", weight="bold")

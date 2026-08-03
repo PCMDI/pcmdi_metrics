@@ -1,0 +1,1668 @@
+"""
+Standard API for computing variability modes.
+
+This module provides simple, standardized functions for computing climate variability modes
+such as NAO, NAM, SAM, PNA, NPO, PDO, NPGO, and AMO. Each function takes xarray datasets
+as input and returns diagnostics and metrics as Python dictionaries.
+
+Usage
+-----
+>>> import xarray as xr
+>>> from pcmdi_metrics.variability_mode import NAO
+>>>
+>>> # Load model data
+>>> model_ds = xr.open_dataset('model_psl.nc')
+>>>
+>>> # Compute NAO without reference
+>>> results = NAO(model_ds)
+>>>
+>>> # With reference data for metrics
+>>> obs_ds = xr.open_dataset('obs_psl.nc')
+>>> results = NAO(model_ds, reference_ds=obs_ds)
+"""
+
+from typing import Dict, List, Optional, Union
+
+import xarray as xr
+
+from pcmdi_metrics.io import get_grid  # Get grid information from dataset
+from pcmdi_metrics.io import get_time_key  # Get time coordinate key name
+from pcmdi_metrics.io import load_regions_specs  # Load predefined geographic regions
+from pcmdi_metrics.io import region_subset  # Subset dataset by region
+from pcmdi_metrics.utils import apply_landmask  # Apply land-sea mask
+from pcmdi_metrics.utils import regrid  # Regrid dataset to target grid
+from pcmdi_metrics.variability_mode.lib import (
+    adjust_timeseries,  # Remove annual cycle and domain mean
+)
+from pcmdi_metrics.variability_mode.lib import adjust_units  # Adjust variable units
+from pcmdi_metrics.variability_mode.lib import (
+    calc_stats_save_dict,  # Calculate comparison statistics
+)
+from pcmdi_metrics.variability_mode.lib import calcSTD  # Calculate standard deviation
+from pcmdi_metrics.variability_mode.lib import (
+    eof_analysis_get_variance_mode,  # Perform EOF analysis
+)
+from pcmdi_metrics.variability_mode.lib import (
+    gain_pcs_fraction,  # Calculate variance fraction for CBF
+)
+from pcmdi_metrics.variability_mode.lib import (
+    gain_pseudo_pcs,  # Project data onto reference EOFs
+)
+from pcmdi_metrics.variability_mode.lib import (
+    linear_regression_on_globe_for_teleconnection,  # Linear regression for teleconnection patterns
+)
+from pcmdi_metrics.variability_mode.lib import sea_ice_adjust  # Adjust sea ice values
+
+# Mapping of modes to their properties
+_MODE_CONFIG = {
+    "NAO": {"eof_number": 1, "variable": "psl"},
+    "NAM": {"eof_number": 1, "variable": "psl"},
+    "SAM": {"eof_number": 1, "variable": "psl"},
+    "PNA": {"eof_number": 1, "variable": "psl"},
+    "NPO": {"eof_number": 2, "variable": "psl"},
+    "PDO": {"eof_number": 1, "variable": "ts"},
+    "NPGO": {"eof_number": 2, "variable": "ts"},
+    "AMO": {"eof_number": 1, "variable": "ts"},
+    "PSA1": {"eof_number": 2, "variable": "psl"},
+    "PSA2": {"eof_number": 3, "variable": "psl"},
+}
+
+
+def _validate_dataset(
+    ds: xr.Dataset, data_var: str, dataset_name: str = "dataset"
+) -> None:
+    """
+    Validate that dataset contains required variable and dimensions.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset to validate.
+    data_var : str
+        Required variable name.
+    dataset_name : str, optional
+        Name for error messages. Default is "dataset".
+
+    Raises
+    ------
+    TypeError
+        If ds is not an xarray Dataset.
+    ValueError
+        If required variable or dimensions are missing.
+    """
+    if not isinstance(ds, xr.Dataset):
+        raise TypeError(f"{dataset_name} must be an xarray.Dataset, got {type(ds)}")
+
+    if data_var not in ds.data_vars:
+        raise ValueError(
+            f"Variable '{data_var}' not found in {dataset_name}. "
+            f"Available variables: {list(ds.data_vars.keys())}"
+        )
+
+    # Check for time dimension (using get_time_key will raise error if not found)
+    try:
+        get_time_key(ds)
+    except Exception as e:
+        raise ValueError(f"{dataset_name} must have a time dimension: {e}")
+
+
+def _subset_time_range(
+    ds: xr.Dataset, start_year: Optional[int], end_year: Optional[int]
+) -> xr.Dataset:
+    """
+    Subset dataset by time range using pcmdi_metrics.io utilities.
+
+    Uses get_time_key() from pcmdi_metrics.io to robustly find the time coordinate.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Input dataset.
+    start_year : int, optional
+        Start year for subsetting.
+    end_year : int, optional
+        End year for subsetting.
+
+    Returns
+    -------
+    xr.Dataset
+        Subsetted dataset.
+    """
+    if start_year is None and end_year is None:
+        return ds
+
+    # Get time coordinate key using pcmdi_metrics.io utility
+    time_key = get_time_key(ds)
+
+    # Convert times to years
+    years = ds[time_key].dt.year
+
+    # Build selection criteria
+    if start_year is not None and end_year is not None:
+        selection = (years >= start_year) & (years <= end_year)
+    elif start_year is not None:
+        selection = years >= start_year
+    else:  # end_year is not None
+        selection = years <= end_year
+
+    return ds.sel({time_key: selection})
+
+
+def _compute_variability_mode(
+    mode: str,
+    model_ds: xr.Dataset,
+    data_var: str,
+    seasons: List[str],
+    reference_ds: Optional[xr.Dataset],
+    method: str,
+    start_year: Optional[int],
+    end_year: Optional[int],
+    EofScaling: bool = False,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Core computation function for variability modes.
+
+    Parameters
+    ----------
+    mode : str
+        Variability mode name (e.g., 'NAO', 'NAM', 'SAM', etc.).
+    model_ds : xr.Dataset
+        Model dataset containing the variable to analyze.
+    data_var : str
+        Variable name in the dataset.
+    seasons : list of str
+        List of seasons to compute (e.g., ['DJF', 'MAM', 'JJA', 'SON']).
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics.
+    method : str
+        Method to use: 'eof' or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis.
+    end_year : int, optional
+        End year for analysis.
+    EofScaling : bool, optional
+        If True, apply EOF scaling (unit variance). Default is False.
+    remove_domain_mean : bool, optional
+        If True, remove domain mean at each time step (detrending). Default is True.
+        This removes the spatial mean from each time step to focus on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions for SST-based modes (PDO, NPGO, AMO).
+        Default is False. If True but landfrac_ds is not provided, a land-sea mask
+        will be generated automatically.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction data (variable 'sftlf'). If not provided
+        and land_mask is True, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Tuple for unit conversion: (enable, operation, value).
+        Example: (True, 'divide', 100.0) converts Pa to hPa.
+        Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Notes
+    -----
+    For SST-based variables (ts, sst, tos, tosanom), the API automatically applies
+    sea ice adjustment, replacing temperatures below -1.8°C with -1.8°C (the
+    approximate freezing point of seawater). This matches the driver script behavior
+    and prevents unrealistic cold values from affecting the EOF analysis.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,
+                    'pc_timeseries': xr.DataArray,
+                    'cbf_pattern': xr.DataArray,  # only if method='cbf'
+                },
+                'metrics': {  # only if reference_ds provided
+                    'frac': float,
+                    'stdv_pc': float,
+                    'cor': float,
+                    'rms': float,
+                    ...
+                }
+            }
+        }
+    """
+    # Validate inputs
+    if mode not in _MODE_CONFIG:
+        raise ValueError(
+            f"Unknown mode: {mode}. Supported modes: {list(_MODE_CONFIG.keys())}"
+        )
+
+    if method not in ["eof", "cbf"]:
+        raise ValueError(f"Method must be 'eof' or 'cbf', got: {method}")
+
+    if method == "cbf" and reference_ds is None:
+        raise ValueError("method='cbf' requires reference_ds to be provided")
+
+    # Get mode configuration
+    eofn = _MODE_CONFIG[mode]["eof_number"]
+
+    # Validate datasets using helper function
+    _validate_dataset(model_ds, data_var, "model_ds")
+    if reference_ds is not None:
+        _validate_dataset(reference_ds, data_var, "reference_ds")
+
+    # Apply units adjustment if provided
+    if units_adjust is not None:
+        model_ds = model_ds.copy(deep=True)
+        model_ds[data_var] = adjust_units(model_ds[data_var], units_adjust)
+
+    if reference_units_adjust is not None and reference_ds is not None:
+        reference_ds = reference_ds.copy(deep=True)
+        reference_ds[data_var] = adjust_units(
+            reference_ds[data_var], reference_units_adjust
+        )
+
+    # Apply sea ice adjustment for SST-based variables
+    # Replace temperature below -1.8°C with -1.8°C (freezing point)
+    if data_var.lower() in ["ts", "sst", "tos", "tosanom"]:
+        model_ds = model_ds.copy(deep=True)
+        model_ds[data_var] = sea_ice_adjust(model_ds[data_var])
+
+        if reference_ds is not None:
+            reference_ds = reference_ds.copy(deep=True)
+            reference_ds[data_var] = sea_ice_adjust(reference_ds[data_var])
+
+    # Apply land masking if requested for SST-based modes
+    if land_mask:
+        # Extract land fraction if provided
+        landfrac = None
+        if landfrac_ds is not None:
+            if "sftlf" in landfrac_ds.data_vars:
+                landfrac = landfrac_ds["sftlf"]
+            else:
+                raise ValueError(
+                    "landfrac_ds must contain 'sftlf' variable. "
+                    f"Available variables: {list(landfrac_ds.data_vars.keys())}"
+                )
+
+        # Apply mask to model data
+        model_ds = model_ds.copy(deep=True)
+        model_ds[data_var] = apply_landmask(
+            model_ds[data_var], landfrac=landfrac, keep_over="ocean"
+        )
+
+        # Apply mask to reference data if provided
+        if reference_ds is not None:
+            reference_ds = reference_ds.copy(deep=True)
+            reference_ds[data_var] = apply_landmask(
+                reference_ds[data_var], landfrac=landfrac, keep_over="ocean"
+            )
+
+    # Load region specifications
+    regions_specs = load_regions_specs()
+
+    # Subset time range
+    model_ds = _subset_time_range(model_ds, start_year, end_year)
+    if reference_ds is not None:
+        reference_ds = _subset_time_range(reference_ds, start_year, end_year)
+
+    # Initialize results dictionary
+    results = {}
+
+    # Process reference data if provided (once, before season loop)
+    if reference_ds is not None:
+        ref_grid_global = get_grid(reference_ds)
+        eof_obs = {}
+        pc_obs = {}
+        frac_obs = {}
+        stdv_pc_obs = {}
+        solver_obs = {}
+        reverse_sign_obs = {}
+        eof_lr_obs = {}
+        ref_timeseries_season_dict = {}
+
+        for season in seasons:
+            # Adjust reference timeseries
+            ref_timeseries_season = adjust_timeseries(
+                reference_ds, data_var, mode, season, regions_specs, remove_domain_mean
+            )
+
+            # Extract subdomain
+            ref_timeseries_season_subdomain = region_subset(
+                ref_timeseries_season, mode, regions_specs=regions_specs
+            )
+
+            # EOF analysis on reference
+            (
+                eof_obs[season],
+                pc_obs[season],
+                frac_obs[season],
+                reverse_sign_obs[season],
+                solver_obs[season],
+            ) = eof_analysis_get_variance_mode(
+                mode,
+                ref_timeseries_season_subdomain,
+                data_var,
+                eofn=eofn,
+                EofScaling=EofScaling,
+            )
+
+            # Calculate stdv of pc time series
+            stdv_pc_obs[season] = calcSTD(pc_obs[season])
+
+            # Linear regression for teleconnection
+            (
+                eof_lr_obs[season],
+                slope_obs,
+                intercept_obs,
+            ) = linear_regression_on_globe_for_teleconnection(
+                pc_obs[season],
+                ref_timeseries_season,
+                data_var,
+                stdv_pc_obs[season],
+                remove_domain_mean,
+                EofScaling,
+            )
+
+            ref_timeseries_season["eof_lr"] = eof_lr_obs[season]
+            ref_timeseries_season_dict[season] = ref_timeseries_season
+
+    # Season loop for model data
+    for season in seasons:
+        # Adjust model timeseries
+        model_timeseries_season = adjust_timeseries(
+            model_ds, data_var, mode, season, regions_specs, remove_domain_mean
+        )
+
+        # Extract subdomain
+        model_timeseries_season_subdomain = region_subset(
+            model_timeseries_season, mode, regions_specs=regions_specs
+        )
+
+        # Initialize season results
+        season_results = {"diagnostics": {}}
+
+        if method == "eof":
+            # EOF analysis on model
+            (
+                eof_model,
+                pc_model,
+                frac_model,
+                reverse_sign_model,
+                solver_model,
+            ) = eof_analysis_get_variance_mode(
+                mode,
+                model_timeseries_season_subdomain,
+                data_var,
+                eofn=eofn,
+                EofScaling=EofScaling,
+            )
+
+            # Calculate stdv of pc time series
+            stdv_pc_model = calcSTD(pc_model)
+
+            # Linear regression for teleconnection
+            (
+                eof_lr_model,
+                slope_model,
+                intercept_model,
+            ) = linear_regression_on_globe_for_teleconnection(
+                pc_model,
+                model_timeseries_season,
+                data_var,
+                stdv_pc_model,
+                remove_domain_mean,
+                EofScaling,
+            )
+
+            model_timeseries_season["eof_lr"] = eof_lr_model
+
+            # Extract subdomain for statistics
+            model_timeseries_season_subdomain = region_subset(
+                model_timeseries_season, mode, regions_specs=regions_specs
+            )
+
+            # Calculate statistics (including mean and mean_glo)
+            dict_head = {}
+            if reference_ds is not None:
+                # With reference: compute metrics
+                dict_head, _ = calc_stats_save_dict(
+                    mode=mode,
+                    dict_head=dict_head,
+                    model_ds=model_timeseries_season,
+                    model_data_var="eof_lr",
+                    eof=model_timeseries_season_subdomain["eof_lr"],
+                    eof_lr=eof_lr_model,
+                    pc=pc_model,
+                    stdv_pc=stdv_pc_model,
+                    frac=frac_model,
+                    regions_specs=regions_specs,
+                    obs_ds=ref_timeseries_season_dict[season],
+                    eof_obs=eof_obs[season],
+                    eof_lr_obs=eof_lr_obs[season],
+                    stdv_pc_obs=stdv_pc_obs[season],
+                    obs_compare=True,
+                    method="eof",
+                )
+
+                # Remove duplicated fields that are already in diagnostics
+                metrics = {
+                    k: v
+                    for k, v in dict_head.items()
+                    if k not in ["frac", "stdv_pc", "mean", "mean_glo"]
+                }
+                season_results["metrics"] = metrics
+            else:
+                # Without reference: only compute mean values for diagnostics
+                dict_head, _ = calc_stats_save_dict(
+                    mode=mode,
+                    dict_head=dict_head,
+                    model_ds=model_timeseries_season,
+                    model_data_var="eof_lr",
+                    eof=model_timeseries_season_subdomain["eof_lr"],
+                    eof_lr=eof_lr_model,
+                    pc=pc_model,
+                    stdv_pc=stdv_pc_model,
+                    frac=frac_model,
+                    regions_specs=regions_specs,
+                    obs_compare=False,
+                )
+
+            # Store diagnostics
+            season_results["diagnostics"]["eof_pattern"] = eof_lr_model
+            season_results["diagnostics"]["pc_timeseries"] = pc_model
+            season_results["diagnostics"]["frac"] = float(frac_model)
+            season_results["diagnostics"]["stdv_pc"] = float(stdv_pc_model)
+            season_results["diagnostics"]["mean"] = dict_head["mean"]
+            season_results["diagnostics"]["mean_glo"] = dict_head["mean_glo"]
+
+        elif method == "cbf":
+            # CBF requires reference
+            # Regrid model to reference grid
+            model_timeseries_season_regrid = regrid(
+                model_timeseries_season,
+                data_var,
+                ref_grid_global,
+                regrid_tool="regrid2",
+                fill_zero=True,
+            )
+
+            # Crop to subdomain
+            model_timeseries_season_regrid_subdomain = region_subset(
+                model_timeseries_season_regrid, mode, regions_specs=regions_specs
+            )
+
+            # Project onto reference EOFs to get CBF PCs
+            cbf_pc = gain_pseudo_pcs(
+                solver_obs[season],
+                model_timeseries_season_regrid_subdomain[data_var],
+                eofn,
+                reverse_sign_obs[season],
+                EofScaling=EofScaling,
+            )
+
+            # Calculate stdv of cbf pc
+            stdv_cbf_pc = calcSTD(cbf_pc)
+
+            # Linear regression for teleconnection
+            (
+                eof_lr_cbf,
+                slope_cbf,
+                intercept_cbf,
+            ) = linear_regression_on_globe_for_teleconnection(
+                cbf_pc,
+                model_timeseries_season,
+                data_var,
+                stdv_cbf_pc,
+                remove_domain_mean,
+                EofScaling,
+            )
+
+            model_timeseries_season["eof_lr_cbf"] = eof_lr_cbf
+
+            # Extract subdomain for statistics
+            model_timeseries_season_subdomain = region_subset(
+                model_timeseries_season, mode, regions_specs=regions_specs
+            )
+
+            # Calculate fraction of variance explained by cbf pc
+            frac_cbf = gain_pcs_fraction(
+                model_timeseries_season_subdomain,
+                data_var,
+                model_timeseries_season_subdomain,
+                "eof_lr_cbf",
+                cbf_pc / stdv_cbf_pc,
+            )
+
+            # Compute statistics including mean and mean_glo
+            dict_head = {}
+            dict_head, _ = calc_stats_save_dict(
+                mode=mode,
+                dict_head=dict_head,
+                model_ds=model_timeseries_season,
+                model_data_var="eof_lr_cbf",
+                eof=model_timeseries_season_subdomain["eof_lr_cbf"],
+                eof_lr=eof_lr_cbf,
+                pc=cbf_pc,
+                stdv_pc=stdv_cbf_pc,
+                frac=frac_cbf,
+                regions_specs=regions_specs,
+                obs_ds=ref_timeseries_season_dict[season],
+                eof_obs=eof_obs[season],
+                eof_lr_obs=eof_lr_obs[season],
+                stdv_pc_obs=stdv_pc_obs[season],
+                obs_compare=True,
+                method="cbf",
+            )
+
+            # Remove duplicated fields that are already in diagnostics
+            metrics = {
+                k: v
+                for k, v in dict_head.items()
+                if k not in ["frac", "stdv_pc", "mean", "mean_glo"]
+            }
+            season_results["metrics"] = metrics
+
+            # Store diagnostics
+            season_results["diagnostics"]["cbf_pattern"] = eof_lr_cbf
+            season_results["diagnostics"]["pc_timeseries"] = cbf_pc
+            season_results["diagnostics"]["frac"] = float(frac_cbf)
+            season_results["diagnostics"]["stdv_pc"] = float(stdv_cbf_pc)
+            season_results["diagnostics"]["mean"] = dict_head["mean"]
+            season_results["diagnostics"]["mean_glo"] = dict_head["mean_glo"]
+
+        results[season] = season_results
+
+    return results
+
+
+def NAO(
+    model_ds: xr.Dataset,
+    data_var: str = "psl",
+    seasons: List[str] = ["DJF", "MAM", "JJA", "SON"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute North Atlantic Oscillation (NAO) diagnostics and metrics.
+
+    The NAO is the leading EOF of sea level pressure over the North Atlantic
+    (20-80N, 90W-40E). This function performs EOF analysis on model data and
+    optionally compares against reference data using spatial correlation, RMS
+    differences, and other statistics.
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea level pressure data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'psl'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['DJF', 'MAM', 'JJA', 'SON'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> import xarray as xr
+    >>> from pcmdi_metrics.variability_mode import NAO
+    >>> model_ds = xr.open_dataset('model_psl.nc')
+    >>> results = NAO(model_ds)
+    >>> print(results['DJF']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "NAO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def NAM(
+    model_ds: xr.Dataset,
+    data_var: str = "psl",
+    seasons: List[str] = ["DJF", "MAM", "JJA", "SON"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute Northern Annular Mode (NAM) diagnostics and metrics.
+
+    The NAM is the leading EOF of sea level pressure over the Northern
+    Hemisphere (20-90N). This function performs EOF analysis on model data and
+    optionally compares against reference data using spatial correlation, RMS
+    differences, and other statistics.
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea level pressure data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'psl'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['DJF', 'MAM', 'JJA', 'SON'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import NAM
+    >>> results = NAM(model_ds, reference_ds=obs_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "NAM",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def SAM(
+    model_ds: xr.Dataset,
+    data_var: str = "psl",
+    seasons: List[str] = ["DJF", "MAM", "JJA", "SON"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute Southern Annular Mode (SAM) diagnostics and metrics.
+
+    The SAM is the leading EOF of sea level pressure over the Southern
+    Hemisphere (90S-20S). This function performs EOF analysis on model data and
+    optionally compares against reference data using spatial correlation, RMS
+    differences, and other statistics.
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea level pressure data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'psl'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['DJF', 'MAM', 'JJA', 'SON'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import SAM
+    >>> results = SAM(model_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "SAM",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def PNA(
+    model_ds: xr.Dataset,
+    data_var: str = "psl",
+    seasons: List[str] = ["DJF", "MAM", "JJA", "SON"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute Pacific North American Pattern (PNA) diagnostics and metrics.
+
+    PNA is the leading EOF of sea level pressure over the North Pacific (20-85N, 120-240E).
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea level pressure data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'psl'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['DJF', 'MAM', 'JJA', 'SON'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import PNA
+    >>> results = PNA(model_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "PNA",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def NPO(
+    model_ds: xr.Dataset,
+    data_var: str = "psl",
+    seasons: List[str] = ["DJF", "MAM", "JJA", "SON"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute North Pacific Oscillation (NPO) diagnostics and metrics.
+
+    NPO is the second EOF of sea level pressure over the North Pacific (20-85N, 120-240E).
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea level pressure data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'psl'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['DJF', 'MAM', 'JJA', 'SON'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import NPO
+    >>> results = NPO(model_ds)
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "NPO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def PDO(
+    model_ds: xr.Dataset,
+    data_var: str = "ts",
+    seasons: List[str] = ["monthly"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = True,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute Pacific Decadal Oscillation (PDO) diagnostics and metrics.
+
+    PDO is the leading EOF of sea surface temperature over the North Pacific (20-70N, 110-260E).
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea surface temperature data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'ts'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['monthly'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'subtract', -273.15)
+        converts K to C. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import PDO
+    >>> results = PDO(model_ds, data_var='ts')
+    >>> # PDO defaults to monthly analysis
+    >>> print(results['monthly']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "PDO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def NPGO(
+    model_ds: xr.Dataset,
+    data_var: str = "ts",
+    seasons: List[str] = ["monthly"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = True,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute North Pacific Gyre Oscillation (NPGO) diagnostics and metrics.
+
+    NPGO is the second EOF of sea surface temperature over the North Pacific (20-70N, 110-260E).
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea surface temperature data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'ts'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['monthly'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'subtract', -273.15)
+        converts K to C. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import NPGO
+    >>> results = NPGO(model_ds, data_var='ts')
+    >>> # NPGO defaults to monthly analysis
+    >>> print(results['monthly']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "NPGO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def AMO(
+    model_ds: xr.Dataset,
+    data_var: str = "ts",
+    seasons: List[str] = ["yearly"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = True,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute Atlantic Multidecadal Oscillation (AMO) diagnostics and metrics.
+
+    AMO is the leading EOF of sea surface temperature over the North Atlantic (0-70N, 80W-0E).
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea surface temperature data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'ts'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['yearly'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'subtract', -273.15)
+        converts K to C. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import AMO
+    >>> results = AMO(model_ds, data_var='ts')
+    >>> # AMO defaults to yearly analysis
+    >>> print(results['yearly']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "AMO",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def PSA1(
+    model_ds: xr.Dataset,
+    data_var: str = "psl",
+    seasons: List[str] = ["DJF", "MAM", "JJA", "SON"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute Pacific-South American Pattern 1 (PSA1) diagnostics and metrics.
+
+    PSA1 is the second EOF of sea level pressure over the Southern Hemisphere (90S-20S).
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea level pressure data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'psl'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['DJF', 'MAM', 'JJA', 'SON'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import PSA1
+    >>> results = PSA1(model_ds)
+    >>> print(results['DJF']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "PSA1",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )
+
+
+def PSA2(
+    model_ds: xr.Dataset,
+    data_var: str = "psl",
+    seasons: List[str] = ["DJF", "MAM", "JJA", "SON"],
+    reference_ds: Optional[xr.Dataset] = None,
+    method: str = "eof",
+    start_year: Optional[int] = None,
+    end_year: Optional[int] = None,
+    remove_domain_mean: bool = True,
+    land_mask: bool = False,
+    landfrac_ds: Optional[xr.Dataset] = None,
+    units_adjust: Optional[tuple] = None,
+    reference_units_adjust: Optional[tuple] = None,
+) -> Dict[str, Dict[str, Union[xr.DataArray, float, Dict]]]:
+    """
+    Compute Pacific-South American Pattern 2 (PSA2) diagnostics and metrics.
+
+    PSA2 is the third EOF of sea level pressure over the Southern Hemisphere (90S-20S).
+
+    Parameters
+    ----------
+    model_ds : xr.Dataset
+        Model dataset containing sea level pressure data.
+    data_var : str, optional
+        Variable name in the dataset. Default is 'psl'.
+    seasons : list of str, optional
+        List of seasons to compute. Default is ['DJF', 'MAM', 'JJA', 'SON'].
+    reference_ds : xr.Dataset, optional
+        Reference/observational dataset for computing metrics. Default is None.
+    method : str, optional
+        Method to use: 'eof' (default) or 'cbf' (requires reference_ds).
+    start_year : int, optional
+        Start year for analysis. Default is None (use all data).
+    end_year : int, optional
+        End year for analysis. Default is None (use all data).
+    remove_domain_mean : bool, optional
+        If True (default), remove domain mean at each time step. This detrends
+        the data by subtracting the spatial mean, focusing on spatial patterns.
+    land_mask : bool, optional
+        If True, mask out land regions. Default is False.
+    landfrac_ds : xr.Dataset, optional
+        Dataset containing land fraction ('sftlf'). If land_mask is True but this
+        is not provided, a land-sea mask will be generated automatically.
+    units_adjust : tuple, optional
+        Unit conversion tuple: (enable, operation, value). Example: (True, 'divide', 100.0)
+        converts Pa to hPa. Operations: 'multiply', 'divide', 'add', 'subtract'.
+        Default is None (no conversion).
+    reference_units_adjust : tuple, optional
+        Same as units_adjust but for reference dataset. Default is None.
+
+    Returns
+    -------
+    dict
+        Results dictionary with structure:
+        {
+            'SEASON': {
+                'diagnostics': {
+                    'eof_pattern': xr.DataArray,  # EOF spatial pattern
+                    'pc_timeseries': xr.DataArray,  # PC time series
+                    'frac': float,  # Variance fraction
+                    'stdv_pc': float,  # PC standard deviation
+                    'mean': float,  # Spatial mean (subdomain)
+                    'mean_glo': float,  # Spatial mean (global)
+                },
+                'metrics': {  # Only present if reference_ds provided
+                    'cor': float,  # Spatial correlation (subdomain)
+                    'cor_glo': float,  # Correlation (global teleconnection)
+                    'rms': float,  # RMS error (subdomain)
+                    'rms_glo': float,  # RMS error (global teleconnection)
+                    'rmsc': float,  # Centered RMS (subdomain)
+                    'rmsc_glo': float,  # Centered RMS (global teleconnection)
+                    'bias': float,  # Bias (subdomain)
+                    'bias_glo': float,  # Bias (global teleconnection)
+                    'stdv_pc_ratio_to_obs': float,  # PC stdv ratio
+                }
+            }
+        }
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.variability_mode import PSA2
+    >>> results = PSA2(model_ds)
+    >>> print(results['DJF']['diagnostics']['frac'])
+
+    References
+    ----------
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+        Quantifying the Agreement Between Observed and Simulated Extratropical
+        Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089.
+        https://doi.org/10.1007/s00382-018-4355-4
+    """
+    return _compute_variability_mode(
+        "PSA2",
+        model_ds,
+        data_var,
+        seasons,
+        reference_ds,
+        method,
+        start_year,
+        end_year,
+        remove_domain_mean=remove_domain_mean,
+        land_mask=land_mask,
+        landfrac_ds=landfrac_ds,
+        units_adjust=units_adjust,
+        reference_units_adjust=reference_units_adjust,
+    )

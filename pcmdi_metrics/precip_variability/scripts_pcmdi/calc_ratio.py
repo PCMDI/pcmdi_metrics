@@ -3,8 +3,8 @@ import glob
 import json
 import os
 
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import AddParserArgument
+from pcmdi_metrics.utils.pmp_parser import PMPParser
 
 # Read parameters
 P = PMPParser()
