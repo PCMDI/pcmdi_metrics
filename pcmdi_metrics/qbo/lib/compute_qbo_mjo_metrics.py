@@ -597,7 +597,3 @@ def process_qbo_mjo_metrics(params: dict[str, Any]) -> dict[str, Any]:
     print("json file saved:", json_file_path)
 
     return output
-
-
-if __name__ == "__main__":
-    main()

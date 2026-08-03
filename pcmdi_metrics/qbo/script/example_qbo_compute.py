@@ -15,9 +15,9 @@ def test_example_cesm2():
         "varname": "ua",
         "level": 50,  # hPa (=mb)
         "varname2": "rlut",
-        #"start": "1981-01",
+        # "start": "1981-01",
         "start": "1979-01",
-        #"end": "1988-12",
+        # "end": "1988-12",
         "end": "2005-12",
         "regrid": False,
         "regrid_tool": "xesmf",
@@ -59,6 +59,6 @@ def test_example_era5():
 if __name__ == "__main__":
     # Run ERA5 example by default
     # test_example_era5()
-    
+
     # Run CESM2 example
     test_example_cesm2()
