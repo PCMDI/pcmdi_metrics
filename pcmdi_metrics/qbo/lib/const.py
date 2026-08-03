@@ -1,4 +1,4 @@
-# constant module class
+"""Physical constants used by `kf_filter.py`'s equatorial wave dispersion filters."""
 
 # universal constants
 gravitational_constant = 6.673e-11  # Nm^2/kg^2

@@ -26,6 +26,7 @@ The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` versi
     :toctree: generated/
 
     mjo.compute_mjo_ewr_from_dataset
+    qbo.compute_qbo_mjo_metrics
     sea_ice.calc_iiee_annual_cycle
     variability_mode.NAO
     variability_mode.NAM
