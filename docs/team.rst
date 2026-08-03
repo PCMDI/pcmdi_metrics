@@ -12,7 +12,7 @@ Current Core Development Team
 * `Jiwoo Lee <https://people.llnl.gov/lee1043>`_ (`LLNL`_, PMP Lead)
 * `Kristin Chang <https://people.llnl.gov/chang61>`_ (`LLNL`_)
 * `Seth Goodnight <https://people.llnl.gov/goodnight1>`_ (`LLNL`_)
-* `Peter Gleckler <https://pcmdi.llnl.gov/staff/gleckler/>`_ (`LLNL`_)
+* `Peter Gleckler <https://pcmdi.llnl.gov/staff/gleckler/>`_ (`LLNL`_, PMP Founder)
 * `Paul Ullrich <https://people.llnl.gov/ullrich4>`_ (`LLNL`_, `PCMDI <https://pcmdi.llnl.gov/>`_ Project PI)
 * `Shixuan Zhang <https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376>`_ (`PNNL`_)
 
