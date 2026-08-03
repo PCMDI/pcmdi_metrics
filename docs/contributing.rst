@@ -59,12 +59,24 @@ Steps to contributing new metrics:
 
 .. _GitHub.io documentation: https://github.com/PCMDI/pcmdi_metrics/tree/main/docs
 
+Critical Constraints
+~~~~~~~~~~~~~~~~~~~~
+
+**MUST NOT alter existing computational logic** - metrics are published and validated. Changing computational logic invalidates scientific results. If changes are needed, describe the issue, show current vs proposed behavior, and wait for explicit approval before proceeding.
+
+**MUST maintain backward compatibility** - driver scripts and parameter files are used in operational workflows and MUST NOT BREAK.
+
+**MUST use xCDAT, not CDAT** - CDAT is fully deprecated. Do not introduce any new CDAT dependencies or use CDAT-specific APIs.
+
 Please keep in mind that:
 
 * It is never too early to open a Feature Request or contact the PMP team with your idea.
 * All metrics code must be in Python, and it is the responsibility of the contributor to deliver Python code. The PMP team has limited bandwidth to assist with code conversion to Python.
 * Current PMP dependencies can be found in `dev.yml file`_. Dependencies cannot be added without the approval of the PMP team.
 * Input data sets are expected to follow the `CF Metadata Conventions`_ (e.g. CMIP, obs4mips).
+* New metrics should use standard Python API structure: importable functions, not standalone executable scripts.
+* Always maintain backward compatibility: add new optional parameters with defaults, don't remove or change existing behavior.
+* Preserve CMEC (Climate Model Evaluation Collective) output format when modifying existing metrics that support it.
 * Providing `unit tests`_ is highly encouraged.
 
 Quick links to useful code sections:
@@ -95,18 +107,22 @@ Guidelines
 
 1. ``main`` must always be deployable
 2. All changes are made through support branches
-3. Branch names should follow the pattern "issuenumber_initials_description"
-4. Rebase with the latest ``main`` to avoid/resolve conflicts
-5. Make sure pre-commit quality assurance checks pass when committing (enforced in CI/CD build)
-6. Open a pull request early for discussion
-7. Once the CI/CD build passes and pull request is approved, squash and rebase your commits
-8. Merge pull request into ``main`` and delete the branch
+3. **Never push changes directly to main branch**
+4. Branch names should follow the pattern "<issue-number>_<username>_<change-description>"
+5. Always reference the issue in new branches and pull requests
+6. Rebase with the latest ``main`` to avoid/resolve conflicts
+7. Make sure pre-commit quality assurance checks pass when committing (enforced in CI/CD build)
+8. Always run ``pre-commit run --all-files`` before committing changes
+9. Open a pull request early for discussion
+10. Once the CI/CD build passes and pull request is approved, squash and rebase your commits
+11. Merge pull request into ``main`` and delete the branch
+12. Always use a clear, descriptive commit message and reference any relevant issue numbers
 
 Things to Avoid
 ~~~~~~~~~~~~~~~
 
 1. Don't merge in broken or commented out code
-2. Don't commit directly to ``main``
+2. **Don't commit or push directly to** ``main``
 
    *  There are branch-protection rules for ``main``
 
@@ -261,6 +277,26 @@ PMP integrates the Black code formatter for code styling. If you want to learn m
 PMP also leverages `Python Type Annotations <https://docs.python.org/3.8/library/typing.html>`_ to help the project scale.
 `mypy <https://mypy.readthedocs.io/en/stable/introduction.html>`_ performs optional static type checking through pre-commit.
 
+API Design Principles
+~~~~~~~~~~~~~~~~~~~~~
+
+When developing new metrics or refactoring existing code:
+
+* Accept standard data structures (xarray.Dataset, numpy arrays)
+* Return standard data structures (dict, DataFrame, Dataset)
+* Use keyword arguments for options with sensible defaults
+* Type hints required for main functions, optional for helpers
+* Comprehensive docstrings using NumPy style with a short one-line description at the top of each function
+* Include citations for any scientific references used
+* Minimal side effects (no global state, file I/O optional)
+* Prioritize readability and correctness over premature optimization
+* Use classes minimally
+* Avoid hard coding values, especially if units or order may vary among different datasets
+* Prioritize API flexibility for commonly used climate model and observation datasets (functions should handle data inputs with different grids or non-standard units)
+* Only create helper functions when the same logic is used in 3+ places - avoid single-use helper functions or premature abstractions
+
+See ``pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset`` in the docs for a well-designed API example.
+
 Testing
 -------
 
@@ -271,6 +307,14 @@ To get started, here are guides on how to write tests using pytest:
 
 - https://docs.pytest.org/en/latest/
 - https://docs.python-guide.org/writing/tests/#py-test
+
+Testing Guidelines
+~~~~~~~~~~~~~~~~~~
+
+* **Always run test before committing changes**
+* Test driver scripts with sample parameter files to ensure backward compatibility
+* For expensive computations, test on a data slice (temporal subset or coarser grid) appropriate to the metric's science
+* Legacy tests in ``./tests/deprecated/`` are excluded from test runs
 
 In most cases, if a function is hard to test, it is usually a symptom of being too complex (high cyclomatic-complexity).
 
