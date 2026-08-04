@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.graphics.parallel\_coordinate\_plot
+==================================================
+
+.. currentmodule:: pcmdi_metrics.graphics
+
+.. autofunction:: parallel_coordinate_plot

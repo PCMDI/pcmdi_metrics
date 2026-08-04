@@ -1,0 +1,1325 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="5. MJO" href="Demo_5_mjo_metrics.html"><link rel="prev" title="4. Modes of Variability" href="Demo_4_modes_of_variability.html">
+        <link rel="prefetch" href="../_static/PMPLogo_500x421px_72dpi.png" as="image">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>4B. Modes of Variability API Demo - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input aria-label="Toggle navigation of Getting Started" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input aria-label="Toggle navigation of PMP Metrics" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_cloud-feedback.html">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input aria-label="Toggle navigation of Demo notebooks" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">4B. Modes of Variability API Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eof_classification.html">Empirical Orthogonal Functions (EOF) Classification Algorithm for Arctic Atmospheric Variability Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sea_ice_iiee_metrics.html">Sea-ice Integrated Ice-Edge Error (IIEE)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset.html">pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.qbo.compute_qbo_mjo_metrics.html">pcmdi_metrics.qbo.compute_qbo_mjo_metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.sea_ice.calc_iiee_annual_cycle.html">pcmdi_metrics.sea_ice.calc_iiee_annual_cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NAO.html">pcmdi_metrics.variability_mode.NAO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NAM.html">pcmdi_metrics.variability_mode.NAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.SAM.html">pcmdi_metrics.variability_mode.SAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PSA1.html">pcmdi_metrics.variability_mode.PSA1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PSA2.html">pcmdi_metrics.variability_mode.PSA2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PNA.html">pcmdi_metrics.variability_mode.PNA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NPO.html">pcmdi_metrics.variability_mode.NPO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PDO.html">pcmdi_metrics.variability_mode.PDO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NPGO.html">pcmdi_metrics.variability_mode.NPGO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.AMO.html">pcmdi_metrics.variability_mode.AMO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.eof_classification.html">pcmdi_metrics.variability_mode.eof_classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input aria-label="Toggle navigation of Resources" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input aria-label="Toggle navigation of Legacy archive" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/Demo_4b_modes_of_variability_API.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/Demo_4b_modes_of_variability_API.ipynb" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="4B.-Modes-of-Variability-API-Demo">
+<h1>4B. Modes of Variability API Demo<a class="headerlink" href="#4B.-Modes-of-Variability-API-Demo" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates how to use the PCMDI Metrics variability mode API to analyze climate model outputs and compare them with observations.</p>
+<section id="What-This-Notebook-Demonstrates">
+<h2>What This Notebook Demonstrates<a class="headerlink" href="#What-This-Notebook-Demonstrates" title="Link to this heading"></a></h2>
+<p>This notebook shows you how to:</p>
+<ul class="simple">
+<li><p><strong>Compute variability modes</strong> (NAO, NAM, PDO, NPGO) from climate model data</p></li>
+<li><p><strong>Compare with observations</strong> using comprehensive evaluation metrics</p></li>
+<li><p><strong>Choose between methods</strong> (EOF vs CBF) for different analysis needs</p></li>
+<li><p><strong>Understand the results</strong> including diagnostics, metrics, and their scientific meaning</p></li>
+<li><p><strong>Visualize patterns</strong> using EOF spatial patterns and PC time series</p></li>
+<li><p><strong>Configure the analysis</strong> with options like unit conversion, land masking, and time periods</p></li>
+</ul>
+<p>All examples use CMIP5 demo data and can be easily adapted to your own datasets.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># Import variability mode API functions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.variability_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">NAO</span><span class="p">,</span> <span class="n">NAM</span><span class="p">,</span> <span class="n">SAM</span><span class="p">,</span> <span class="n">PDO</span><span class="p">,</span> <span class="n">NPGO</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Imports successful!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Imports successful!
+</pre></div></div>
+</div>
+</section>
+<section id="Quick-Start">
+<h2>Quick Start<a class="headerlink" href="#Quick-Start" title="Link to this heading"></a></h2>
+<p>Here’s the simplest possible example - computing NAO from model data in just a few lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.variability_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">NAO</span>
+
+<span class="c1"># Load your data</span>
+<span class="n">model_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;your_psl_data.nc&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute NAO</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">NAO</span><span class="p">(</span><span class="n">model_ds</span><span class="p">,</span> <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;psl&#39;</span><span class="p">)</span>
+
+<span class="c1"># Access the results</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DJF variance fraction: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;DJF&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s explore the full capabilities with real CMIP5 data below!</p>
+<hr class="docutils" />
+<p><strong>Key Concepts:</strong></p>
+<ul class="simple">
+<li><p><strong>Diagnostics</strong> contain the model’s own statistics (variance fraction, PC std dev, spatial means)</p></li>
+<li><p><strong>Metrics</strong> contain comparison statistics when reference data is provided (correlations, RMS errors, bias)</p></li>
+<li><p><strong>Subdomain metrics</strong> assess performance in the EOF core region (e.g., NAO: 20-80N, 90W-40E)</p></li>
+<li><p><strong>Global teleconnection metrics</strong> (with <code class="docutils literal notranslate"><span class="pre">_glo</span></code> suffix) assess how well remote influences are captured</p></li>
+</ul>
+<hr class="docutils" />
+<p>Let’s begin with the setup!</p>
+</section>
+<section id="Setup:-Define-Data-Paths">
+<h2>Setup: Define Data Paths<a class="headerlink" href="#Setup:-Define-Data-Paths" title="Link to this heading"></a></h2>
+<p>Download the demo data following the <a class="reference external" href="https://pcmdi.github.io/pcmdi_metrics/examples/Demo_0_download_data.html">Demo 0 Notebook</a>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Base directory for demo data</span>
+<span class="n">base_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./demo_data&quot;</span><span class="p">)</span>
+
+<span class="c1"># Model data paths</span>
+<span class="n">model_psl_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="s2">&quot;CMIP5_demo_data&quot;</span> <span class="o">/</span> <span class="s2">&quot;psl_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc&quot;</span>
+<span class="n">model_ts_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="s2">&quot;CMIP5_demo_data&quot;</span> <span class="o">/</span> <span class="s2">&quot;ts_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc&quot;</span>
+<span class="n">model_sftlf_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="s2">&quot;CMIP5_demo_data&quot;</span> <span class="o">/</span> <span class="s2">&quot;sftlf_fx_ACCESS1-0_amip_r0i0p0.nc&quot;</span>
+
+<span class="c1"># Reference data paths</span>
+<span class="n">ref_psl_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="s2">&quot;obs4MIPs_PCMDI_monthly&quot;</span> <span class="o">/</span> <span class="s2">&quot;NOAA-ESRL-PSD&quot;</span> <span class="o">/</span> <span class="s2">&quot;20CR&quot;</span> <span class="o">/</span> <span class="s2">&quot;mon&quot;</span> <span class="o">/</span> <span class="s2">&quot;psl&quot;</span> <span class="o">/</span> <span class="s2">&quot;gn&quot;</span> <span class="o">/</span> <span class="s2">&quot;v20210727&quot;</span> <span class="o">/</span> <span class="s2">&quot;psl_mon_20CR_PCMDI_gn_187101-201212.nc&quot;</span>
+<span class="n">ref_ts_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="s2">&quot;obs4MIPs_PCMDI_monthly&quot;</span> <span class="o">/</span> <span class="s2">&quot;MOHC&quot;</span> <span class="o">/</span> <span class="s2">&quot;HadISST-1-1&quot;</span> <span class="o">/</span> <span class="s2">&quot;mon&quot;</span> <span class="o">/</span> <span class="s2">&quot;ts&quot;</span> <span class="o">/</span> <span class="s2">&quot;gn&quot;</span> <span class="o">/</span> <span class="s2">&quot;v20260416&quot;</span> <span class="o">/</span> <span class="s2">&quot;ts_mon_HadISST-1-1_PCMDI_gn_187001-202501.nc&quot;</span>
+
+<span class="c1"># Verify files exist</span>
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">model_psl_path</span><span class="p">,</span> <span class="n">model_ts_path</span><span class="p">,</span> <span class="n">model_sftlf_path</span><span class="p">,</span> <span class="n">ref_psl_path</span><span class="p">,</span> <span class="n">ref_ts_path</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ </span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✗ MISSING: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+✓ psl_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc
+✓ ts_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc
+✓ sftlf_fx_ACCESS1-0_amip_r0i0p0.nc
+✓ psl_mon_20CR_PCMDI_gn_187101-201212.nc
+✓ ts_mon_HadISST-1-1_PCMDI_gn_187001-202501.nc
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load model data</span>
+<span class="n">model_psl</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">model_psl_path</span><span class="p">)</span>
+<span class="n">model_ts</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">model_ts_path</span><span class="p">)</span>
+<span class="n">model_sftlf</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">model_sftlf_path</span><span class="p">)</span>
+
+<span class="c1"># Load reference data</span>
+<span class="n">ref_psl</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">ref_psl_path</span><span class="p">)</span>
+<span class="n">ref_ts</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">ref_ts_path</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model PSL shape:&quot;</span><span class="p">,</span> <span class="n">model_psl</span><span class="p">[</span><span class="s1">&#39;psl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model TS shape:&quot;</span><span class="p">,</span> <span class="n">model_ts</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Land fraction shape:&quot;</span><span class="p">,</span> <span class="n">model_sftlf</span><span class="p">[</span><span class="s1">&#39;sftlf&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Reference PSL shape:&quot;</span><span class="p">,</span> <span class="n">ref_psl</span><span class="p">[</span><span class="s1">&#39;psl&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reference TS shape:&quot;</span><span class="p">,</span> <span class="n">ref_ts</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Model PSL shape: (1872, 145, 192)
+Model TS shape: (1872, 145, 192)
+Land fraction shape: (145, 192)
+
+Reference PSL shape: (1704, 91, 180)
+Reference TS shape: (1861, 180, 360)
+</pre></div></div>
+</div>
+</section>
+<section id="Example-1:-Basic-Mode-Calculation-(NAO)">
+<h2>Example 1: Basic Mode Calculation (NAO)<a class="headerlink" href="#Example-1:-Basic-Mode-Calculation-(NAO)" title="Link to this heading"></a></h2>
+<p>Let’s start with the simplest use case - computing NAO from model data without reference observations.</p>
+<p>This example shows:</p>
+<ul class="simple">
+<li><p>Computing a variability mode with default settings</p></li>
+<li><p>Automatic unit conversion (Pa to hPa)</p></li>
+<li><p>Accessing diagnostics (variance fraction, PC standard deviation)</p></li>
+<li><p>Time period selection</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing NAM with reference data...&quot;</span><span class="p">)</span>
+<span class="n">nao_results</span> <span class="o">=</span> <span class="n">NAO</span><span class="p">(</span>
+    <span class="n">model_psl</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;psl&#39;</span><span class="p">,</span>
+    <span class="n">seasons</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span> <span class="s1">&#39;JJA&#39;</span><span class="p">],</span>  <span class="c1"># Only winter and summer</span>
+    <span class="n">units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">),</span>  <span class="c1"># Pa to hPa</span>
+    <span class="n">start_year</span><span class="o">=</span><span class="mi">1900</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="o">=</span><span class="mi">2005</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Computing NAM with reference data...
+Converting units by  divide 100.0
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot NAO EOF pattern for DJF</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cartopy.crs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ccrs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cartopy.feature</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cfeature</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">()}</span>
+<span class="p">)</span>
+
+<span class="n">eof_pattern</span> <span class="o">=</span> <span class="n">nao_results</span><span class="p">[</span><span class="s2">&quot;DJF&quot;</span><span class="p">][</span><span class="s2">&quot;diagnostics&quot;</span><span class="p">][</span><span class="s2">&quot;eof_pattern&quot;</span><span class="p">]</span>
+
+<span class="n">eof_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+    <span class="n">vmin</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">vmax</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">cbar_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;EOF amplitude&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Coastline only</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+<span class="c1"># Simple gridlines (no labels to avoid version compatibility issues)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">gridlines</span><span class="p">(</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;NAO EOF Pattern (DJF) - Model&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_4b_modes_of_variability_API_9_0.png" src="../_images/examples_Demo_4b_modes_of_variability_API_9_0.png" />
+</div>
+</div>
+</section>
+<section id="Example-2:-Comprehensive-Metrics-Display-(NAM)">
+<h2>Example 2: Comprehensive Metrics Display (NAM)<a class="headerlink" href="#Example-2:-Comprehensive-Metrics-Display-(NAM)" title="Link to this heading"></a></h2>
+<p>Now let’s compute a variability mode with observational reference data to get evaluation metrics.</p>
+<p>This example shows:</p>
+<ul class="simple">
+<li><p>How metrics are computed when reference data is provided</p></li>
+<li><p>Complete display of all 9 comparison statistics</p></li>
+<li><p>Scientific descriptions for each metric</p></li>
+<li><p>Distinction between subdomain and global teleconnection metrics</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing NAM with reference data...&quot;</span><span class="p">)</span>
+<span class="n">nam_results</span> <span class="o">=</span> <span class="n">NAM</span><span class="p">(</span>
+    <span class="n">model_psl</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;psl&#39;</span><span class="p">,</span>
+    <span class="n">reference_ds</span><span class="o">=</span><span class="n">ref_psl</span><span class="p">,</span>
+    <span class="n">seasons</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span> <span class="s1">&#39;JJA&#39;</span><span class="p">],</span>  <span class="c1"># Only winter and summer</span>
+    <span class="n">units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">),</span>  <span class="c1"># Pa to hPa</span>
+    <span class="n">reference_units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">),</span>  <span class="c1"># Pa to hPa</span>
+    <span class="n">start_year</span><span class="o">=</span><span class="mi">1900</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="o">=</span><span class="mi">2005</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Computing NAM with reference data...
+Converting units by  divide 100.0
+Converting units by  divide 100.0
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot NAM EOF pattern for DJF</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cartopy.crs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ccrs</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="n">ccrs</span><span class="o">.</span><span class="n">NorthPolarStereo</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">eof_pattern</span> <span class="o">=</span> <span class="n">nam_results</span><span class="p">[</span><span class="s2">&quot;DJF&quot;</span><span class="p">][</span><span class="s2">&quot;diagnostics&quot;</span><span class="p">][</span><span class="s2">&quot;eof_pattern&quot;</span><span class="p">]</span>
+
+<span class="n">eof_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+    <span class="n">vmin</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">vmax</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">cbar_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;EOF amplitude&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Show latitudes from 20°N to 90°N</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_extent</span><span class="p">([</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">90</span><span class="p">],</span> <span class="n">crs</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
+
+<span class="c1"># Coastline only</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+<span class="c1"># Circular map boundary</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">center</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="mf">0.5</span>
+<span class="n">circle</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Circle</span><span class="p">(</span>
+    <span class="n">center</span><span class="p">,</span>
+    <span class="n">radius</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+    <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+<span class="c1"># Simple gridlines (no labels to avoid version compatibility issues)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">gridlines</span><span class="p">(</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span>
+<span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;NAM EOF Pattern (DJF) - North Polar Projection&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_4b_modes_of_variability_API_12_0.png" src="../_images/examples_Demo_4b_modes_of_variability_API_12_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nam_results</span><span class="p">[</span><span class="s1">&#39;DJF&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;rms&#39;: 0.5744337380453614,
+ &#39;rms_glo&#39;: 0.37577792532746496,
+ &#39;rmsc&#39;: 0.35982744956247725,
+ &#39;rmsc_glo&#39;: 0.41440570733751625,
+ &#39;cor&#39;: 0.935262099788672,
+ &#39;cor_glo&#39;: 0.9141339596458946,
+ &#39;bias&#39;: 0.0030016601934660264,
+ &#39;bias_glo&#39;: 0.03907360776119204,
+ &#39;stdv_pc_ratio_to_obs&#39;: 0.8105150390693061}
+</pre></div></div>
+</div>
+</section>
+<section id="Example-3:-SST-Based-Mode-(PDO)-with-Comparing-Analysis-Methods-(PDO)">
+<h2>Example 3: SST-Based Mode (PDO) with Comparing Analysis Methods (PDO)<a class="headerlink" href="#Example-3:-SST-Based-Mode-(PDO)-with-Comparing-Analysis-Methods-(PDO)" title="Link to this heading"></a></h2>
+<p>This example compares different approaches to analyzing PDO with reference data.</p>
+<p>We’ll demonstrate three methods:</p>
+<ol class="arabic simple">
+<li><p><strong>Individual calculations</strong> - Model and reference computed separately (no metrics)</p></li>
+<li><p><strong>EOF method with metrics</strong> - Both compute their own EOFs, then compare</p></li>
+<li><p><strong>CBF method</strong> - Model projected onto reference EOFs for direct comparison</p></li>
+</ol>
+<p>Understanding these differences helps you choose the right method for your analysis.</p>
+<section id="3.1:-Individual-Calculations">
+<h3>3.1: Individual Calculations<a class="headerlink" href="#3.1:-Individual-Calculations" title="Link to this heading"></a></h3>
+<p>First, let’s compute model and reference PDO separately (without metrics).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing PDO with model and reference data...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># PDO with model data only (diagnostics only)</span>
+<span class="n">pdo_model</span> <span class="o">=</span> <span class="n">PDO</span><span class="p">(</span>
+    <span class="n">model_ts</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;ts&#39;</span><span class="p">,</span>
+    <span class="n">start_year</span><span class="o">=</span><span class="mi">1900</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="o">=</span><span class="mi">2005</span><span class="p">,</span>
+    <span class="n">units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;subtract&#39;</span><span class="p">,</span> <span class="mf">273.15</span><span class="p">),</span>  <span class="c1"># K to C</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PDO (model - diagnostics):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Variance fraction: </span><span class="si">{</span><span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  PC stdv: </span><span class="si">{</span><span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;stdv_pc&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">pdo_ref</span> <span class="o">=</span> <span class="n">PDO</span><span class="p">(</span>
+    <span class="n">ref_ts</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;ts&#39;</span><span class="p">,</span>
+    <span class="n">start_year</span><span class="o">=</span><span class="mi">1900</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="o">=</span><span class="mi">2005</span><span class="p">,</span>
+    <span class="n">units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;subtract&#39;</span><span class="p">,</span> <span class="mf">273.15</span><span class="p">),</span>  <span class="c1"># K to C</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PDO (ref - diagnostics):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Variance fraction: </span><span class="si">{</span><span class="n">pdo_ref</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  PC stdv: </span><span class="si">{</span><span class="n">pdo_ref</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;stdv_pc&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Computing PDO with model and reference data...
+
+Converting units by  subtract 273.15
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/miniforge3/envs/pmp_devel_20260331/lib/python3.12/site-packages/pcmdi_metrics/utils/land_sea_mask.py:218: UserWarning: landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PDO (model - diagnostics):
+  Variance fraction: 0.1520
+  PC stdv: 0.22
+Converting units by  subtract 273.15
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/miniforge3/envs/pmp_devel_20260331/lib/python3.12/site-packages/pcmdi_metrics/utils/land_sea_mask.py:218: UserWarning: landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PDO (ref - diagnostics):
+  Variance fraction: 0.2610
+  PC stdv: 0.24
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot PDO EOF pattern</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">eof_pattern</span> <span class="o">=</span> <span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;eof_pattern&#39;</span><span class="p">]</span>
+<span class="n">eof_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PDO EOF Pattern (monthly) - Model&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_4b_modes_of_variability_API_17_0.png" src="../_images/examples_Demo_4b_modes_of_variability_API_17_0.png" />
+</div>
+</div>
+</section>
+<section id="3.2:-PDO-with-Model-and-Reference-Data-to-enable-metrics-calculation">
+<h3>3.2: PDO with Model and Reference Data to enable metrics calculation<a class="headerlink" href="#3.2:-PDO-with-Model-and-Reference-Data-to-enable-metrics-calculation" title="Link to this heading"></a></h3>
+<p>PDO uses the 1st EOF of SST and defaults to monthly analysis for the reference dataset and model. Providing reference dataset enables additional calculation for evaluation metrics.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pdo_model_with_ref</span> <span class="o">=</span> <span class="n">PDO</span><span class="p">(</span>
+    <span class="n">model_ts</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;ts&#39;</span><span class="p">,</span>
+    <span class="n">reference_ds</span><span class="o">=</span><span class="n">ref_ts</span><span class="p">,</span>
+    <span class="n">land_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">start_year</span><span class="o">=</span><span class="mi">1900</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="o">=</span><span class="mi">2005</span><span class="p">,</span>
+    <span class="n">units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;subtract&#39;</span><span class="p">,</span> <span class="mf">273.15</span><span class="p">),</span>  <span class="c1"># K to C</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Converting units by  subtract 273.15
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/miniforge3/envs/pmp_devel_20260331/lib/python3.12/site-packages/pcmdi_metrics/utils/land_sea_mask.py:218: UserWarning: landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function
+  warnings.warn(
+/Users/lee1043/miniforge3/envs/pmp_devel_20260331/lib/python3.12/site-packages/pcmdi_metrics/utils/land_sea_mask.py:218: UserWarning: landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pdo_model_with_ref</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;rms&#39;: 0.19730699293185888,
+ &#39;rms_glo&#39;: 0.11597448404959312,
+ &#39;rmsc&#39;: 0.6886745261245016,
+ &#39;rmsc_glo&#39;: 0.7828663652732126,
+ &#39;cor&#39;: 0.762863699089476,
+ &#39;cor_glo&#39;: 0.6935601175817083,
+ &#39;bias&#39;: 0.004169892132225708,
+ &#39;bias_glo&#39;: -0.042598168879460226,
+ &#39;stdv_pc_ratio_to_obs&#39;: 0.9407360648044291}
+</pre></div></div>
+</div>
+</section>
+<section id="3.3:-CBF-Method">
+<h3>3.3: CBF Method<a class="headerlink" href="#3.3:-CBF-Method" title="Link to this heading"></a></h3>
+<p>The Common Basis Function (CBF) method projects the model data onto the reference EOFs, providing a more direct comparison.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PDO with both model and reference data (diagnostics + metrics)</span>
+<span class="n">pdo_model_cbf</span> <span class="o">=</span> <span class="n">PDO</span><span class="p">(</span>
+    <span class="n">model_ts</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;ts&#39;</span><span class="p">,</span>
+    <span class="n">reference_ds</span><span class="o">=</span><span class="n">ref_ts</span><span class="p">,</span>
+    <span class="n">land_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">start_year</span><span class="o">=</span><span class="mi">1900</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="o">=</span><span class="mi">2005</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cbf&#39;</span><span class="p">,</span>
+    <span class="n">units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;subtract&#39;</span><span class="p">,</span> <span class="mf">273.15</span><span class="p">),</span>  <span class="c1"># K to C</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">PDO (with reference - diagnostics + metrics):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Variance fraction: </span><span class="si">{</span><span class="n">pdo_model_cbf</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  PC stdv: </span><span class="si">{</span><span class="n">pdo_model_cbf</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;stdv_pc&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Metrics (comparison with reference):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Correlation: </span><span class="si">{</span><span class="n">pdo_model_cbf</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;cor&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    RMS error: </span><span class="si">{</span><span class="n">pdo_model_cbf</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;rms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Bias: </span><span class="si">{</span><span class="n">pdo_model_cbf</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;bias&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Note: Metrics are only available when reference_ds is provided.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Converting units by  subtract 273.15
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/miniforge3/envs/pmp_devel_20260331/lib/python3.12/site-packages/pcmdi_metrics/utils/land_sea_mask.py:218: UserWarning: landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function
+  warnings.warn(
+/Users/lee1043/miniforge3/envs/pmp_devel_20260331/lib/python3.12/site-packages/pcmdi_metrics/utils/land_sea_mask.py:218: UserWarning: landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+PDO (with reference - diagnostics + metrics):
+  Variance fraction: 0.1353
+  PC stdv: 0.18
+
+  Metrics (comparison with reference):
+    Correlation: 0.9160
+    RMS error: 0.1179
+    Bias: 0.0026
+
+Note: Metrics are only available when reference_ds is provided.
+</pre></div></div>
+</div>
+</section>
+<section id="3.4:-Visual-Comparison">
+<h3>3.4: Visual Comparison<a class="headerlink" href="#3.4:-Visual-Comparison" title="Link to this heading"></a></h3>
+<p>Let’s visualize the three EOF patterns side by side to see the differences between methods.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare EOF patterns obtained from the reference and model</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># REF</span>
+<span class="n">eof_ref</span> <span class="o">=</span> <span class="n">pdo_ref</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;eof_pattern&#39;</span><span class="p">]</span>
+<span class="n">eof_ref</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PDO REF </span><span class="si">{</span><span class="n">pdo_ref</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+
+<span class="c1"># Model (EOF)</span>
+<span class="n">eof_model</span> <span class="o">=</span> <span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;eof_pattern&#39;</span><span class="p">]</span>
+<span class="n">eof_model</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PDO Model - EOF </span><span class="si">{</span><span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+
+<span class="c1"># Model (CBF)</span>
+<span class="n">eof_model</span> <span class="o">=</span> <span class="n">pdo_model_cbf</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;cbf_pattern&#39;</span><span class="p">]</span>
+<span class="n">eof_model</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PDO Model - CBF </span><span class="si">{</span><span class="n">pdo_model_cbf</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_4b_modes_of_variability_API_24_0.png" src="../_images/examples_Demo_4b_modes_of_variability_API_24_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Example-4:-Higher-EOF-Modes-(NPGO)">
+<h2>Example 4: Higher EOF Modes (NPGO)<a class="headerlink" href="#Example-4:-Higher-EOF-Modes-(NPGO)" title="Link to this heading"></a></h2>
+<p>Beyond the leading EOF, you can analyze secondary modes. Here we compute NPGO, which is the 2nd EOF of North Pacific SST.</p>
+<p>This example shows:</p>
+<ul class="simple">
+<li><p>Computing higher EOF modes (2nd, 3rd, etc.)</p></li>
+<li><p>The API automatically extracts the correct EOF number for each mode</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing NPGO with model...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># PDO with model data only (diagnostics only)</span>
+<span class="n">npgo_results</span> <span class="o">=</span> <span class="n">NPGO</span><span class="p">(</span>
+    <span class="n">model_ts</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s1">&#39;ts&#39;</span><span class="p">,</span>
+    <span class="n">start_year</span><span class="o">=</span><span class="mi">1900</span><span class="p">,</span>
+    <span class="n">end_year</span><span class="o">=</span><span class="mi">2005</span><span class="p">,</span>
+    <span class="n">units_adjust</span><span class="o">=</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;subtract&#39;</span><span class="p">,</span> <span class="mf">273.15</span><span class="p">),</span>  <span class="c1"># K to C</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NPGO (model - diagnostics):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Variance fraction: </span><span class="si">{</span><span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;frac&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  PC stdv: </span><span class="si">{</span><span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;stdv_pc&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Computing NPGO with model...
+
+Converting units by  subtract 273.15
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/lee1043/miniforge3/envs/pmp_devel_20260331/lib/python3.12/site-packages/pcmdi_metrics/utils/land_sea_mask.py:218: UserWarning: landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+NPGO (model - diagnostics):
+  Variance fraction: 0.1520
+  PC stdv: 0.22
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot NPGO EOF pattern</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">eof_pattern</span> <span class="o">=</span> <span class="n">npgo_results</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;eof_pattern&#39;</span><span class="p">]</span>
+<span class="n">eof_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;NPGO EOF Pattern (monthly) - Model&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_4b_modes_of_variability_API_27_0.png" src="../_images/examples_Demo_4b_modes_of_variability_API_27_0.png" />
+</div>
+</div>
+</section>
+<section id="Example-5:-Time-Series-Analysis">
+<h2>Example 5: Time Series Analysis<a class="headerlink" href="#Example-5:-Time-Series-Analysis" title="Link to this heading"></a></h2>
+<p>The principal component (PC) time series captures the temporal evolution of each variability mode. Let’s extract and visualize it.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract PC time series</span>
+<span class="n">pc_ts</span> <span class="o">=</span> <span class="n">pdo_model</span><span class="p">[</span><span class="s1">&#39;monthly&#39;</span><span class="p">][</span><span class="s1">&#39;diagnostics&#39;</span><span class="p">][</span><span class="s1">&#39;pc_timeseries&#39;</span><span class="p">]</span>
+
+<span class="c1"># Plot time series</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">pc_ts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PDO Principal Component Time Series (monthly, 1950-2000)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;PC Amplitude&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PC time series shape: </span><span class="si">{</span><span class="n">pc_ts</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PC mean: </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">pc_ts</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PC std: </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">pc_ts</span><span class="o">.</span><span class="n">std</span><span class="p">())</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_4b_modes_of_variability_API_29_0.png" src="../_images/examples_Demo_4b_modes_of_variability_API_29_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PC time series shape: (1272,)
+PC mean: -6.72e-18
+PC std: 0.22
+</pre></div></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>This notebook demonstrated:</p>
+<ol class="arabic simple">
+<li><p>✅ <strong>Test 1</strong>: Basic NAO computation with unit conversion (Pa to hPa) - diagnostics only</p></li>
+<li><p>✅ <strong>Test 2</strong>: NAM with reference data - comprehensive display of all comparison metrics with descriptions</p></li>
+<li><p>✅ <strong>Test 3</strong>: PDO with model and reference data</p>
+<ul class="simple">
+<li><p><strong>3.1</strong>: PDO calculated from model and reference data individually</p></li>
+<li><p><strong>3.2</strong>: PDO with reference to enable metrics calculation (EOF method)</p></li>
+<li><p><strong>3.3</strong>: PDO with CBF method for model-reference comparison</p></li>
+<li><p><strong>3.4</strong>: Visual comparison of EOF patterns from reference, model EOF, and model CBF</p></li>
+</ul>
+</li>
+<li><p>✅ <strong>Test 4</strong>: NPGO (2nd EOF) with reference data - demonstrates higher EOF modes</p></li>
+<li><p>✅ <strong>Test 5</strong>: PC time series extraction and visualization</p></li>
+</ol>
+<section id="Key-Features-Tested:">
+<h3>Key Features Tested:<a class="headerlink" href="#Key-Features-Tested:" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>✅ Atmospheric modes (NAO, NAM) and SST-based modes (PDO, NPGO)</p></li>
+<li><p>✅ EOF analysis with and without reference data</p></li>
+<li><p>✅ CBF (Common Basis Function) method for model-reference comparison</p></li>
+<li><p>✅ Unit conversion: Pa to hPa (divide by 100), K to °C (subtract 273.15)</p></li>
+<li><p>✅ Automatic land masking for SST modes</p></li>
+<li><p>✅ Time subsetting (start_year, end_year)</p></li>
+<li><p>✅ Multiple season options (DJF, JJA, monthly)</p></li>
+<li><p>✅ Comprehensive metrics display with descriptions (subdomain vs global teleconnection)</p></li>
+<li><p>✅ Visualization of EOF patterns and PC time series</p></li>
+</ul>
+</section>
+<section id="Key-Findings:">
+<h3>Key Findings:<a class="headerlink" href="#Key-Findings:" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The API successfully handles all variability modes with realistic results</p></li>
+<li><p>Unit conversion works correctly for both model and reference datasets</p></li>
+<li><p>EOF method computes model’s own EOFs independently from reference</p></li>
+<li><p>CBF method projects model data onto reference EOFs for direct comparison</p></li>
+<li><p>Metrics section contains only comparison statistics (no duplication with diagnostics)</p></li>
+<li><p>Subdomain metrics assess performance in the EOF core region</p></li>
+<li><p>Global teleconnection metrics assess how well remote influences are captured</p></li>
+<li><p>Automatic land masking generates appropriate ocean masks when not provided</p></li>
+<li><p>All 9 comparison metrics are clearly documented with scientific descriptions</p></li>
+<li><p>EOF patterns and PC time series are properly extracted and visualizable</p></li>
+</ul>
+</section>
+<section id="Available-Modes">
+<h3>Available Modes<a class="headerlink" href="#Available-Modes" title="Link to this heading"></a></h3>
+<p>Beyond NAO, NAM, PDO, and NPGO demonstrated here, you can also compute:</p>
+<ul class="simple">
+<li><p><strong>SAM</strong> - Southern Annular Mode</p></li>
+<li><p><strong>PNA</strong> - Pacific North American Pattern</p></li>
+<li><p><strong>NPO</strong> - North Pacific Oscillation</p></li>
+<li><p><strong>AMO</strong> - Atlantic Multidecadal Oscillation</p></li>
+<li><p><strong>PSA1, PSA2</strong> - Pacific-South American Patterns</p></li>
+</ul>
+<p>All modes use the same API structure!</p>
+</section>
+<section id="Getting-Help">
+<h3>Getting Help<a class="headerlink" href="#Getting-Help" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Documentation</strong>: <a class="reference external" href="https://pcmdi.github.io/pcmdi_metrics">pcmdi.github.io/pcmdi_metrics</a></p></li>
+<li><p><strong>Issues</strong>: <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/issues">github.com/PCMDI/pcmdi_metrics/issues</a></p></li>
+<li><p><strong>Email</strong>: <a class="reference external" href="mailto:pcmdi-metrics&#37;&#52;&#48;llnl&#46;gov">pcmdi-metrics<span>&#64;</span>llnl<span>&#46;</span>gov</a></p></li>
+</ul>
+</section>
+<section id="Citation">
+<h3>Citation<a class="headerlink" href="#Citation" title="Link to this heading"></a></h3>
+<p>If you use this package in your research, please cite:</p>
+<p>Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019: Quantifying the Agreement Between Observed and Simulated Extratropical Modes of Interannual Variability. <em>Climate Dynamics</em>, 52, 4057-4089. <a class="reference external" href="https://doi.org/10.1007/s00382-018-4355-4">https://doi.org/10.1007/s00382-018-4355-4</a></p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Demo_5_mjo_metrics.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">5. MJO</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Demo_4_modes_of_variability.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">4. Modes of Variability</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">4B. Modes of Variability API Demo</a><ul>
+<li><a class="reference internal" href="#What-This-Notebook-Demonstrates">What This Notebook Demonstrates</a></li>
+<li><a class="reference internal" href="#Quick-Start">Quick Start</a></li>
+<li><a class="reference internal" href="#Setup:-Define-Data-Paths">Setup: Define Data Paths</a></li>
+<li><a class="reference internal" href="#Example-1:-Basic-Mode-Calculation-(NAO)">Example 1: Basic Mode Calculation (NAO)</a></li>
+<li><a class="reference internal" href="#Example-2:-Comprehensive-Metrics-Display-(NAM)">Example 2: Comprehensive Metrics Display (NAM)</a></li>
+<li><a class="reference internal" href="#Example-3:-SST-Based-Mode-(PDO)-with-Comparing-Analysis-Methods-(PDO)">Example 3: SST-Based Mode (PDO) with Comparing Analysis Methods (PDO)</a><ul>
+<li><a class="reference internal" href="#3.1:-Individual-Calculations">3.1: Individual Calculations</a></li>
+<li><a class="reference internal" href="#3.2:-PDO-with-Model-and-Reference-Data-to-enable-metrics-calculation">3.2: PDO with Model and Reference Data to enable metrics calculation</a></li>
+<li><a class="reference internal" href="#3.3:-CBF-Method">3.3: CBF Method</a></li>
+<li><a class="reference internal" href="#3.4:-Visual-Comparison">3.4: Visual Comparison</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Example-4:-Higher-EOF-Modes-(NPGO)">Example 4: Higher EOF Modes (NPGO)</a></li>
+<li><a class="reference internal" href="#Example-5:-Time-Series-Analysis">Example 5: Time Series Analysis</a></li>
+<li><a class="reference internal" href="#Summary">Summary</a><ul>
+<li><a class="reference internal" href="#Key-Features-Tested:">Key Features Tested:</a></li>
+<li><a class="reference internal" href="#Key-Findings:">Key Findings:</a></li>
+<li><a class="reference internal" href="#Available-Modes">Available Modes</a></li>
+<li><a class="reference internal" href="#Getting-Help">Getting Help</a></li>
+<li><a class="reference internal" href="#Citation">Citation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>
