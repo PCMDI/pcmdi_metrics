@@ -25,6 +25,7 @@ The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` versi
 .. autosummary::
     :toctree: generated/
 
+    hadley_cell.hadley_cell_metrics
     mjo.compute_mjo_ewr_from_dataset
     qbo.compute_qbo_mjo_metrics
     sea_ice.calc_iiee_annual_cycle
