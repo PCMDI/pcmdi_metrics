@@ -428,8 +428,8 @@ def get_dataset_rv(
         return_value[season].attrs["units"] = units
         standard_error[season].attrs["units"] = units
 
-    return_value = return_value.bounds.add_missing_bounds()
-    standard_error = standard_error.bounds.add_missing_bounds()
+    return_value = return_value.bounds.add_missing_bounds(axes=["X", "Y"])
+    standard_error = standard_error.bounds.add_missing_bounds(axes=["X", "Y"])
 
     return return_value, standard_error
 
