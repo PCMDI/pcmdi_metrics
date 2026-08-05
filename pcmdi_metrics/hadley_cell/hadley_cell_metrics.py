@@ -70,7 +70,7 @@ def hadley_cell_metrics(
     Examples
     --------
     >>> import xarray as xr
-    >>> from pcmdi_metrics.hadley_cell.hadley_cell_metrics import hadley_cell_metrics
+    >>> from pcmdi_metrics.hadley_cell import hadley_cell_metrics
     >>> vwnd = xr.open_mfdataset('path/to/va_*.nc')
     >>> ps = xr.open_mfdataset('path/to/ps_*.nc')
     >>> results = hadley_cell_metrics(
