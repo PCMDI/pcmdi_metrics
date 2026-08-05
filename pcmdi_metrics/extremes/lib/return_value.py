@@ -153,8 +153,6 @@ def compute_rv_for_model(
             arr[ind1:ind2, :] = data[i1:, :]
             rep_ind[ind1:ind2] = count
             ds.close()
-        scale_factor = np.abs(np.nanmean(arr))
-        arr = arr / scale_factor
         if nonstationary:
             rv_array = np.ones((t, lat * lon)) * np.nan
         else:
@@ -171,11 +169,11 @@ def compute_rv_for_model(
             )
             if rv is not None:
                 if nonstationary:
-                    rv_array[i1:, j] = np.squeeze(rv * scale_factor)
-                    se_array[i1:, j] = np.squeeze(se * scale_factor)
+                    rv_array[i1:, j] = np.squeeze(rv)
+                    se_array[i1:, j] = np.squeeze(se)
                 else:
-                    rv_array[j] = rv * scale_factor
-                    se_array[j] = se * scale_factor
+                    rv_array[j] = rv
+                    se_array[j] = se
 
         # reshape array to match desired dimensions and add to Dataset
         # Also reorder dimensions for nonstationary case
@@ -228,21 +226,15 @@ def compute_rv_for_model(
     return meta
 
 
-def fit_cell(
-    data,
-    covariate,
-    scale_factor,
-    return_period,
-    maxes,
-):
+def fit_cell(data, covariate, return_period, maxes):
     """Fit a stationary or nonstationary GEV at one grid cell."""
 
-    data = np.asarray(data)
+    data = np.asarray(data, dtype=float)
 
     nonstationary = covariate is not None
 
     if nonstationary:
-        covariate = np.asarray(covariate)
+        covariate = np.asarray(covariate, dtype=float)
         valid = np.isfinite(data) & np.isfinite(covariate)
         empty_result = (
             np.full(data.shape, np.nan),
@@ -260,11 +252,15 @@ def fit_cell(
     if np.all(data_valid == data_valid[0]):
         return empty_result
 
+    center = np.mean(data_valid)
+    spread = np.std(data_valid, ddof=1)
+    data_norm = (data_valid - center) / spread
+
     covariate_valid = covariate[valid] if nonstationary else None
 
     try:
         rv, se = calc_rv_py(
-            x=data_valid,
+            x=data_norm,
             covariate=covariate_valid,
             return_period=return_period,
             nreplicates=1,
@@ -278,21 +274,26 @@ def fit_cell(
 
     if not nonstationary:
         return (
-            rv * scale_factor,
-            se * scale_factor,
+            center + spread * rv,
+            se * spread,
         )
 
     rv_output = np.full(data.shape, np.nan)
     se_output = np.full(data.shape, np.nan)
 
-    rv_output[valid] = np.asarray(rv) * scale_factor
-    se_output[valid] = np.asarray(se) * scale_factor
+    rv_output[valid] = center + spread * np.asarray(rv)
+    se_output[valid] = spread * np.asarray(se)
 
     return rv_output, se_output
 
 
 def get_dataset_rv(
-    ds, cov_filepath, cov_varname, return_period=20, maxes=True, n_jobs=-1
+    ds,
+    cov_filepath,
+    cov_varname,
+    return_period=20,
+    maxes=True,
+    n_jobs=-1,
 ):
     # Get the return value for a single model & realization
     # Set cov_filepath and cov_varname to None for stationary GEV.
@@ -356,9 +357,8 @@ def get_dataset_rv(
 
     for season in SEASONS:
         data = ds[season].data
-        # Scale x to be around magnitude 1
-        scale_factor = np.abs(np.nanmean(data))
-        data = data / scale_factor
+
+        # Scale factor being the mean caused instability in the initial GEV fit, looking to normalize on a per grid-cell basis next.
 
         if season == "DJF" and dec_mode == "DJF" and drop_incomplete_djf:
             # Step first time index to skip all-nan block
@@ -373,17 +373,13 @@ def get_dataset_rv(
             rv_array = np.ones((n_cells)) * np.nan
         se_array = rv_array.copy()
 
-        # Turn nans to zeros
-
         if nonstationary:
             cov_slice = cov_ds[t_ind:]
         else:
             cov_slice = None
 
         results = Parallel(n_jobs=n_jobs, prefer="processes")(
-            delayed(fit_cell)(
-                data[t_ind:, j], cov_slice, scale_factor, return_period, maxes
-            )
+            delayed(fit_cell)(data[t_ind:, j], cov_slice, return_period, maxes)
             for j in range(n_cells)
         )
         rv_results, se_results = zip(*results)
@@ -448,6 +444,11 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
     #   return_period: int
     #   maxes: bool
     x = np.asarray(x, dtype=float).squeeze()  # Ensure numpy array
+    x = x[np.isfinite(x)]
+
+    if len(x) < 10:  # Minimum periods = 10
+        return np.nan, np.nan
+
     if maxes:
         mins = False
     else:
@@ -506,15 +507,32 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
         return result
 
     # Get GEV parameters
+
+    optimizer_options = {
+        "xatol": 1e-4,  # parameter absolute tolerance
+        "fatol": 1e-4,  # function absolute tolerance
+        "maxiter": 5000,  # max NM calls
+        "maxfev": 10000,  # max LL func calls
+    }
+
     if nonstationary:
-        ll_min = minimize(ll, (loc, 0, scale, shape), tol=1e-7, method="nelder-mead")
+        params = (loc, 0, scale, shape)  # Guess 0 for the covariate location slope
     else:
-        ll_min = minimize(ll, (loc, scale, shape), tol=1e-7, method="nelder-mead")
+        params = (loc, scale, shape)
+
+    ll_min = minimize(
+        ll,
+        params,
+        method="nelder-mead",
+        options=optimizer_options,
+    )
 
     params = ll_min["x"]
     success = ll_min["success"]
 
     if nonstationary:
+        beta0 = params[0]
+        beta1 = params[1]
         scale = params[2]
         shape = params[3]
     else:
@@ -527,8 +545,9 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
     return_value = np.ones((len(covariate), 1)) * np.nan
     for time in range(0, len(covariate)):
         if nonstationary:
-            location = params[0] + params[1] * covariate[time]
+            location = beta0 + beta1 * covariate[time]
         rv = genextreme.isf(1 / return_period, -shape, location, scale)
+
         return_value[time] = np.squeeze(np.where(success == 1, rv, np.nan))
     if mins:
         return_value = -1 * return_value
@@ -575,9 +594,9 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
 
             if abs(shape) < 1e-6:
                 # grad = np.array([1, -np.log(y)])
-                grad = np.array(
-                    [1.0, -log_y, 0.5 * scale * log_y**2]
-                )  # Gumbel limit gradients, Coles (2001)
+                grad = np.array([1.0, -log_y, 0.5 * scale * log_y**2])[
+                    :, None
+                ]  # Gumbel limit gradients, Coles (2001)
             else:
                 db1 = 1
                 dsh = (-1 / shape) * (1 - y ** (-shape))
