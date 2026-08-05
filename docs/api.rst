@@ -19,14 +19,25 @@ additional diagnostics and metric calculations will be exposed in a way that sup
 integration into workflows, while maintaining consistency with the package’s existing design and documentation conventions.
 
 The `variability_mode.eof_classification` and `sea_ice.calc_iiee_annual_cycle` APIs are available in `pcmdi_metrics` version `v4.1` and later. 
-The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` version `v4.1.1` and later.
+The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` version `v4.1.1` and later. `variability_mode` and `qbo` APIs are available in version `v4.2` or later.
 
 
 .. autosummary::
     :toctree: generated/
 
     mjo.compute_mjo_ewr_from_dataset
+    qbo.compute_qbo_mjo_metrics
     sea_ice.calc_iiee_annual_cycle
+    variability_mode.NAO
+    variability_mode.NAM
+    variability_mode.SAM
+    variability_mode.PSA1
+    variability_mode.PSA2
+    variability_mode.PNA
+    variability_mode.NPO
+    variability_mode.PDO
+    variability_mode.NPGO
+    variability_mode.AMO
     variability_mode.eof_classification
 
 Custom calendars
