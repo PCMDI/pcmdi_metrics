@@ -4,7 +4,7 @@ Hadley Cell Metrics
 Compute Hadley cell edge positions and meridional stream function.
 
 Created By: Kristin Chang (December 2025)
-Last Updated: July 2026
+Last Updated: August 2026
 
 References:
 Hur, I., Yoo, C., Yeh, S.-W., Kim, Y.-H., & Seo, K.-H. (2024). Processes driving the intermodel spread of the Southern Hemisphere Hadley Circulation expansion in CMIP6 models. Journal of Geophysical Research: Atmospheres, 129, e2024JD041726. https://doi.org/10.1029/2024JD041726
@@ -12,623 +12,455 @@ Hur, I., Kim, M., Kwak, K. et al. Hadley Circulation in the Present and Future C
 """
 
 from pathlib import Path
-from typing import Optional
+from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from scipy import integrate, stats
 
-# Physical constants
-GRAVITY = 9.81  # m/s²
-EARTH_RADIUS = 6376.0e3  # m
-DEGREES_TO_RADIANS = np.pi / 180.0
-
-# Pressure level thresholds
-HPA_LEVEL_FILTER = 5
-PA_LEVEL_FILTER = 500
-HPA_500 = 500
-PA_500 = 50000
-
 
 def hadley_cell_metrics(
+    vwnd_ds: xr.Dataset,
+    ps_ds: xr.Dataset,
+    vwnd_var: str,
+    ps_var: str,
+    output_dir: str,
     model_name: str,
-    psl_data_path: str,
-    vwnd_data_path: str,
-    output_path: str,
-    psl_ds_varname: str,
-    vwnd_ds_varname: str,
     time_dim: str = "time",
     lon_dim: str = "lon",
     lat_dim: str = "lat",
-    level_dim: str = "plev",
-    regrid: Optional[bool] = False,
-    target_grid: Optional[xr.Dataset] = None,
-    regrid_tool: Optional[str] = None,
-    regrid_method: Optional[str] = None,
-):
+    lev_dim: str = "plev",
+) -> dict:
     """
-    Calculates annual, seasonal, and monthly atmospheric meridional stream function (psi), 500 hPa psi cross section, and Hadle cell northern and southern hemipsher edge positions with linear trends.
+    Calculate Hadley cell meridional stream function and edge positions.
 
     Parameters
     ----------
-    model_name : str
-        Name of model.
-    psl_data_path : str
-        Path to directory containing all sea level pressure netCDF files.
-    vwnd_data_path : str
-        Path to directory containing all meridional wind netCDF files.
-    output_path: str
-        Path to directory where output files will be saved.
-    psl_varname : str
-        Variable name for sea level pressure in input dataset.
-    vwnd_varname : str
-        Variable name for meridional wind in input dataset.
-    time_dim : str
-        Name of time dimension in dataset. Default is 'time'.
-    lon_dim : str
-        Name of longitude dimension in dataset. Default is 'lon'.
-    lat_dim : str
-        Name of latitude dimension in dataset. Default is 'lat'.
-    level_dim : str
-        Name of pressure level dimension in dataset. Default is 'plev'.
-    regrid : bool, optional
-        If True, regrid input datasets to target_grid using xcdat.
-        Default is False.
-    target_grid : xarray dataset, optional
-        Target grid for regridding. Required if regrid=True.
-        Default is None.
-    regrid_tool : str, optional
-        Regrid tool (e.g., 'xesmf'). Required if regrid=True.
-        Default is None.
-    regrid_method : str, optional
-        Regrid method (e.g., 'bilinear'). Required if regrid=True.
-        Default is None.
-
-    Returns
-    ----------
-    - Three netcdf data files for monthly psi, annual edge positions, climatological 500 hPa cross section.
-    - Seasonal psi PNG plot.
-
-    Example
-    ----------
-    > from hadley_cell_metrics import hadley_cell_metrics
-    > hadley_cell_metrics(model_name=model_name,
-                        vwnd_data_path=vwnd_data_path,
-                        vpsl_data_path=psl_data_path,
-                        output_path=data_output_path,
-                        psl_ds_varname='MSL',
-                        vwnd_ds_varname='V',
-                        time_dim='time',
-                        lon_dim='lon',
-                        lat_dim='lat',
-                        level_dim='level',
-                        target_grid=target_grid,
-                        regrid_tool='xesmf',
-                        regrid_method='bilinear',
-                        regrid=True
-                        )
-    """
-
-    # Load data
-    vwnd_ds, ps_ds = open_and_combine_data(psl_data_path, vwnd_data_path)
-    print(f"Opened: files in {psl_data_path} and {vwnd_data_path}")
-
-    # Regrid if requested
-    if regrid:
-        if target_grid is None or regrid_tool is None or regrid_method is None:
-            raise ValueError(
-                "target_grid, regrid_tool, and regrid_method must be provided when regrid=True"
-            )
-        vwnd_datasets, ps_datasets = regrid_with_xcdat(
-            vwnd_ds,
-            ps_ds,
-            vwnd_ds_varname,
-            psl_ds_varname,
-            target_grid,
-            regrid_tool,
-            regrid_method,
-        )
-        print("Regridded vwnd and psl datasets to target_grid")
-    else:
-        vwnd_datasets = vwnd_ds
-        ps_datasets = ps_ds
-        print("Skip: regrid")
-
-    # calculate meridional stream function (psi)
-    vwndps_monthly_psi_file, psi, vwnd, lev, lat = compute_monthly_psi(
-        model_name,
-        output_path,
-        vwnd_datasets,
-        ps_datasets,
-        lat_dim,
-        lon_dim,
-        time_dim,
-        level_dim,
-        psl_ds_varname,
-        vwnd_ds_varname,
-    )
-
-    # calculate edge and slope
-    compute_annual_edges(
-        vwndps_monthly_psi_file, model_name, level_dim, lat_dim, time_dim, output_path
-    )
-
-    # calculate 500hPa cross section and seasonal climatology of meridional stream function (psi) plot
-    compute_clim_psi(
-        psi, lev, lat, model_name, output_path, time_dim, level_dim, lat_dim
-    )
-
-    return
-
-
-def open_and_combine_data(psl_data_path, vwnd_data_path):
-    """
-    Load and combine netCDF datasets from directories provided.
-
-    Parameters
-    ----------
-    psl_data_path : str
-        Path to directory containing all sea level pressure netCDF files.
-    vwnd_data_path : str
-        Path to directory containing meridional wind netCDF files.
-
-    Returns
-    ----------
-    tuple of xr.Dataset
-        Tuple containing (vwnd_dataset, psl_dataset)
-
-    Raises
-    ------
-    FileNotFoundError
-        If no .nc files found in either directory.
-    """
-
-    vwnd_files = sorted(Path(vwnd_data_path).glob("*.nc"))
-    psl_files = sorted(Path(psl_data_path).glob("*.nc"))
-
-    if not vwnd_files:
-        raise FileNotFoundError(f"No .nc files found in {vwnd_data_path}")
-    if not psl_files:
-        raise FileNotFoundError(f"No .nc files found in {psl_data_path}")
-
-    vwnd_datasets = xr.open_mfdataset(vwnd_files, combine="by_coords")
-    ps_datasets = xr.open_mfdataset(psl_files, combine="by_coords")
-
-    return vwnd_datasets, ps_datasets
-
-
-def regrid_with_xcdat(
-    vwnd_datasets,
-    ps_datasets,
-    vwnd_ds_varname,
-    psl_ds_varname,
-    target_grid,
-    regrid_tool,
-    regrid_method,
-):
-    """
-    Regrid datasets to target grid using xcdat.
-
-    Parameters
-    ----------
-    vwnd_ds : xr.Dataset
-        Meridional wind dataset.
-    ps_ds : xr.Dataset
-        Sea level pressure dataset.
-    vwnd_varname : str
-        Variable name for meridional wind in vwnd_ds.
-    psl_varname : str
-        Variable name for sea level pressure in ps_ds.
-    target_grid : xr.Dataset
-        Target grid for regridding.
-    regrid_tool : str
-        Regridding tool (e.g., "xesmf").
-    regrid_method : str
-        Regridding method (e.g., "bilinear").
-
-    Returns
-    -------
-    tuple of xr.Dataset
-        Tuple containing (regridded_vwnd, regridded_psl).
-    """
-    vwnd_regridded = vwnd_datasets.regridder.horizontal(
-        vwnd_ds_varname, target_grid, tool=regrid_tool, method=regrid_method
-    )
-    ps_regridded = ps_datasets.regridder.horizontal(
-        psl_ds_varname, target_grid, tool=regrid_tool, method=regrid_method
-    )
-
-    return vwnd_regridded, ps_regridded
-
-
-def compute_monthly_psi(
-    model_name,
-    output_path,
-    vwnd_datasets,
-    ps_datasets,
-    lat_dim,
-    lon_dim,
-    time_dim,
-    level_dim,
-    psl_ds_varname,
-    vwnd_ds_varname,
-):
-    """
-    Compute monthly meridional stream function.
-
-    Calculates the atmospheric meridional stream function by integrating
-    zonally-averaged meridional wind over pressure levels.
-
-    Parameters
-    ----------
-    model_name : str
-        Model name for output file naming.
-    output_path : str
-        Directory path for output file.
     vwnd_ds : xr.Dataset
         Meridional wind dataset.
     ps_ds : xr.Dataset
         Surface pressure dataset.
-    lat_dim : str
-        Name of latitude dimension.
-    lon_dim : str
-        Name of longitude dimension.
-    time_dim : str
-        Name of time dimension.
-    level_dim : str
-        Name of pressure level dimension.
-    psl_varname : str
-        Variable name for surface pressure.
-    vwnd_varname : str
+    vwnd_var : str
         Variable name for meridional wind.
+    ps_var : str
+        Variable name for surface pressure.
+    output_dir : str
+        Directory path for output files.
+    model_name : str
+        Model identifier for file naming.
+    time_dim : str, optional
+        Time dimension name. Default 'time'.
+    lon_dim : str, optional
+        Longitude dimension name. Default 'lon'.
+    lat_dim : str, optional
+        Latitude dimension name. Default 'lat'.
+    lev_dim : str, optional
+        Pressure level dimension name. Default 'plev'.
 
     Returns
     -------
-    tuple
-        Tuple containing:
-        - output_file_path (str): Path to saved netCDF file
-        - psi (xr.DataArray): Stream function array
-        - vwnd (xr.DataArray): Masked meridional wind array
-        - lev (np.ndarray): Pressure levels
-        - lat (np.ndarray): Latitude coordinates
+    dict
+        Dictionary with paths to output files:
+        - 'monthly_psi': Monthly stream function netCDF
+        - 'annual_edges': Annual edge positions netCDF
+        - 'clim_psi500': Climatological 500 hPa cross section netCDF
+        - 'clim_plot': Seasonal climatology PNG
+
+    Examples
+    --------
+    >>> import xarray as xr
+    >>> from pcmdi_metrics.hadley_cell.hadley_cell_metrics import hadley_cell_metrics
+    >>> vwnd = xr.open_mfdataset('path/to/va_*.nc')
+    >>> ps = xr.open_mfdataset('path/to/ps_*.nc')
+    >>> results = hadley_cell_metrics(
+    ...     vwnd_ds=vwnd,
+    ...     ps_ds=ps,
+    ...     vwnd_var='va',
+    ...     ps_var='ps',
+    ...     output_dir='./output',
+    ...     model_name='CESM2'
+    ... )
     """
-    filename = f"{model_name}_vwndps_monthly_psi"
-    output_file_path = Path(output_path) / filename
-    print(f"Monthly psi will be saved to: {output_file_path}")
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
 
-    # Determine pressure level filter
-    if vwnd_datasets[level_dim].units == "hPa":
-        level_filter = HPA_LEVEL_FILTER
-    else:
-        level_filter = PA_LEVEL_FILTER
-
-    # Filter and sort by pressure level
-    vwnd_ = vwnd_datasets[vwnd_ds_varname].where(
-        vwnd_datasets[level_dim] > level_filter, drop=True
+    # Compute monthly stream function
+    psi, vwnd_masked = compute_stream_function(
+        vwnd_ds, ps_ds, vwnd_var, ps_var, time_dim, lon_dim, lat_dim, lev_dim
     )
-    vwnd_ = vwnd_.sortby(level_dim, ascending=True)
+    monthly_file = output_path / f"{model_name}_monthly_psi.nc"
+    psi.to_netcdf(monthly_file)
+    print(f"Saved: {monthly_file}")
 
-    # Extract coordinates and variables
-    lev = np.asarray(vwnd_[level_dim])
-    lat = np.asarray(vwnd_datasets.variables[lat_dim][:])
-    t = np.asarray(vwnd_datasets.variables[time_dim][:])
-    ps = ps_datasets[psl_ds_varname]
+    # Compute annual edge positions
+    edge_ds = compute_hadley_edges(psi, time_dim, lev_dim, lat_dim)
+    edge_file = output_path / f"{model_name}_annual_edges.nc"
+    edge_ds.to_netcdf(edge_file)
+    print(f"Saved: {edge_file}")
 
-    # Convert from hPa to Pa if needed & mask data below surface
-    if vwnd_datasets[level_dim].units == "hPa":
-        p_np = np.array(vwnd_[level_dim]) * 1.0e2
-    else:
-        p_np = np.array(vwnd_[level_dim])
+    # Compute seasonal climatology
+    clim_psi500, plot_file = compute_seasonal_climatology(
+        psi, model_name, output_path, time_dim, lev_dim, lat_dim
+    )
+    clim_file = output_path / f"{model_name}_clim_psi500.nc"
+    clim_psi500.to_netcdf(clim_file)
+    print(f"Saved: {clim_file}")
 
-    ps_np = np.array(ps)
-    v_np = np.array(vwnd_)
-    vwnd = v_np
-
-    for iii in range(len(t)):
-        vtmp = 1.0 * v_np[iii, :, :, :]
-        vtmp = 1.0 * vtmp.transpose(2, 1, 0)
-        pstmp = 1.0 * ps_np[iii, :, :]
-        pstmp = 1.0 * pstmp.transpose(1, 0)
-
-        # make 3d arr
-        ptmp3d = (
-            0.0 * vtmp + p_np
-        )  # build a 3D pressure field by broadcasting p_np (vertical levels) over lat, lon
-        pstmp3d = (
-            0.0 * vtmp
-        )  # build a 3d surface pressure field by repeating ps over the vertical dimension
-        for kkk in range(len(p_np)):
-            pstmp3d[:, :, kkk] = pstmp
-
-        # 3D boolean indexing
-        vtmp[ptmp3d > pstmp3d] = np.nan  # set v to NaN wherever p > ps
-        vtmp = vtmp.transpose(2, 1, 0)
-        vwnd[iii, :, :, :] = vtmp
-
-    vwnd = xr.DataArray(vwnd, dims=[time_dim, level_dim, lat_dim, lon_dim])
-    vwnd = vwnd.assign_coords(vwnd_.coords)
-
-    print("Calculate: zonal mean")
-    # zonal mean
-    vzm = vwnd.mean(dim=lon_dim)
-
-    print("Compute: psi")
-    # compute psi
-    if vwnd[level_dim].max() > 2000:  # Already in Pa
-        lev_ = vwnd[level_dim]
-    else:
-        lev_ = vwnd[level_dim] * 1.0e2  # In hPa, convert to Pa
-    g = 9.81  # [m/s2 ]
-    a0 = 6376.0e3
-    psi_ = integrate.cumulative_trapezoid(vzm, lev_, axis=1, initial=0)
-    psi_ = (
-        2
-        * np.pi
-        * a0
-        / g
-        * psi_
-        * np.cos(lat[np.newaxis, np.newaxis, :] * np.pi / 180.0)
-    )  # [kg/s]
-    psi = xr.DataArray(psi_, dims=[time_dim, level_dim, lat_dim])
-    psi = psi.assign_coords(vzm.coords)
-
-    # Save to NetCDF
-    output_file_path.unlink(missing_ok=True)
-    ds = xr.Dataset({"psi": psi})
-    ds.to_netcdf(output_file_path, format="NETCDF4")
-    print(f"Saved: {output_file_path}")
-
-    return output_file_path, psi, vwnd, lev, lat
+    return {
+        "monthly_psi": str(monthly_file),
+        "annual_edges": str(edge_file),
+        "clim_psi500": str(clim_file),
+        "clim_plot": str(plot_file),
+    }
 
 
-def compute_annual_edges(
-    vwndps_monthly_psi_file, model_name, level_dim, lat_dim, time_dim, output_path
-):
+def compute_stream_function(
+    vwnd_ds: xr.Dataset,
+    ps_ds: xr.Dataset,
+    vwnd_var: str,
+    ps_var: str,
+    time_dim: str = "time",
+    lon_dim: str = "lon",
+    lat_dim: str = "lat",
+    lev_dim: str = "plev",
+) -> Tuple[xr.DataArray, xr.DataArray]:
     """
-    Compute annual Hadley cell edge positions and trends.
+    Calculate atmospheric meridional stream function.
 
-    Identifies the latitude of Hadley cell edges as the zero-crossing of the
-    500 hPa stream function near ±30° latitude, then calculates linear trends
-    over the time series.
+    Integrates zonally-averaged meridional wind over pressure levels
+    using the formula:
+
+    psi = (2*pi*a/g) * integral(v * cos(lat) dp)
+
+    where a is Earth radius, g is gravity, v is meridional wind.
 
     Parameters
     ----------
-    monthly_psi_file : str
-        Path to netCDF file containing monthly stream function.
-    model_name : str
-        Model name for output file naming.
-    level_dim : str
-        Name of pressure level dimension.
-    lat_dim : str
-        Name of latitude dimension.
+    vwnd_ds : xr.Dataset
+        Meridional wind dataset.
+    ps_ds : xr.Dataset
+        Surface pressure dataset.
+    vwnd_var : str
+        Variable name for meridional wind.
+    ps_var : str
+        Variable name for surface pressure.
     time_dim : str
-        Name of time dimension.
-    output_path : str
-        Directory path for output file.
+        Time dimension name.
+    lon_dim : str
+        Longitude dimension name.
+    lat_dim : str
+        Latitude dimension name.
+    lev_dim : str
+        Pressure level dimension name.
 
     Returns
     -------
-    None
-        Creates netCDF file with edge_nh and edge_sh variables, each containing
-        slope and p_value attributes.
+    psi : xr.DataArray
+        Stream function in kg/s, dimensions (time, level, lat).
+    vwnd_masked : xr.DataArray
+        Meridional wind masked below surface.
     """
-    ds = xr.open_dataset(vwndps_monthly_psi_file)
-    ann = ds.resample({time_dim: "1YE"}).mean()
+    # Extract and prepare data
+    vwnd = vwnd_ds[vwnd_var]
+    ps = ps_ds[ps_var]
 
-    # call annual mean psi
-    edge_filename = f"{model_name}_psi_annual_edge.nc"
-    output_file_path = Path(output_path) / edge_filename
-    print(f"Annual edges will be saved to: {output_file_path}")
+    # Determine pressure units
+    lev_units = vwnd[lev_dim].attrs.get("units", "Pa")
+    is_hpa = lev_units == "hPa"
 
-    lat = ann[lat_dim]
-    tim = ann[time_dim]
-    ntim = len(tim)
+    # Filter near-surface levels and sort by pressure
+    min_lev = 5 if is_hpa else 500
+    vwnd = vwnd.where(vwnd[lev_dim] > min_lev, drop=True)
+    vwnd = vwnd.sortby(lev_dim)
 
-    # SH edge (edge_sh)
-    edge_sh = np.zeros(ntim)
+    # Convert pressure to Pa
+    lev_pa = vwnd[lev_dim] * 100 if is_hpa else vwnd[lev_dim]
+    ps_pa = ps * 100 if ps.max() < 2000 else ps  # Assume hPa if max < 2000
 
-    if ann[level_dim].units == "hPa":
-        level_filter = HPA_500
-    else:
-        level_filter = PA_500
+    # Mask wind below surface
+    vwnd_masked = vwnd.where(lev_pa < ps_pa)
 
-    for i in range(ntim):
-        if ann[lat_dim][0].values > ann[lat_dim][1].values:
-            tmp = ann.sel(
-                {level_dim: level_filter, lat_dim: slice(-20, -40), time_dim: tim[i]}
-            )
-        else:
-            tmp = ann.sel(
-                {level_dim: level_filter, lat_dim: slice(-40, -20), time_dim: tim[i]}
-            )
+    # Compute zonal mean
+    vzm = vwnd_masked.mean(dim=lon_dim)
 
-        tmp = tmp.to_array()
+    # Integrate over pressure
+    psi_values = integrate.cumulative_trapezoid(
+        vzm, lev_pa, axis=vzm.dims.index(lev_dim), initial=0
+    )
 
-        # Find positive part
-        pos_indices = np.where(tmp >= 0, tmp, np.nan)
-        ilat = np.where((lat >= -40) & (lat <= -20))[0]
-        x1 = lat[ilat][np.nanargmin(pos_indices)]
-        y1 = np.nanmin(pos_indices)
+    # Apply spherical geometry factor
+    earth_radius = 6.376e6  # m
+    gravity = 9.81  # m/s²
+    lat_rad = np.deg2rad(vwnd[lat_dim])
+    cos_lat = np.cos(lat_rad)
 
-        # Find negative part
-        neg_indices = np.where(tmp <= 0, tmp, np.nan)
-        x2 = lat[ilat][np.nanargmax(neg_indices)]
-        y2 = np.nanmax(neg_indices)
+    psi_values = (2 * np.pi * earth_radius / gravity) * psi_values * cos_lat.values
 
-        # Calculate slope (a) and y-intercept (b)
-        a = (y2 - y1) / (x2 - x1)
-        b = -x1 * a + y1
+    # Create DataArray
+    psi = xr.DataArray(
+        psi_values,
+        coords=vzm.coords,
+        dims=vzm.dims,
+        name="psi",
+        attrs={
+            "long_name": "meridional stream function",
+            "units": "kg/s",
+            "description": "Atmospheric meridional overturning stream function",
+        },
+    )
 
-        # Calculate edge_sh
-        edge_sh[i] = -b / a
-
-    # slope
-    x = np.arange(1, ntim + 1, 1)
-    slp, intercept, r_value, p_value, std_err = stats.linregress(x, edge_sh)
-
-    # save as xarray
-    edge_sh = xr.DataArray(edge_sh, dims=[time_dim])
-    edge_sh = edge_sh.assign_coords(ann[time_dim].coords)
-    edge_sh.attrs["slope"] = slp  # [/yr]
-
-    # NH edge (edge_nh)
-    edge_nh = np.zeros(ntim)
-
-    for i in range(ntim):
-        if ann[lat_dim][0].values > ann[lat_dim][1].values:
-            tmp = ann.sel(
-                {level_dim: level_filter, lat_dim: slice(40, 20), time_dim: tim[i]}
-            )
-        else:
-            tmp = ann.sel(
-                {level_dim: level_filter, lat_dim: slice(20, 40), time_dim: tim[i]}
-            )
-
-        tmp = tmp.to_array()
-
-        # Find positive part
-        pos_indices = np.where(tmp >= 0, tmp, np.nan)
-        ilat = np.where((lat >= 20) & (lat <= 40))[0]
-        x1 = lat[ilat][np.nanargmin(pos_indices)]
-        y1 = np.nanmin(pos_indices)
-
-        # Find negative part
-        neg_indices = np.where(tmp <= 0, tmp, np.nan)
-        x2 = lat[ilat][np.nanargmax(neg_indices)]
-        y2 = np.nanmax(neg_indices)
-
-        # Calculate slope (a) and y-intercept (b)
-        a = (y2 - y1) / (x2 - x1)
-        b = -x1 * a + y1
-
-        # Calculate edge_nh
-        edge_nh[i] = -b / a
-
-    # slope
-    x = np.arange(1, ntim + 1, 1)
-    slp, _, _, _, _ = stats.linregress(x, edge_nh)
-
-    # save as xarray
-    edge_nh = xr.DataArray(edge_nh, dims=[time_dim])
-    edge_nh = edge_nh.assign_coords(ann[time_dim].coords)
-    edge_nh.attrs["slope"] = slp  # [/yr]
-
-    # Save to NetCDF
-    output_file_path.unlink(missing_ok=True)
-    ds_out = xr.Dataset({"edge_nh": edge_nh, "edge_sh": edge_sh})
-    ds_out.to_netcdf(output_file_path, format="NETCDF4")
-    print(f"Saved: {output_file_path}")
+    return psi, vwnd_masked
 
 
-def compute_clim_psi(
-    psi, lev, lat, model_name, output_path, time_dim, level_dim, lat_dim
-):
+def compute_hadley_edges(
+    psi: xr.DataArray,
+    time_dim: str = "time",
+    lev_dim: str = "plev",
+    lat_dim: str = "lat",
+) -> xr.Dataset:
     """
-    Compute and plot seasonal climatology of stream function.
+    Identify Hadley cell edge positions from zero-crossing of psi at 500 hPa.
 
-    Calculates annual and seasonal (DJF, MAM, JJA, SON) climatological means
-    of the meridional stream function and creates a multi-panel plot.
+    Edges are defined as the latitude where the stream function crosses zero
+    near ±30° latitude, calculated annually with linear trends.
 
     Parameters
     ----------
     psi : xr.DataArray
-        Monthly stream function array.
-    lev : np.ndarray
-        Pressure levels.
-    lat : np.ndarray
-        Latitude coordinates.
-    model_name : str
-        Model name for output file naming.
-    output_path : str
-        Directory path for output files.
+        Monthly stream function.
     time_dim : str
-        Name of time dimension.
-    level_dim : str
-        Name of pressure level dimension.
+        Time dimension name.
+    lev_dim : str
+        Pressure level dimension name.
     lat_dim : str
-        Name of latitude dimension.
+        Latitude dimension name.
 
     Returns
     -------
-    None
-        Creates PNG plot and netCDF file with 500 hPa cross section.
+    xr.Dataset
+        Dataset with 'edge_nh' and 'edge_sh' variables, each with
+        'slope' and 'p_value' attributes.
     """
-    season = psi.groupby(f"{time_dim}.season").mean(time_dim)
-    ann_clim = psi.mean(dim=time_dim)
+    # Annual mean
+    psi_ann = psi.resample({time_dim: "YE"}).mean()
 
-    ss = ["ANN", "DJF", "JJA", "MAM", "SON"]
-    clm = xr.DataArray(
-        np.zeros((5, len(lev), len(lat))),
-        coords=[ss, lev, lat],
-        dims=["season", level_dim, lat_dim],
+    # Select 500 hPa level
+    lev_units = psi[lev_dim].attrs.get("units", "Pa")
+    lev_500 = 500 if lev_units == "hPa" else 50000
+    psi_500 = psi_ann.sel({lev_dim: lev_500})
+
+    # Calculate edges for each year
+    edge_nh = xr.apply_ufunc(
+        _find_edge_position,
+        psi_500,
+        input_core_dims=[[lat_dim]],
+        vectorize=True,
+        kwargs={"lat": psi_500[lat_dim].values, "lat_range": (20, 40)},
     )
 
-    clm[0, :, :] = ann_clim
-    clm[1:, :, :] = season
+    edge_sh = xr.apply_ufunc(
+        _find_edge_position,
+        psi_500,
+        input_core_dims=[[lat_dim]],
+        vectorize=True,
+        kwargs={"lat": psi_500[lat_dim].values, "lat_range": (-40, -20)},
+    )
 
-    vwndps_psi_filename = f"{model_name}_vwndps_clm_psi"
-    output_path = Path(output_path) / vwndps_psi_filename
-    print(f"vwndps_clm_psi will be saved to: {output_path}")
+    # Calculate trends
+    years = np.arange(1, len(psi_500[time_dim]) + 1)
+    slope_nh, _, _, p_nh, _ = stats.linregress(years, edge_nh.values)
+    slope_sh, _, _, p_sh, _ = stats.linregress(years, edge_sh.values)
 
-    # Plot by season
-    # Fixed colorbar range
-    vmin, vmax = -1.5e11, 1.5e11
+    # Package as dataset
+    edge_nh.attrs = {"slope": slope_nh, "p_value": p_nh, "units": "degrees_north"}
+    edge_sh.attrs = {"slope": slope_sh, "p_value": p_sh, "units": "degrees_north"}
 
-    num_panels = len(ss)
-    fig, axes = plt.subplots(1, num_panels, figsize=(20, 4))
+    return xr.Dataset({"edge_nh": edge_nh, "edge_sh": edge_sh})
 
-    # Determine pressure units and set fixed y-axis range
-    # Check if lev is in hPa or Pa
-    if np.max(lev) > 10000:  # Likely in Pa
-        ylim_bottom, ylim_top = 100000, 10000  # 1000 hPa to 100 hPa in Pa
+
+def _find_edge_position(
+    psi_slice: np.ndarray, lat: np.ndarray, lat_range: Tuple[float, float]
+) -> float:
+    """
+    Find latitude where psi crosses zero within lat_range via linear interpolation.
+
+    Parameters
+    ----------
+    psi_slice : np.ndarray
+        1D array of stream function values.
+    lat : np.ndarray
+        Latitude coordinates.
+    lat_range : tuple
+        (lat_min, lat_max) search range.
+
+    Returns
+    -------
+    float
+        Edge position in degrees.
+    """
+    lat_min, lat_max = sorted(lat_range)
+    mask = (lat >= lat_min) & (lat <= lat_max)
+    psi_sub = psi_slice[mask]
+    lat_sub = lat[mask]
+
+    # Find sign change
+    pos_mask = psi_sub >= 0
+    if not np.any(pos_mask) or not np.any(~pos_mask):
+        return np.nan
+
+    # Get closest positive and negative values
+    x1 = lat_sub[pos_mask][np.argmin(psi_sub[pos_mask])]
+    y1 = psi_sub[pos_mask].min()
+    x2 = lat_sub[~pos_mask][np.argmax(psi_sub[~pos_mask])]
+    y2 = psi_sub[~pos_mask].max()
+
+    # Linear interpolation to zero
+    if x2 != x1:
+        edge = x1 - y1 * (x2 - x1) / (y2 - y1)
+    else:
+        edge = np.nan
+
+    return edge
+
+
+def compute_seasonal_climatology(
+    psi: xr.DataArray,
+    model_name: str,
+    output_path: Path,
+    time_dim: str = "time",
+    lev_dim: str = "plev",
+    lat_dim: str = "lat",
+) -> Tuple[xr.Dataset, Path]:
+    """
+    Calculate and plot seasonal climatology of stream function.
+
+    Parameters
+    ----------
+    psi : xr.DataArray
+        Monthly stream function.
+    model_name : str
+        Model identifier.
+    output_path : Path
+        Output directory.
+    time_dim : str
+        Time dimension name.
+    lev_dim : str
+        Pressure level dimension name.
+    lat_dim : str
+        Latitude dimension name.
+
+    Returns
+    -------
+    clim_psi500 : xr.Dataset
+        500 hPa seasonal climatology.
+    plot_path : Path
+        Path to saved plot.
+    """
+    # Seasonal and annual means
+    psi_seasonal = psi.groupby(f"{time_dim}.season").mean(time_dim)
+    psi_annual = psi.mean(dim=time_dim)
+
+    # Add season dimension to annual mean for concatenation
+    psi_annual_expanded = psi_annual.expand_dims({"season": ["ANN"]})
+
+    # Combine into single array
+    seasons = ["ANN", "DJF", "JJA", "MAM", "SON"]
+    clim_all = xr.concat(
+        [psi_annual_expanded] + [psi_seasonal.sel(season=s) for s in seasons[1:]],
+        dim=xr.DataArray(seasons, dims="season", name="season"),
+    )
+
+    # Extract 500 hPa
+    lev_units = psi[lev_dim].attrs.get("units", "Pa")
+    lev_500 = 500 if lev_units == "hPa" else 50000
+    clim_psi500 = clim_all.sel({lev_dim: lev_500})
+
+    # Plot
+    plot_path = _plot_seasonal_psi(clim_all, model_name, output_path, lev_dim, lat_dim)
+
+    return xr.Dataset({"psi": clim_psi500}), plot_path
+
+
+def _plot_seasonal_psi(
+    clim: xr.DataArray, model_name: str, output_path: Path, lev_dim: str, lat_dim: str
+) -> Path:
+    """
+    Create multi-panel seasonal plot of stream function.
+
+    Parameters
+    ----------
+    clim : xr.DataArray
+        Climatological stream function with season dimension.
+    model_name : str
+        Model identifier.
+    output_path : Path
+        Output directory.
+    lev_dim : str
+        Pressure level dimension name.
+    lat_dim : str
+        Latitude dimension name.
+
+    Returns
+    -------
+    Path
+        Path to saved plot.
+    """
+    seasons = clim.season.values
+    num_seasons = len(seasons)
+
+    fig, axes = plt.subplots(1, num_seasons, figsize=(4 * num_seasons, 4))
+    if num_seasons == 1:
+        axes = [axes]
+
+    # Determine pressure units
+    lev = clim[lev_dim].values
+    if np.max(lev) > 10000:
+        ylim = (100000, 10000)
         ylabel = "Pressure [Pa]"
-    else:  # Likely in hPa
-        ylim_bottom, ylim_top = 1000, 100  # 1000 hPa to 100 hPa
+    else:
+        ylim = (1000, 100)
         ylabel = "Pressure [hPa]"
 
-    for i in range(num_panels):
+    vmin, vmax = -1.5e11, 1.5e11
+
+    for i, season in enumerate(seasons):
         ax = axes[i]
-        # Use pcolormesh with actual coordinates instead of imshow
+        data = clim.sel(season=season)
+
         img = ax.pcolormesh(
-            lat, lev, clm[i, :, :], cmap="jet", shading="auto", vmin=vmin, vmax=vmax
+            data[lat_dim],
+            data[lev_dim],
+            data,
+            cmap="jet",
+            shading="auto",
+            vmin=vmin,
+            vmax=vmax,
         )
-        ax.set_title(ss[i])
+        ax.set_title(season)
         ax.set_xlabel("Latitude [°]")
-        if i == 0:  # Only label y-axis on first panel
+        ax.set_ylim(ylim)
+
+        if i == 0:
             ax.set_ylabel(ylabel)
 
-        # Set fixed y-axis range: 1000 hPa (bottom) to 100 hPa (top)
-        ax.set_ylim(ylim_bottom, ylim_top)
+    cbar = fig.colorbar(img, ax=axes, orientation="horizontal", fraction=0.02, pad=0.25)
+    cbar.set_label("Stream function [kg/s]", labelpad=12)
 
-    cbar = fig.colorbar(img, ax=axes, orientation="horizontal", fraction=0.02, pad=0.1)
-    cbar.set_label("[kg /s]")
-
-    plot_path = Path(output_path) / f"{model_name}_clim_psi_plot.png"
+    plot_path = output_path / f"{model_name}_seasonal_psi.png"
     plt.savefig(plot_path, dpi=150, bbox_inches="tight")
-    print(f"Plot saved to: {plot_path}")
     plt.close(fig)
+    print(f"Saved: {plot_path}")
 
-    # save 500 hPa Cross Section
-    if HPA_500 in clm[level_dim].values:
-        level_500hpa = HPA_500
-    else:
-        level_500hpa = PA_500
-    clm5 = clm.sel({level_dim: level_500hpa})
-
-    filename = f"{model_name}_vwndps_clm_psi500.nc"
-    output_file_path = Path(output_path) / filename
-    print(f"500 hPa cross section will be saved to: {output_file_path}")
-
-    output_file_path.unlink(missing_ok=True)
-    ds = xr.Dataset({"clm": clm5})
-    ds.to_netcdf(output_file_path, format="NETCDF4")
-    print(f"Saved: {output_file_path}")
+    return plot_path
 
 
 def main():
     """Entry point when run as script."""
-    hadley_cell_metrics()
+    raise NotImplementedError(
+        "Use hadley_cell_metrics() function with xarray datasets as inputs. "
+        "See function docstring for examples."
+    )
 
 
 if __name__ == "__main__":
