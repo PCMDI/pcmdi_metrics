@@ -246,8 +246,8 @@ def fit_cell(data, covariate, return_period, maxes):
 
     data_valid = data[valid]
 
-    if data_valid.size < 10:
-        return empty_result
+    # if data_valid.size < 5:
+    #     return empty_result
 
     if np.all(data_valid == data_valid[0]):
         return empty_result
@@ -293,7 +293,7 @@ def get_dataset_rv(
     cov_varname,
     return_period=20,
     maxes=True,
-    n_jobs=-1,
+    n_jobs=4,  # Conservative number of cores
 ):
     # Get the return value for a single model & realization
     # Set cov_filepath and cov_varname to None for stationary GEV.
@@ -446,8 +446,8 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
     x = np.asarray(x, dtype=float).squeeze()  # Ensure numpy array
     x = x[np.isfinite(x)]
 
-    if len(x) < 10:  # Minimum periods = 10
-        return np.nan, np.nan
+    # if len(x) < 5:  # Minimum periods = 5
+    #     return np.nan, np.nan
 
     if maxes:
         mins = False
