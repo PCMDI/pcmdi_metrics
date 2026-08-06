@@ -83,7 +83,19 @@ VAR_NAME = "eof"  # variable name inside the netCDF files
 # Direct paths to the EA and SCA control pattern files.
 EA_CTRL_FILE = "data/EA_psl_EOF2_JFM_obs_1969-2012.nc"  # Path to Reanalysis East Atlantic Pattern NetCDF file (20CR-VR recommended)
 SCA_CTRL_FILE = "data/SCA_psl_EOF3_JFM_obs_1969-2012.nc"  # Path to Reanalysis Scandinavian Pattern NetCDF file (20CR-VR recommended)
+
+# IMPORTANT: EA_SIGN/SCA_SIGN are calibrated for a SPECIFIC reanalysis and
+# reference period. The defaults (+1.0, -1.0) match 20CR-V2 over 1969-2012.
+# EOFs are sign-ambiguous (an EOF and its negative are the same mode), so the
+# controls must be oriented to a fixed convention before classification. A
+# different reanalysis, reference period, or EOF ordering can flip the sign of
+# a control pattern; if so, set these accordingly. An incorrect sign silently
+# corrupts ALL downstream steps -- correlation scores, geographic tests, and
+# k-means cluster geometry -- not just the final label. Verify by plotting each
+# control and confirming it matches the canonical EA/SCA orientation
+# (e.g. Comas-Bru & Hernandez, 2018) before trusting the output.
 EA_SIGN, SCA_SIGN = +1.0, -1.0  # sign convention applied at load time
+
 # CTRL_REANALYSIS: label identifying which reanalysis the control files come from.
 # This is checked against the k-means centers file to warn about mismatches.
 CTRL_REANALYSIS = "20CR-V2"
