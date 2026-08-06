@@ -246,8 +246,8 @@ def fit_cell(data, covariate, return_period, maxes):
 
     data_valid = data[valid]
 
-    # if data_valid.size < 5:
-    #     return empty_result
+    if data_valid.size == 0:
+        return empty_result
 
     if np.all(data_valid == data_valid[0]):
         return empty_result
