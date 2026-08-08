@@ -15,7 +15,14 @@ SEASONS = ["ANN", "DJF", "MAM", "JJA", "SON"]
 
 
 def compute_rv_from_file(
-    filelist, cov_filepath, cov_name, outdir, return_period, meta, maxes=True
+    filelist,
+    cov_filepath,
+    cov_name,
+    outdir,
+    return_period,
+    meta,
+    maxes=True,
+    norm=0,
 ):
     # Go through all files and get return value and standard error by file.
     # Write results to netcdf file.
@@ -31,7 +38,9 @@ def compute_rv_from_file(
     for ncfile in filelist:
         ds = xc.open_dataset(ncfile)
         print(ncfile)
-        rv, se = get_dataset_rv(ds, cov_filepath, cov_name, return_period, maxes)
+        rv, se = get_dataset_rv(
+            ds, cov_filepath, cov_name, return_period, maxes, norm=norm
+        )
         if rv is None:
             print("Error in calculating return value for", ncfile)
             print("Skipping file.")
@@ -60,7 +69,13 @@ def compute_rv_from_file(
 
 
 def compute_rv_for_model(
-    filelist, cov_filepath, cov_varname, ncdir, return_period, meta, maxes=True
+    filelist,
+    cov_filepath,
+    cov_varname,
+    ncdir,
+    return_period,
+    meta,
+    maxes=True,
 ):
     # Similar to compute_rv_from_dataset, but to work on multiple realizations
     # from the same model
@@ -70,6 +85,7 @@ def compute_rv_for_model(
     #   cov_varname: string
     #   return_period: int
     #   maxes: bool
+    #   norm_opt - 0,1,2
 
     nreal = len(filelist)
 
@@ -226,8 +242,11 @@ def compute_rv_for_model(
     return meta
 
 
-def fit_cell(data, covariate, return_period, maxes):
+def fit_cell(data, covariate, return_period, maxes, norm=0):
     """Fit a stationary or nonstationary GEV at one grid cell."""
+
+    if norm not in [0, 1, 2]:
+        raise ValueError("Normalization Option must be 0, 1, or 2")
 
     data = np.asarray(data, dtype=float)
 
@@ -254,7 +273,16 @@ def fit_cell(data, covariate, return_period, maxes):
 
     center = np.mean(data_valid)
     spread = np.std(data_valid, ddof=1)
-    data_norm = (data_valid - center) / spread
+
+    # Option 1: Subtract mean divide by STD
+    if norm == 0:
+        data_norm = (data_valid - center) / spread
+    # Option 2: Divide by mean (original)
+    elif norm == 1:
+        data_norm = data_valid / center
+    # Option 3: Raw
+    else:
+        data_norm = data_valid
 
     covariate_valid = covariate[valid] if nonstationary else None
 
@@ -272,17 +300,26 @@ def fit_cell(data, covariate, return_period, maxes):
     if rv is None:
         return empty_result
 
+    if norm == 0:
+        rv = center + spread * np.asarray(rv)
+        se = spread * np.asarray(se)
+
+    elif norm == 1:
+        rv = center * np.asarray(rv)
+        se = abs(center) * np.asarray(se)
+
+    else:
+        rv = np.asarray(rv)
+        se = np.asarray(se)
+
     if not nonstationary:
-        return (
-            center + spread * rv,
-            se * spread,
-        )
+        return rv, se
 
     rv_output = np.full(data.shape, np.nan)
     se_output = np.full(data.shape, np.nan)
 
-    rv_output[valid] = center + spread * np.asarray(rv)
-    se_output[valid] = spread * np.asarray(se)
+    rv_output[valid] = rv
+    se_output[valid] = se
 
     return rv_output, se_output
 
@@ -293,7 +330,8 @@ def get_dataset_rv(
     cov_varname,
     return_period=20,
     maxes=True,
-    n_jobs=4,  # Conservative number of cores
+    n_jobs=8,  # Conservative number of cores
+    norm=0,
 ):
     # Get the return value for a single model & realization
     # Set cov_filepath and cov_varname to None for stationary GEV.
@@ -379,7 +417,9 @@ def get_dataset_rv(
             cov_slice = None
 
         results = Parallel(n_jobs=n_jobs, prefer="processes")(
-            delayed(fit_cell)(data[t_ind:, j], cov_slice, return_period, maxes)
+            delayed(fit_cell)(
+                data[t_ind:, j], cov_slice, return_period, maxes, norm=norm
+            )
             for j in range(n_cells)
         )
         rv_results, se_results = zip(*results)
