@@ -228,12 +228,12 @@
     "HadISST-1-1": {
         "ts": {
             "CMIP_CMOR_TABLE": "Amon",
-            "MD5sum": "99c8691e0f615dc4d79b4fb5e926cc76",
+            "MD5sum": "96224d2e9a6ad837819e7372fb1d443c",
             "RefTrackingDate": "Tue Jul 27 11:32:36 2021",
-            "filename": "ts_mon_HadISST-1-1_PCMDI_gn_187001-201907.nc",
-            "period": "187001-201907",
+            "filename": "ts_mon_HadISST-1-1_PCMDI_gn_187001-202501.nc",
+            "period": "187001-202501",
             "shape": "(1795, 180, 360)",
-            "template": "MOHC/HadISST-1-1/mon/ts/gn/v20210727/ts_mon_HadISST-1-1_PCMDI_gn_187001-201907.nc",
+            "template": "MOHC/HadISST-1-1/mon/ts/gn/v20260416/ts_mon_HadISST-1-1_PCMDI_gn_187001-202501.nc",
             "version": "latest"
         }
     }
