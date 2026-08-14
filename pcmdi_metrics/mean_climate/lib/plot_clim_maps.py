@@ -12,6 +12,7 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.util import add_cyclic_point
 from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm
+from matplotlib.transforms import Bbox
 
 from pcmdi_metrics.io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.stats import cor_xy, mean_xy, rms_xy, seasonal_mean
@@ -306,7 +307,14 @@ def plot_climatology_diff(
         output_filename = f"{output_filename_head}_{_split_and_join(dataname_test)}_{period_test}_{season}_vs_{_split_and_join(dataname_ref)}.png"
 
     # Save and show plot
-    plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
+    bbox = Bbox.from_bounds(
+        0.15,  # crop some whitespace from left
+        0.80,  # crop ~0.8 inches from bottom
+        5.10,  # width; leaves room for colorbar label
+        8.80,  # height; crops ~0.4 inches from top
+    )  #
+
+    plt.savefig(os.path.join(output_dir, output_filename), bbox_inches=bbox, dpi=150)
 
 
 def plot_climatology(
@@ -559,7 +567,13 @@ def plot_climatology(
             )
 
     # Save and show plot
-    plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
+    bbox = Bbox.from_bounds(
+        0.9,  # crop 0.9" from left
+        0.6,  # crop 0.6" from bottom
+        10.2,  # width
+        8.1,  # height
+    )
+    plt.savefig(os.path.join(output_dir, output_filename), bbox_inches=bbox, dpi=150)
 
 
 # ================
