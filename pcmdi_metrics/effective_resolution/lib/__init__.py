@@ -7,10 +7,11 @@ Public API functions:
 
 Supporting utilities (also available but considered internal):
 
-- KE spectra from vorticity/divergence spherical-harmonic coefficients
+- KE spectra of the rotational and divergent wind, from an exact
+  spherical-harmonic transform
 - Sliding-window spectral slope fitting and steepening detection
 - Representative grid box distance for regular, Gaussian and reduced grids
-- Figure 1 / Figure 2 reproductions
+- Figure 1 and Figure 2 reproductions
 """
 
 # Public API - exposed at pcmdi_metrics.effective_resolution level
@@ -27,9 +28,13 @@ from .grid_distance import (  # noqa
     representative_grid_box_distance,
 )
 from .ke_spectra import (  # noqa
+    EARTH_RADIUS,
     compute_ke_spectra,
     compute_ke_spectra_timeseries,
     eddy_scale,
+    select_pressure_level,
+    sum_over_m,
+    vrtdiv_spectral_coefficients,
     wavenumber_from_eddy_scale,
 )
 from .plot import plot_resolution_scatter, plot_spectra_and_slope  # noqa
@@ -37,16 +42,6 @@ from .spectral_slope import (  # noqa
     detect_steepening,
     fit_spectral_slope,
     reference_steepening_line,
-)
-from .spherical_harmonics import (  # noqa
-    EARTH_RADIUS,
-    available_backends,
-    normalized_legendre,
-    parseval_check,
-    resolve_backend,
-    scalar_sh_analysis,
-    sum_over_m,
-    vrtdiv_spectral_coefficients,
 )
 
 __all__ = [
@@ -57,8 +52,12 @@ __all__ = [
     # Spectra
     "compute_ke_spectra",
     "compute_ke_spectra_timeseries",
+    "vrtdiv_spectral_coefficients",
+    "sum_over_m",
+    "select_pressure_level",
     "eddy_scale",
     "wavenumber_from_eddy_scale",
+    "EARTH_RADIUS",
     # Slope and detection
     "fit_spectral_slope",
     "detect_steepening",
@@ -67,15 +66,6 @@ __all__ = [
     "representative_grid_box_distance",
     "grid_box_distance_from_dataset",
     "ratio_to_dx_convention",
-    # Spherical harmonics
-    "vrtdiv_spectral_coefficients",
-    "available_backends",
-    "resolve_backend",
-    "sum_over_m",
-    "scalar_sh_analysis",
-    "normalized_legendre",
-    "parseval_check",
-    "EARTH_RADIUS",
     # Plotting
     "plot_spectra_and_slope",
     "plot_resolution_scatter",

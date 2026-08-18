@@ -1,13 +1,13 @@
-"""Effective resolution metric computation.
+"""Effective resolution metric.
 
-This module estimates the *effective* (dynamical) resolution of an
-atmospheric model -- the smallest spatial scale it plausibly represents --
-from the kinetic energy spectra of the rotational and divergent parts of the
-horizontal wind, following Klaver et al. (2020).
+Estimates the *effective* (dynamical) resolution of an atmospheric model --
+the smallest spatial scale it plausibly represents -- from the kinetic energy
+spectra of the rotational and divergent parts of the horizontal wind,
+following Klaver et al. (2020).
 
 Unlike the *nominal* resolution, which is just the mesh size, the effective
 resolution reflects how far down the spectrum the model's dynamics remain
-credible.  Scales below it are affected by parameterisation, numerical
+credible.  Scales below it are shaped by parameterisation, numerical
 diffusion, interpolation and anti-aliasing filters, and should be disregarded
 in interpretational climate studies.
 
@@ -19,9 +19,6 @@ Klaver, R., Haarsma, R., Vidale, P. L., & Hazeleger, W. (2020). Effective
     https://doi.org/10.1002/asl.952
 """
 
-from .lib import (  # noqa
-    compute_effective_resolution,
-    process_effective_resolution,
-)
+from .lib import compute_effective_resolution, process_effective_resolution  # noqa
 
 __all__ = ["compute_effective_resolution", "process_effective_resolution"]

@@ -1,22 +1,24 @@
 #!/usr/bin/env python
 """Figures for the effective-resolution diagnostic.
 
-Two plots, mirroring Klaver et al. (2020):
-
-`plot_spectra_and_slope`
-    Their Figure 1: an :math:`l^{-3}`-compensated KE spectrum panel above a
-    spectral-slope panel, with reference power laws, detection wavenumbers,
-    and the "skewed" steepening reference lines.
-`plot_resolution_scatter`
-    Their Figure 2: :math:`L_{eff}` against :math:`\\tilde{L}_{box}` for a
-    model ensemble, with the ratio shaded in the background and the
-    per-spectrum detection range as error bars.
+`plot_spectra_and_slope` reproduces Figure 1 of Klaver et al. (2020): an
+:math:`l^{-3}`-compensated KE spectrum panel above a spectral-slope panel,
+with reference power laws, detection wavenumbers and the "skewed" steepening
+reference lines.  `plot_resolution_scatter` reproduces their Figure 2:
+:math:`L_{eff}` against :math:`\\tilde{L}_{box}` for a model ensemble, with
+the ratio shaded behind and the per-spectrum detection range as error bars.
 
 The compensation matters: KE amplitude falls by several orders of magnitude
 over the plotted range, so an uncompensated spectrum hides exactly the
 curvature the diagnostic is about.  On log-log axes a power law is a straight
-line, so any curvature visible in a compensated panel is real curvature of
-the spectrum.
+line, so any curvature visible in a compensated panel is real.
+
+References
+----------
+Klaver, R., Haarsma, R., Vidale, P. L., & Hazeleger, W. (2020). Effective
+    resolution in high resolution global atmospheric models for climate
+    studies. *Atmospheric Science Letters*, 21, e952.
+    https://doi.org/10.1002/asl.952
 """
 
 from __future__ import annotations
@@ -25,21 +27,16 @@ from typing import Any, Sequence
 
 import numpy as np
 
-from .ke_spectra import eddy_scale
+from .ke_spectra import EARTH_RADIUS, eddy_scale, wavenumber_from_eddy_scale
 from .spectral_slope import reference_steepening_line
 
-__all__ = ["plot_spectra_and_slope", "plot_resolution_scatter"]
+__all__ = ["plot_resolution_scatter", "plot_spectra_and_slope"]
 
-#: Consistent colours for the three diagnosed spectra, following the paper.
-SPECTRUM_COLORS = {
-    "div_250": "tab:blue",
-    "rot_250": "tab:red",
-    "rot_500": "tab:green",
-}
-SPECTRUM_LABELS = {
-    "div_250": "divergent, 250 hPa",
-    "rot_250": "rotational, 250 hPa",
-    "rot_500": "rotational, 500 hPa",
+#: Consistent colours and labels for the three diagnosed spectra.
+SPECTRUM_STYLE = {
+    "div_250": ("tab:blue", "divergent, 250 hPa"),
+    "rot_250": ("tab:red", "rotational, 250 hPa"),
+    "rot_500": ("tab:green", "rotational, 500 hPa"),
 }
 
 
@@ -51,7 +48,7 @@ def plot_spectra_and_slope(
     output_file: str | None = None,
     figsize: tuple[float, float] = (7.0, 8.0),
     slope_ylim: tuple[float, float] = (0.0, 8.0),
-    show_reference_laws: bool = True,
+    rsphere: float = EARTH_RADIUS,
 ):
     """Two-panel compensated spectrum and slope figure (paper Figure 1).
 
@@ -59,8 +56,8 @@ def plot_spectra_and_slope(
     ----------
     diagnostics : dict
         Second return value of
-        `~pcmdi_metrics.effective_resolution.lib.compute_effective_resolution.compute_effective_resolution`,
-        containing ``spectra``, ``slopes`` and ``detections``.
+        `~pcmdi_metrics.effective_resolution.compute_effective_resolution`,
+        holding ``spectra``, ``slopes`` and ``detections``.
     metrics : dict or None, optional
         Inner metrics dict for the model/member, used to draw the final
         :math:`l_{eff}` line.  If ``None``, only per-spectrum detections are
@@ -71,19 +68,17 @@ def plot_spectra_and_slope(
     title : str, optional
         Figure title.
     output_file : str or None, optional
-        If given, save to this path and close the figure.
+        If given, save to this path, close the figure and return ``None``.
     figsize : tuple of float, optional
         Figure size in inches.
     slope_ylim : tuple of float, optional
         y-limits of the slope panel.
-    show_reference_laws : bool, optional
-        Draw the :math:`k^{-5/3}` and :math:`k^{-3}` reference laws and their
-        10%-steeper dash-dot counterparts.  Default ``True``.
+    rsphere : float, optional
+        Sphere radius in metres, used for the eddy-scale top axis.
 
     Returns
     -------
-    matplotlib.figure.Figure
-        The figure, or ``None`` if ``output_file`` was given.
+    matplotlib.figure.Figure or None
 
     Examples
     --------
@@ -103,75 +98,42 @@ def plot_spectra_and_slope(
         component, level = key.split("_")
         spec = spectra[float(level)][f"ke_{component}"]
         ell = np.asarray(spec["wavenumber"].values, dtype=float)
-        color = SPECTRUM_COLORS.get(key, "0.4")
+        color, label = SPECTRUM_STYLE.get(key, ("0.4", key))
 
         ax_spec.loglog(
-            ell,
-            ell**compensate * np.asarray(spec.values),
-            color=color,
-            label=SPECTRUM_LABELS.get(key, key),
+            ell, ell**compensate * np.asarray(spec.values), color=color, label=label
         )
         ax_slope.semilogx(ell, np.asarray(slope.values), color=color)
 
         detected = detections.get(key, {}).get("wavenumber")
         if detected is None:
             continue
-        ax_slope.axvline(detected, color=color, alpha=0.35, lw=1.0)
-        ax_spec.axvline(detected, color=color, alpha=0.35, lw=1.0)
+        for axis in (ax_spec, ax_slope):
+            axis.axvline(detected, color=color, alpha=0.35, lw=1.0)
 
         # The "skewed" reference line: +25% exponent per doubling of l.
-        n0 = detections[key]["slope_at_detection"]
-        crit = detections[key]["criterion"]
+        criterion = detections[key]["criterion"]
         line_l = np.linspace(detected / 2.0, detected * 2.0, 50)
         ax_slope.plot(
             line_l,
             reference_steepening_line(
                 line_l,
                 detected,
-                n0,
-                crit["steepening_factor"],
-                crit["wavenumber_ratio"],
+                detections[key]["slope_at_detection"],
+                criterion["steepening_factor"],
+                criterion["wavenumber_ratio"],
             ),
             color=color,
             ls=":",
             lw=1.0,
         )
 
-    if show_reference_laws and slopes:
-        # Anchor the reference laws to the spectra themselves, so they sit in
-        # the panel rather than at an arbitrary amplitude. The anchor is the
-        # compensated amplitude of the first spectrum at l = anchor_l.
-        first = next(iter(slopes))
-        component, level = first.split("_")
-        anchor_spec = spectra[float(level)][f"ke_{component}"]
-        anchor_ell = np.asarray(anchor_spec["wavenumber"].values, dtype=float)
-        anchor_l = float(np.clip(30.0, anchor_ell.min(), anchor_ell.max()))
-        anchor_y = float(
-            np.interp(anchor_l, anchor_ell, anchor_ell**compensate * np.asarray(anchor_spec.values))
-        )
-        ell_ref = np.array([anchor_ell.min(), anchor_ell.max()])
-
-        for exponent, color, label in (
-            (5.0 / 3.0, "lightblue", r"$k^{-5/3}$"),
-            (3.0, "orange", r"$k^{-3}$"),
-        ):
-            for factor, style, width in ((1.0, "-", 1.2), (1.1, "-.", 1.0)):
-                ax_spec.loglog(
-                    ell_ref,
-                    anchor_y * (ell_ref / anchor_l) ** (compensate - factor * exponent),
-                    color=color,
-                    lw=width,
-                    ls=style,
-                    label=label if factor == 1.0 else None,
-                    zorder=0,
-                )
-            ax_slope.axhline(exponent, color=color, lw=1.0, zorder=0)
+    if slopes:
+        _add_reference_laws(ax_spec, ax_slope, spectra, list(slopes), compensate)
 
     if metrics is not None and metrics.get("effective_wavenumber") is not None:
         for axis in (ax_spec, ax_slope):
-            axis.axvline(
-                metrics["effective_wavenumber"], color="k", lw=1.6, ls="--"
-            )
+            axis.axvline(metrics["effective_wavenumber"], color="k", lw=1.6, ls="--")
         ax_spec.text(
             metrics["effective_wavenumber"],
             ax_spec.get_ylim()[1],
@@ -195,11 +157,13 @@ def plot_spectra_and_slope(
     ax_top = ax_spec.secondary_xaxis(
         "top",
         functions=(
-            lambda x: np.where(x > 0, eddy_scale(np.maximum(x, 1e-9)), np.inf),
-            lambda s: np.pi * 6371.0 / np.maximum(s, 1e-9),
+            lambda x: eddy_scale(np.maximum(x, 1e-9), rsphere),
+            lambda s: np.vectorize(wavenumber_from_eddy_scale)(
+                np.maximum(s, 1e-9), rsphere
+            ),
         ),
     )
-    ax_top.set_xlabel("eddy scale $\\Delta S$ (km)")
+    ax_top.set_xlabel(r"eddy scale $\Delta S$ (km)")
 
     if title:
         fig.suptitle(title, fontsize=11)
@@ -207,11 +171,47 @@ def plot_spectra_and_slope(
 
     if output_file:
         fig.savefig(output_file, dpi=150, bbox_inches="tight")
-        import matplotlib.pyplot as plt_close
-
-        plt_close.close(fig)
+        plt.close(fig)
         return None
     return fig
+
+
+def _add_reference_laws(ax_spec, ax_slope, spectra, keys, compensate):
+    """Draw the k^-5/3 and k^-3 reference laws, anchored to the plotted spectra.
+
+    Anchoring to the data rather than to a fixed amplitude keeps the lines
+    inside the panel for any model and any units; anchoring to the *largest*
+    of the plotted spectra keeps them alongside the dominant curve rather than
+    floating below it.
+    """
+    anchor_l, anchor_y, ell = None, -np.inf, None
+    for key in keys:
+        component, level = key.split("_")
+        spec = spectra[float(level)][f"ke_{component}"]
+        wavenumber = np.asarray(spec["wavenumber"].values, dtype=float)
+        compensated = wavenumber**compensate * np.asarray(spec.values)
+        candidate_l = float(np.clip(30.0, wavenumber.min(), wavenumber.max()))
+        candidate_y = float(np.interp(candidate_l, wavenumber, compensated))
+        if candidate_y > anchor_y:
+            anchor_l, anchor_y, ell = candidate_l, candidate_y, wavenumber
+
+    ell_ref = np.array([ell.min(), ell.max()])
+
+    for exponent, color, label in (
+        (5.0 / 3.0, "lightblue", r"$k^{-5/3}$"),
+        (3.0, "orange", r"$k^{-3}$"),
+    ):
+        for factor, style, width in ((1.0, "-", 1.2), (1.1, "-.", 1.0)):
+            ax_spec.loglog(
+                ell_ref,
+                anchor_y * (ell_ref / anchor_l) ** (compensate - factor * exponent),
+                color=color,
+                lw=width,
+                ls=style,
+                label=label if factor == 1.0 else None,
+                zorder=0,
+            )
+        ax_slope.axhline(exponent, color=color, lw=1.0, zorder=0)
 
 
 def plot_resolution_scatter(
@@ -221,26 +221,30 @@ def plot_resolution_scatter(
     output_file: str | None = None,
     figsize: tuple[float, float] = (6.5, 5.5),
     ratio_levels: Sequence[float] = (2.0, 3.0, 4.0, 5.0, 6.0),
+    rsphere: float = EARTH_RADIUS,
 ):
-    """Ensemble scatter of :math:`L_{eff}` against :math:`\\tilde{L}_{box}` (paper Figure 2).
+    """Ensemble scatter of :math:`L_{eff}` against :math:`\\tilde{L}_{box}` (Figure 2).
 
     Parameters
     ----------
     results : sequence of dict
-        One inner metrics dict per model configuration, each as returned by
-        `~pcmdi_metrics.effective_resolution.lib.compute_effective_resolution.compute_effective_resolution`.
+        One inner metrics dict per model configuration, as returned by
+        `~pcmdi_metrics.effective_resolution.compute_effective_resolution`.
     labels : sequence of str or None, optional
-        Point labels.  Default uses ``result["model"]`` if present, else the
-        index.
+        Point labels.  Default uses each result's ``"model"`` key if present,
+        else the index.
     title : str, optional
         Figure title.
     output_file : str or None, optional
-        If given, save and close.
+        If given, save, close and return ``None``.
     figsize : tuple of float, optional
         Figure size in inches.
     ratio_levels : sequence of float, optional
         Contour levels for the background :math:`L_{eff}/\\tilde{L}_{box}`
         shading.  Klaver et al. find all their models fall in 2.7-4.8.
+    rsphere : float, optional
+        Sphere radius in metres, used to convert the detection wavenumber
+        range into the plotted error bars.
 
     Returns
     -------
@@ -259,43 +263,42 @@ def plot_resolution_scatter(
 
     lbox = np.array([r["grid_box_distance_km"] for r in results], dtype=float)
     leff = np.array(
-        [np.nan if r["effective_resolution_km"] is None else r["effective_resolution_km"]
-         for r in results],
+        [
+            (
+                np.nan
+                if r["effective_resolution_km"] is None
+                else r["effective_resolution_km"]
+            )
+            for r in results
+        ],
         dtype=float,
     )
 
-    x_max = np.nanmax(lbox) * 1.25
-    y_max = np.nanmax(leff) * 1.25
-    xx, yy = np.meshgrid(
-        np.linspace(1.0, x_max, 200), np.linspace(1.0, y_max, 200)
+    x_max, y_max = np.nanmax(lbox) * 1.25, np.nanmax(leff) * 1.25
+    xx, yy = np.meshgrid(np.linspace(1.0, x_max, 200), np.linspace(1.0, y_max, 200))
+    contour = ax.contourf(
+        xx, yy, yy / xx, levels=ratio_levels, cmap="YlGnBu", alpha=0.55
     )
-    ratio = yy / xx
-    contour = ax.contourf(xx, yy, ratio, levels=ratio_levels, cmap="YlGnBu", alpha=0.55)
     fig.colorbar(contour, ax=ax, label=r"$L_{eff}/\tilde{L}_{box}$")
 
     for i, result in enumerate(results):
-        label = (
-            labels[i]
-            if labels is not None
-            else result.get("model", str(i))
-        )
         span = result.get("steepening_wavenumber_range")
         yerr = None
         if span is not None and result["effective_resolution_km"] is not None:
-            hi = float(eddy_scale(span[0]))  # smallest l -> largest scale
-            lo = float(eddy_scale(span[1]))
+            # Smallest wavenumber maps to the largest scale.
+            high = float(eddy_scale(span[0], rsphere))
+            low = float(eddy_scale(span[1], rsphere))
             centre = result["effective_resolution_km"]
-            yerr = np.array([[max(centre - lo, 0.0)], [max(hi - centre, 0.0)]])
+            yerr = np.array([[max(centre - low, 0.0)], [max(high - centre, 0.0)]])
 
-        marker = "v" if result.get("is_upper_limit") else "o"
         ax.errorbar(
             lbox[i],
             leff[i],
             yerr=yerr,
-            fmt=marker,
+            fmt="v" if result.get("is_upper_limit") else "o",
             capsize=3,
             ms=7,
-            label=label,
+            label=labels[i] if labels is not None else result.get("model", str(i)),
         )
 
     ax.set_xlabel(r"representative grid box distance $\tilde{L}_{box}$ (km)")

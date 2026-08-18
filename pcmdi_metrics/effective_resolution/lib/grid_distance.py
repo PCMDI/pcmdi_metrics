@@ -2,23 +2,29 @@
 """Representative grid box distance :math:`\\tilde{L}_{box}`.
 
 Klaver et al. (2020, Appendix S1) characterise a model's *nominal* resolution
-by an area-weighted mean grid box diagonal, :math:`\\tilde{L}_{box}`.  This is
-the denominator of their headline dimensionless metric,
-:math:`L_{eff}/\\tilde{L}_{box}`, which they find lies between 2.7 and 4.8
-across a set of models spanning regular lat-lon, Gaussian, reduced Gaussian
-and octahedral grids.
+by an area-weighted mean grid box diagonal, :math:`\\tilde{L}_{box}`.  It is
+the denominator of their headline dimensionless metric
+:math:`L_{eff}/\\tilde{L}_{box}`, which lies between 2.7 and 4.8 across models
+spanning regular latitude-longitude, Gaussian, reduced Gaussian and octahedral
+grids.  Working in that ratio rather than in raw kilometres is what makes the
+diagnostic comparable across grid types.
 
-Working in terms of that ratio -- rather than raw kilometres -- is what makes
-the diagnostic comparable across grid types, and is the reason this module
-supports reduced grids explicitly rather than assuming a rectilinear mesh.
+Skamarock (2004) and Abdalla et al. (2013) instead quote the effective
+resolution as a full wavelength over a grid box *side*
+:math:`\\Delta x \\approx \\tilde{L}_{box}/\\sqrt{2}`;
+`ratio_to_dx_convention` converts between the two.
 
-Relation to other conventions
------------------------------
-Skamarock (2004) and Abdalla et al. (2013) quote :math:`L_{eff} \\approx
-7\\Delta x` and :math:`8\\Delta x` respectively, where :math:`\\Delta x
-\\approx \\tilde{L}_{box}/\\sqrt{2}` is a grid *side* rather than a diagonal,
-and their length scales are full wavelengths rather than eddy scales (half
-wavelengths).  `ratio_to_dx_convention` converts between the two.
+References
+----------
+Abdalla, S., Isaksen, L., Janssen, P., & Wedi, N. (2013). Effective spectral
+    resolution of ECMWF atmospheric forecast models. *ECMWF Newsletter*, 137,
+    19-22.
+Klaver, R., Haarsma, R., Vidale, P. L., & Hazeleger, W. (2020). Effective
+    resolution in high resolution global atmospheric models for climate
+    studies. *Atmospheric Science Letters*, 21, e952.
+    https://doi.org/10.1002/asl.952
+Skamarock, W. C. (2004). Evaluating mesoscale NWP models using kinetic energy
+    spectra. *Monthly Weather Review*, 132, 3019-3032.
 """
 
 from __future__ import annotations
@@ -26,12 +32,14 @@ from __future__ import annotations
 import numpy as np
 import xarray as xr
 
-from .spherical_harmonics import EARTH_RADIUS
+from pcmdi_metrics.io import get_latitude_bounds, get_latitude_key, get_longitude_key
+
+from .ke_spectra import EARTH_RADIUS
 
 __all__ = [
-    "representative_grid_box_distance",
     "grid_box_distance_from_dataset",
     "ratio_to_dx_convention",
+    "representative_grid_box_distance",
 ]
 
 
@@ -45,35 +53,29 @@ def representative_grid_box_distance(
     """Area-weighted mean grid box diagonal, in kilometres.
 
     For each grid cell the zonal and meridional side lengths are
-
-    .. math::
-        \\Delta x = a \\cos\\phi \\, \\Delta\\lambda, \\qquad
-        \\Delta y = a \\, \\Delta\\phi,
-
-    the diagonal is :math:`\\sqrt{\\Delta x^2 + \\Delta y^2}`, and the mean is
-    weighted by cell area.
+    :math:`\\Delta x = a\\cos\\phi\\,\\Delta\\lambda` and
+    :math:`\\Delta y = a\\,\\Delta\\phi`; the diagonal is
+    :math:`\\sqrt{\\Delta x^2 + \\Delta y^2}`, and the mean is weighted by cell
+    area.
 
     Parameters
     ----------
     lat : ndarray
-        Latitudes of the grid rows in degrees north, shape ``(nlat,)``.  For
-        a reduced grid these are the row latitudes.
+        Latitudes of the grid rows in degrees north, shape ``(nlat,)``.
     lon : ndarray or None, optional
-        Longitudes in degrees east, shape ``(nlon,)``.  Used only to infer a
-        constant number of longitudes per row; ignored if ``nlon_per_lat`` is
-        given.  One of ``lon`` or ``nlon_per_lat`` is required.
+        Longitudes in degrees east.  Used only to count longitudes per row;
+        ignored when ``nlon_per_lat`` is given.  One of the two is required.
     nlon_per_lat : ndarray or None, optional
         Number of longitude points in each latitude row, shape ``(nlat,)``.
-        Supply this for reduced Gaussian and octahedral grids (e.g. the
-        ECMWF-IFS ``TCO`` grids), where the zonal point count decreases
-        poleward.
+        Supply this for reduced Gaussian and octahedral grids (e.g. the ECMWF
+        ``TCO`` grids), where the zonal point count decreases poleward.
     lat_bounds : ndarray or None, optional
-        Latitude cell edges in degrees north, shape ``(nlat, 2)`` or
-        ``(nlat + 1,)``.  If ``None``, edges are inferred as the midpoints
-        between adjacent latitudes, with the outermost cells extended
-        symmetrically and clipped to the poles.
+        Latitude cell edges, shape ``(nlat, 2)`` or ``(nlat + 1,)``.  If
+        ``None``, edges are inferred as midpoints between adjacent latitudes,
+        with the outermost cells extended symmetrically and clipped to the
+        poles.
     rsphere : float, optional
-        Sphere radius in metres.
+        Sphere radius in metres.  Default is `EARTH_RADIUS`.
 
     Returns
     -------
@@ -82,7 +84,7 @@ def representative_grid_box_distance(
 
     Examples
     --------
-    A 1-degree regular grid.  Note this is well below the 157 km equatorial
+    A 1-degree regular grid.  This is well below the 157 km equatorial
     diagonal: cells narrow poleward, and the area weighting still gives the
     shrinking high-latitude rows appreciable influence.
 
@@ -91,8 +93,8 @@ def representative_grid_box_distance(
     >>> float(np.round(representative_grid_box_distance(lat, lon), 1))
     142.9
 
-    Reproduces the ``L_box`` column of Klaver et al. Table 1 for the
-    grid-point models:
+    Reproduces the :math:`\\tilde{L}_{box}` column of Klaver et al. Table 1
+    for the grid-point models:
 
     >>> for nlat, nlon, published in [
     ...     (145, 192, 217.0), (325, 432, 96.7), (769, 1024, 40.8),
@@ -109,35 +111,29 @@ def representative_grid_box_distance(
     768x1152:   38.2 km (Table 1: 38.2)
     """
     lat = np.asarray(lat, dtype=float)
-    nlat = lat.size
 
     if nlon_per_lat is None:
         if lon is None:
             raise ValueError("Provide either 'lon' or 'nlon_per_lat'")
-        nlon_per_lat = np.full(nlat, np.asarray(lon).size, dtype=float)
+        nlon_per_lat = np.full(lat.size, np.asarray(lon).size, dtype=float)
     nlon_per_lat = np.asarray(nlon_per_lat, dtype=float)
-    if nlon_per_lat.size != nlat:
+    if nlon_per_lat.size != lat.size:
         raise ValueError(
-            f"nlon_per_lat has size {nlon_per_lat.size}, expected {nlat} to match lat"
+            f"nlon_per_lat has size {nlon_per_lat.size}, expected {lat.size}"
         )
 
     edges = _latitude_edges(lat, lat_bounds)
-    dphi = np.deg2rad(np.abs(np.diff(edges)))
-    phi = np.deg2rad(lat)
-
-    dy = rsphere * dphi
-    dx = rsphere * np.cos(phi) * (2.0 * np.pi / nlon_per_lat)
+    dy = rsphere * np.deg2rad(np.abs(np.diff(edges)))
+    dx = rsphere * np.cos(np.deg2rad(lat)) * (2.0 * np.pi / nlon_per_lat)
     diagonal = np.sqrt(dx**2 + dy**2)
 
-    # Area of one cell in the row, times the number of cells in the row.
-    sin_edges = np.sin(np.deg2rad(edges))
-    row_area = 2.0 * np.pi * rsphere**2 * np.abs(np.diff(sin_edges))
-
+    # Area of one cell in a row times the number of cells in that row.
+    row_area = 2.0 * np.pi * rsphere**2 * np.abs(np.diff(np.sin(np.deg2rad(edges))))
     return float(np.sum(row_area * diagonal) / np.sum(row_area) / 1000.0)
 
 
 def _latitude_edges(lat: np.ndarray, lat_bounds: np.ndarray | None) -> np.ndarray:
-    """Return monotonic latitude cell edges of shape ``(nlat + 1,)``."""
+    """Monotonic latitude cell edges of shape ``(nlat + 1,)``."""
     if lat_bounds is not None:
         bounds = np.asarray(lat_bounds, dtype=float)
         if bounds.ndim == 2:
@@ -145,32 +141,26 @@ def _latitude_edges(lat: np.ndarray, lat_bounds: np.ndarray | None) -> np.ndarra
         return bounds
 
     mid = 0.5 * (lat[:-1] + lat[1:])
-    first = lat[0] - (mid[0] - lat[0])
-    last = lat[-1] + (lat[-1] - mid[-1])
-    edges = np.concatenate([[first], mid, [last]])
+    edges = np.concatenate(
+        [[lat[0] - (mid[0] - lat[0])], mid, [lat[-1] + (lat[-1] - mid[-1])]]
+    )
     return np.clip(edges, -90.0, 90.0)
 
 
 def grid_box_distance_from_dataset(
-    ds: xr.Dataset,
-    lat_name: str = "lat",
-    lon_name: str = "lon",
-    lat_bnds_name: str | None = "lat_bnds",
-    rsphere: float = EARTH_RADIUS,
+    ds: xr.Dataset, rsphere: float = EARTH_RADIUS
 ) -> float:
-    """Convenience wrapper: :math:`\\tilde{L}_{box}` straight from a Dataset.
+    """:math:`\\tilde{L}_{box}` straight from a Dataset's own grid.
+
+    Latitude, longitude and latitude bounds are resolved from the dataset's
+    axis metadata, so non-standard coordinate names work.
 
     Parameters
     ----------
     ds : xarray.Dataset
         Dataset carrying the grid coordinates.
-    lat_name, lon_name : str, optional
-        Coordinate names.
-    lat_bnds_name : str or None, optional
-        Name of the latitude bounds variable, used when present.  Default
-        ``"lat_bnds"``.
     rsphere : float, optional
-        Sphere radius in metres.
+        Sphere radius in metres.  Default is `EARTH_RADIUS`.
 
     Returns
     -------
@@ -179,19 +169,21 @@ def grid_box_distance_from_dataset(
 
     Notes
     -----
-    This reads the grid of ``ds`` *as given*.  If the caller regridded the
-    data before computing spectra, this returns the target grid's spacing,
-    not the model's native spacing -- and the resulting
-    :math:`L_{eff}/\\tilde{L}_{box}` would be meaningless.  Compute
-    :math:`\\tilde{L}_{box}` from the native grid, and prefer not to regrid at
-    all for this diagnostic.
+    This reads the grid of ``ds`` *as given*.  If the data were regridded
+    before the spectra were computed, this returns the target grid's spacing
+    rather than the model's native spacing, and the resulting ratio would be
+    meaningless.  Compute it from the native grid, and prefer not to regrid at
+    all for this diagnostic.  For reduced Gaussian and octahedral grids the
+    rectilinear coordinates misrepresent the mesh; pass an explicit value to
+    `~pcmdi_metrics.effective_resolution.compute_effective_resolution` instead.
     """
-    bounds = None
-    if lat_bnds_name is not None and lat_bnds_name in ds:
-        bounds = np.asarray(ds[lat_bnds_name].values, dtype=float)
+    try:
+        bounds = np.asarray(get_latitude_bounds(ds).values, dtype=float)
+    except Exception:
+        bounds = None
     return representative_grid_box_distance(
-        np.asarray(ds[lat_name].values, dtype=float),
-        lon=np.asarray(ds[lon_name].values, dtype=float),
+        np.asarray(ds[get_latitude_key(ds)].values, dtype=float),
+        lon=np.asarray(ds[get_longitude_key(ds)].values, dtype=float),
         lat_bounds=bounds,
         rsphere=rsphere,
     )
@@ -203,8 +195,9 @@ def ratio_to_dx_convention(ratio_leff_lbox: float) -> float:
     Klaver et al. express the effective resolution as an eddy scale (half
     wavelength) over a grid box *diagonal*; Skamarock (2004) and Abdalla et
     al. (2013) express it as a full wavelength over a grid box *side*.  The
-    two differ by a factor :math:`2\\sqrt{2}`, which is why this paper's
-    2.7-4.8 corresponds to the familiar 7-8 :math:`\\Delta x`.
+    two differ by a factor :math:`2\\sqrt{2}`.  The lower end of the paper's
+    2.7-4.8 range therefore corresponds to the familiar :math:`7\\Delta x` of
+    the NWP literature, while its upper end is coarser still.
 
     Parameters
     ----------

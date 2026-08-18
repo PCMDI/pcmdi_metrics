@@ -13,29 +13,21 @@ diagnostic measures the model's own smallest resolved scales, and regridding
 overwrites them.
 """
 
-import datetime
-
 # =================================================
-# Background Information
+# Background information
 # -------------------------------------------------
-mip_era = "CMIP6"
-mip = mip_era.lower()
+mip = "cmip6"
 
-# HighResMIP is the natural target: models run at two or three resolutions.
+# HighResMIP is the natural target: models are run at two or three resolutions.
 exps = ["highresSST-present"]
 
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
 debug = False
-
-parallel = False
-num_processes = 10
 
 # =================================================
 # Models
 # -------------------------------------------------
-# models = "all"
+# The 13 configurations of Klaver et al. Table 1, under their ESGF source_id
+# names (the paper uses pre-publication HighResMIP labels).
 models = [
     "HadGEM3-GC31-LM",
     "HadGEM3-GC31-MM",
@@ -54,6 +46,9 @@ models = [
 
 first_member_only = True
 
+# Fallback when xsearch is unavailable; %(...) fields are filled by the driver.
+path_template = None
+
 # Input variables
 uvar = "ua"
 vvar = "va"
@@ -67,8 +62,8 @@ levels = (250.0, 500.0)
 
 # Klaver et al. sample four months of 2014 to span the seasonal cycle.
 # Spectral slopes barely differ between months, so the diagnosed effective
-# resolution is a time-invariant model property -- but sampling all four is a
-# cheap way to confirm that for a new model.
+# resolution behaves as a time-invariant model property -- but sampling all
+# four is a cheap way to confirm that for a new model.
 periods = [
     ("2014-03-01", "2014-03-31"),
     ("2014-06-01", "2014-06-30"),
@@ -79,11 +74,6 @@ periods = [
 # =================================================
 # Spectral transform
 # -------------------------------------------------
-# "auto" -> windspharm (pyspharm) if available, then shtns, then a numpy
-# fallback. The numpy fallback uses finite-difference vorticity/divergence
-# and will bias the result; it exists for testing, not production.
-backend = "auto"
-
 # "auto" inspects the latitude spacing. Set explicitly for Gaussian grids
 # whose coordinates round to look evenly spaced.
 gridtype = "auto"
@@ -95,8 +85,8 @@ ntrunc = None
 
 # For reduced Gaussian and octahedral grids (e.g. ECMWF-IFS TCO), the
 # Dataset's rectilinear coordinates misrepresent the native mesh. Supply the
-# native value here, keyed by model, or leave empty to derive from the file.
-# Reference values from Klaver et al. Table 1, in km:
+# native value here, keyed by model, or leave the entry out to derive it from
+# the file. Reference values from Klaver et al. Table 1, in km:
 grid_box_distance_km = {
     "HadGEM3-GC31-LM": 217.0,
     "HadGEM3-GC31-MM": 96.7,
@@ -116,12 +106,12 @@ grid_box_distance_km = {
 # =================================================
 # Detection criterion
 # -------------------------------------------------
-# Sliding fit of y = C * l**(-n) over this many wavenumbers (Appendix S3).
+# Sliding fit of E = C * l**(-n) over this many wavenumbers (Appendix S3).
 fit_window = 20
 
-# Which wavenumber in the window the fitted exponent is assigned to.
-# The paper is ambiguous; "center" is conventional, "right" is the literal
-# reading of "steepening at the largest wavenumber in the range".
+# Which wavenumber in the window the fitted exponent is assigned to. The paper
+# is ambiguous; "center" is conventional, "right" is the literal reading of
+# "steepening at the largest wavenumber in the range".
 fit_anchor = "center"
 
 # Required fractional increase of the exponent n over a wavenumber_ratio
@@ -137,24 +127,14 @@ wavenumber_ratio = 2.0
 # limit, not a value.
 min_wavenumber = 32
 
-# Number of the three spectra that must steepen. 2 of 3 == the median.
+# Number of the three spectra that must steepen. 2 of 3 is the median.
 n_confirm = 2
 
 # =================================================
 # Output
 # -------------------------------------------------
-result_dir = "output"
-if debug:
-    result_dir = "output_debug"
-
-case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+result_dir = "output_debug" if debug else "output"
 
 save_netcdf = True
 save_json = True
 plot = True
-
-overwrite_output = False
-
-output_filename_template = (
-    "effective_resolution_%(model)_%(exp)_%(realization)_%(start)_%(end)"
-)
