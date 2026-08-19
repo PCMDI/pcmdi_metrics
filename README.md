@@ -126,7 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
-| [v4.1.1]      | New capability (**Hadley Cell Metrics) and technical update
+| [v4.2.0]      | New capability (**Hadley Cell Metrics) and technical update
 | [v4.1.0]      | New capabilities (**ENSO Metrics, Sea Ice IIEE Metric, and EOF Classification) and technical update
 | [v4.0.4]      | Technical update
 | [v4.0.3]      | Technical update, with test release for the new `eof_classification` capability
@@ -195,7 +195,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
-[v4.1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.1.1
+[v4.2.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.2.0
 [v4.1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.1.0
 [v4.0.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.4
 [v4.0.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.3
