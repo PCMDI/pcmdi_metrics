@@ -204,7 +204,7 @@ Key parameters in the CONFIG section:
 |--------------------|-------------|------------------------------------------|
 | `EA_CTRL_FILE`     | (path)      | Path to EA control pattern netCDF        |
 | `SCA_CTRL_FILE`    | (path)      | Path to SCA control pattern netCDF       |
-| `EA_SIGN`/`SCA_SIGN` | +1.0/−1.0 | Sign convention applied at load time    |
+| `EA_SIGN`/`SCA_SIGN` | +1.0/−1.0 | Sign convention applied at load time. **Calibrated for 20CR-V2, 1969–2012.** A different reanalysis, period, or EOF ordering can flip a control's sign — set accordingly. A wrong sign silently corrupts all downstream steps, not just the label. |
 | `CTRL_REANALYSIS`  | "20CR-V2"   | Label for provenance checking            |
 | `LAT_RANGE`        | (20, 90)    | Latitude bounds for domain restriction   |
 | `SMOOTH_SIGMA_DEG` | 4.0         | Gaussian smoothing width (degrees)       |
@@ -235,10 +235,18 @@ Retraining is only needed if you want to use:
 ### How to Retrain
 
 1. Set `EA_CTRL_FILE` and `SCA_CTRL_FILE` to the new control patterns.
-2. Set `CTRL_REANALYSIS` and `CMIP_TAG` to match.
-3. Set `EOF_GLOBS` to point to EOF files from the full ensemble.
-4. Delete or rename the existing centers file at `KMEANS_CENTERS_FILE`.
-5. Run the script — a new JSON file is saved automatically.
+2. **Verify `EA_SIGN`/`SCA_SIGN` for the new controls.** EOFs are
+   sign-ambiguous, so a different reanalysis, reference period, or EOF
+   ordering can flip a control pattern's sign relative to the defaults
+   (`+1.0`/`−1.0`, calibrated for 20CR-V2 over 1969–2012). Plot each control
+   and confirm its orientation matches the canonical EA/SCA structure
+   (Comas-Bru & Hernández, 2018) before retraining. A wrong sign here is
+   silently baked into the saved centers and corrupts every future
+   classification that loads them — not just the labels from this run.
+3. Set `CTRL_REANALYSIS` and `CMIP_TAG` to match.
+4. Set `EOF_GLOBS` to point to EOF files from the full ensemble.
+5. Delete or rename the existing centers file at `KMEANS_CENTERS_FILE`.
+6. Run the script — a new JSON file is saved automatically.
 
 Alternatively, call `_train_kmeans` directly from Python:
 
@@ -248,6 +256,9 @@ from eof_classification import (
     EA_SIGN, SCA_SIGN
 )
 
+# Confirm these signs (EA_SIGN and SCA_SIGN) match the new controls' orientation (see step 2 above).
+# A wrong sign is baked into the trained centers, silently mis-serving every
+# future classification that loads them.
 EA_ctrl  = EA_SIGN  * _read_da("path/to/new_EA_ctrl.nc")
 SCA_ctrl = SCA_SIGN * _read_da("path/to/new_SCA_ctrl.nc")
 triplets = _load_model_triplets(eof_globs={

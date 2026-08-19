@@ -159,7 +159,7 @@ script.  Key settings:
 |---------------------|------------|----------------------------------------------------|
 | `EA_CTRL_FILE`      | (path)     | Path to the EA control pattern netCDF               |
 | `SCA_CTRL_FILE`     | (path)     | Path to the SCA control pattern netCDF              |
-| `EA_SIGN`/`SCA_SIGN`| +1.0/−1.0 | Sign convention applied to controls at load time   |
+| `EA_SIGN`/`SCA_SIGN`| +1.0/−1.0 | Sign convention applied to controls at load time. **Calibrated for 20CR-V2, 1969–2012.** A different reanalysis, period, or EOF ordering can flip a control's sign — set accordingly. A wrong sign silently corrupts all downstream steps, not just the label. |
 | `CTRL_REANALYSIS`   | "20CR-V2"  | Label for provenance checking vs. k-means centers  |
 | `LAT_RANGE`         | (20, 90)   | Latitude bounds for domain restriction             |
 | `SMOOTH_SIGMA_DEG`  | 4.0        | Gaussian smoothing (degrees); 0 disables           |
