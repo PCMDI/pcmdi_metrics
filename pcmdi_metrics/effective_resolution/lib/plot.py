@@ -49,6 +49,9 @@ def plot_spectra_and_slope(
     figsize: tuple[float, float] = (7.0, 8.0),
     slope_ylim: tuple[float, float] = (0.0, 8.0),
     rsphere: float = EARTH_RADIUS,
+    xlim: tuple[float, float] | None = None,
+    spec_ylim: tuple[float, float] | None = None,
+    xticks: Sequence[float] | None = None,
 ):
     """Two-panel compensated spectrum and slope figure (paper Figure 1).
 
@@ -75,6 +78,19 @@ def plot_spectra_and_slope(
         y-limits of the slope panel.
     rsphere : float, optional
         Sphere radius in metres, used for the eddy-scale top axis.
+    xlim : tuple of float or None, optional
+        x-limits for both panels (wavenumber range). If ``None`` (default),
+        automatically determined from data. To match Klaver et al. (2020)
+        Figure 1, use ``(13, 240)`` or similar depending on model resolution.
+    spec_ylim : tuple of float or None, optional
+        y-limits for the compensated spectrum panel. If ``None`` (default),
+        automatically determined from data. To match Klaver et al. (2020)
+        Figure 1, use ``(1e0, 1e2)`` or adjust based on model output.
+    xticks : sequence of float or None, optional
+        Custom x-axis (wavenumber) tick positions for both panels. If ``None``
+        (default), matplotlib automatically selects tick positions. To match
+        Klaver et al. (2020) Figure 1, use values like ``[13, 20, 32, 40, 60,
+        80, 100, 120, 160, 200, 240]`` or adjust based on the xlim range.
 
     Returns
     -------
@@ -83,6 +99,12 @@ def plot_spectra_and_slope(
     Examples
     --------
     >>> fig = plot_spectra_and_slope(diags, metrics["M"]["r1i1p1f1"])  # doctest: +SKIP
+    >>> # Match paper Figure 1 axis ranges and ticks:
+    >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
+    ...     diags, metrics["M"]["r1i1p1f1"],
+    ...     xlim=(13, 240), spec_ylim=(1e0, 1e2), slope_ylim=(1, 5),
+    ...     xticks=[13, 20, 32, 40, 60, 80, 100, 120, 160, 200, 240]
+    ... )
     """
     import matplotlib.pyplot as plt
 
@@ -131,6 +153,12 @@ def plot_spectra_and_slope(
     if slopes:
         _add_reference_laws(ax_spec, ax_slope, spectra, list(slopes), compensate)
 
+    # Apply axis limits BEFORE text placement so get_ylim() returns correct final value
+    if xlim is not None:
+        ax_spec.set_xlim(*xlim)
+    if spec_ylim is not None:
+        ax_spec.set_ylim(*spec_ylim)
+
     if metrics is not None and metrics.get("effective_wavenumber") is not None:
         for axis in (ax_spec, ax_slope):
             axis.axvline(metrics["effective_wavenumber"], color="k", lw=1.6, ls="--")
@@ -148,10 +176,26 @@ def plot_spectra_and_slope(
     ax_spec.legend(fontsize=8, frameon=False)
     ax_spec.grid(alpha=0.2, which="both")
 
+    # Apply custom x-axis ticks if provided
+    if xticks is not None:
+        from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
+        ax_spec.xaxis.set_major_locator(FixedLocator(xticks))
+        ax_spec.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f'{int(x)}' if x == int(x) else f'{x:g}'))
+        ax_spec.xaxis.set_minor_locator(FixedLocator([]))
+        ax_spec.xaxis.set_minor_formatter(NullFormatter())
+
     ax_slope.set_ylim(*slope_ylim)
     ax_slope.set_ylabel(r"slope exponent $n$")
     ax_slope.set_xlabel("total wavenumber $l$")
     ax_slope.grid(alpha=0.2, which="both")
+
+    # Apply custom x-axis ticks to slope panel as well
+    if xticks is not None:
+        from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
+        ax_slope.xaxis.set_major_locator(FixedLocator(xticks))
+        ax_slope.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f'{int(x)}' if x == int(x) else f'{x:g}'))
+        ax_slope.xaxis.set_minor_locator(FixedLocator([]))
+        ax_slope.xaxis.set_minor_formatter(NullFormatter())
 
     # Secondary axis in eddy scale (km), as in the paper's top axis.
     ax_top = ax_spec.secondary_xaxis(
@@ -167,6 +211,8 @@ def plot_spectra_and_slope(
 
     if title:
         fig.suptitle(title, fontsize=11)
+
+    # Use standard tight_layout - it works well for both default and custom limits
     fig.tight_layout()
 
     if output_file:
