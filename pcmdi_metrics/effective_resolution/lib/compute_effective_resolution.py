@@ -272,11 +272,12 @@ def compute_effective_resolution(
     if exp is not None:
         inner["exp"] = exp
 
-    merged = xr.Dataset({
-        f"{var}_{int(level)}": spec[var]
-        for level, spec in spectra.items()
-        for var in ("ke_rot", "ke_div", "ke_total")
-    })
+    # Build merged dataset iteratively to avoid coordinate conflicts
+    # Each spec has its own 'plev' coordinate value which would conflict in dict comprehension
+    merged = xr.Dataset()
+    for level, spec in spectra.items():
+        for var in ("ke_rot", "ke_div", "ke_total"):
+            merged[f"{var}_{int(level)}"] = spec[var]
     for key, slope in slopes.items():
         merged[f"slope_{key}"] = slope
     merged.attrs = {
