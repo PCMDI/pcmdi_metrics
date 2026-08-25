@@ -98,12 +98,12 @@ def fit_spectral_slope(
         log_e = np.log(np.asarray(spectrum.values, dtype=float))
 
     slope = np.full(ell.size, np.nan)
-    for start in range(0, ell.size - window + 1):
+    min_points = window // 2
+    for start in range(ell.size - window + 1):
         x, y = log_l[start : start + window], log_e[start : start + window]
         good = np.isfinite(x) & np.isfinite(y)
-        if good.sum() < window // 2:
-            continue
-        slope[start + offset] = -np.polyfit(x[good], y[good], 1)[0]
+        if good.sum() >= min_points:
+            slope[start + offset] = -np.polyfit(x[good], y[good], 1)[0]
 
     out = xr.DataArray(
         slope,
@@ -204,9 +204,8 @@ def detect_steepening(
         },
     }
 
-    candidates = np.where(
-        (ell >= min_wavenumber) & (ell <= max_wavenumber) & np.isfinite(n)
-    )[0]
+    mask = (ell >= min_wavenumber) & (ell <= max_wavenumber) & np.isfinite(n)
+    candidates = np.flatnonzero(mask)
     for i in candidates:
         l0, n0 = ell[i], n[i]
         if n0 <= 0:

@@ -297,23 +297,21 @@ def vrtdiv_spectral_coefficients(
     # Project (u cos phi, v cos phi) with weight 1/(1 - mu^2); poles contribute
     # no area and would divide by zero.
     cos2 = cosphi**2
-    weights = np.where(cos2 > 1e-12, weights / np.where(cos2 > 1e-12, cos2, 1.0), 0.0)
+    mask = cos2 > 1e-12
+    weights = np.where(mask, weights / cos2, 0.0)
 
     u_fourier = np.fft.rfft(u * cosphi[:, None], axis=1) / nlon
     v_fourier = np.fft.rfft(v * cosphi[:, None], axis=1) / nlon
 
     vrt = np.zeros((ntrunc + 1, ntrunc + 1), dtype=complex)
     div = np.zeros_like(vrt)
+    scale = 0.5 / rsphere
     for m in range(min(ntrunc + 1, u_fourier.shape[1])):
         p, h = _legendre(m, ntrunc, mu)
         um = u_fourier[:, m] * weights
         vm = v_fourier[:, m] * weights
-        vrt[m:, m] = (
-            1j * m * (0.5 * (p * vm).sum(1)) + 0.5 * (h * um).sum(1)
-        ) / rsphere
-        div[m:, m] = (
-            1j * m * (0.5 * (p * um).sum(1)) - 0.5 * (h * vm).sum(1)
-        ) / rsphere
+        vrt[m:, m] = scale * (1j * m * (p * vm).sum(1) + (h * um).sum(1))
+        div[m:, m] = scale * (1j * m * (p * um).sum(1) - (h * vm).sum(1))
 
     return np.arange(ntrunc + 1), vrt, div
 
@@ -609,9 +607,10 @@ def compute_ke_spectra_timeseries(
     if time_key is None or time_key not in ds.dims:
         return compute_ke_spectra(ds, uvar, vvar, **kwargs)
 
+    n_times = ds.sizes[time_key]
     spectra = [
         compute_ke_spectra(ds.isel({time_key: i}), uvar, vvar, **kwargs)
-        for i in range(ds.sizes[time_key])
+        for i in range(n_times)
     ]
     out = xr.concat(spectra, dim=time_key).assign_coords({time_key: ds[time_key]})
     attrs = dict(spectra[0].attrs)

@@ -141,9 +141,7 @@ def _latitude_edges(lat: np.ndarray, lat_bounds: np.ndarray | None) -> np.ndarra
         return bounds
 
     mid = 0.5 * (lat[:-1] + lat[1:])
-    edges = np.concatenate(
-        [[lat[0] - (mid[0] - lat[0])], mid, [lat[-1] + (lat[-1] - mid[-1])]]
-    )
+    edges = np.concatenate([[2 * lat[0] - mid[0]], mid, [2 * lat[-1] - mid[-1]]])
     return np.clip(edges, -90.0, 90.0)
 
 

@@ -184,16 +184,17 @@ def _add_reference_laws(ax_spec, ax_slope, spectra, keys, compensate):
     of the plotted spectra keeps them alongside the dominant curve rather than
     floating below it.
     """
-    anchor_l, anchor_y, ell = None, -np.inf, None
-    for key in keys:
+
+    def get_anchor_value(key):
         component, level = key.split("_")
         spec = spectra[float(level)][f"ke_{component}"]
-        wavenumber = np.asarray(spec["wavenumber"].values, dtype=float)
-        compensated = wavenumber**compensate * np.asarray(spec.values)
-        candidate_l = float(np.clip(30.0, wavenumber.min(), wavenumber.max()))
-        candidate_y = float(np.interp(candidate_l, wavenumber, compensated))
-        if candidate_y > anchor_y:
-            anchor_l, anchor_y, ell = candidate_l, candidate_y, wavenumber
+        wn = np.asarray(spec["wavenumber"].values, dtype=float)
+        compensated = wn**compensate * np.asarray(spec.values)
+        l_val = float(np.clip(30.0, wn.min(), wn.max()))
+        return l_val, float(np.interp(l_val, wn, compensated)), wn
+
+    anchors = [get_anchor_value(k) for k in keys]
+    anchor_l, anchor_y, ell = max(anchors, key=lambda x: x[1])
 
     ell_ref = np.array([ell.min(), ell.max()])
 
