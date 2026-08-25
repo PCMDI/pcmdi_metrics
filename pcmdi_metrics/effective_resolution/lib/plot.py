@@ -49,6 +49,8 @@ def plot_spectra_and_slope(
     figsize: tuple[float, float] = (7.0, 8.0),
     slope_ylim: tuple[float, float] = (0.0, 8.0),
     rsphere: float = EARTH_RADIUS,
+    xlim: tuple[float, float] | None = None,
+    spec_ylim: tuple[float, float] | None = None,
 ):
     """Two-panel compensated spectrum and slope figure (paper Figure 1).
 
@@ -75,6 +77,14 @@ def plot_spectra_and_slope(
         y-limits of the slope panel.
     rsphere : float, optional
         Sphere radius in metres, used for the eddy-scale top axis.
+    xlim : tuple of float or None, optional
+        x-limits for both panels (wavenumber range). If ``None`` (default),
+        automatically determined from data. To match Klaver et al. (2020)
+        Figure 1, use ``(13, 240)`` or similar depending on model resolution.
+    spec_ylim : tuple of float or None, optional
+        y-limits for the compensated spectrum panel. If ``None`` (default),
+        automatically determined from data. To match Klaver et al. (2020)
+        Figure 1, use ``(1e0, 1e2)`` or adjust based on model output.
 
     Returns
     -------
@@ -83,6 +93,11 @@ def plot_spectra_and_slope(
     Examples
     --------
     >>> fig = plot_spectra_and_slope(diags, metrics["M"]["r1i1p1f1"])  # doctest: +SKIP
+    >>> # Match paper Figure 1 axis ranges:
+    >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
+    ...     diags, metrics["M"]["r1i1p1f1"],
+    ...     xlim=(13, 240), spec_ylim=(1e0, 1e2), slope_ylim=(1, 5)
+    ... )
     """
     import matplotlib.pyplot as plt
 
@@ -147,6 +162,12 @@ def plot_spectra_and_slope(
     ax_spec.set_ylabel(rf"$l^{{{compensate:g}}} E_l$")
     ax_spec.legend(fontsize=8, frameon=False)
     ax_spec.grid(alpha=0.2, which="both")
+
+    # Apply axis limits if provided
+    if xlim is not None:
+        ax_spec.set_xlim(*xlim)
+    if spec_ylim is not None:
+        ax_spec.set_ylim(*spec_ylim)
 
     ax_slope.set_ylim(*slope_ylim)
     ax_slope.set_ylabel(r"slope exponent $n$")
