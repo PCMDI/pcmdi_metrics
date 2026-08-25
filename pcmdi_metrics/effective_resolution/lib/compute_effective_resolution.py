@@ -181,9 +181,8 @@ def compute_effective_resolution(
     >>> metrics["HadGEM3-GC31-HM"]["r1i1p1f1"]["effective_wavenumber"]  # doctest: +SKIP
     108.0
     """
-    spectra: dict[float, xr.Dataset] = {}
-    for level in levels:
-        spectra[float(level)] = compute_ke_spectra_timeseries(
+    spectra = {
+        float(level): compute_ke_spectra_timeseries(
             ds,
             uvar=uvar,
             vvar=vvar,
@@ -194,7 +193,10 @@ def compute_effective_resolution(
             gridtype=gridtype,
             rsphere=rsphere,
         )
-        if debug:
+        for level in levels
+    }
+    if debug:
+        for level in levels:
             print(f"[effective_resolution] computed spectra at {level} hPa")
 
     slopes: dict[str, xr.DataArray] = {}
@@ -217,9 +219,7 @@ def compute_effective_resolution(
         if debug:
             print(f"[effective_resolution] {key}: l = {detections[key]['wavenumber']}")
 
-    detected = sorted(
-        d["wavenumber"] for d in detections.values() if d["wavenumber"] is not None
-    )
+    detected = sorted(filter(None, (d["wavenumber"] for d in detections.values())))
     if len(detected) >= n_confirm:
         l_eff: float | None = float(detected[n_confirm - 1])
         l_eff_km: float | None = float(eddy_scale(l_eff, rsphere))
@@ -272,10 +272,11 @@ def compute_effective_resolution(
     if exp is not None:
         inner["exp"] = exp
 
-    merged = xr.Dataset()
-    for level, spec in spectra.items():
-        for var in ("ke_rot", "ke_div", "ke_total"):
-            merged[f"{var}_{int(level)}"] = spec[var]
+    merged = xr.Dataset({
+        f"{var}_{int(level)}": spec[var]
+        for level, spec in spectra.items()
+        for var in ("ke_rot", "ke_div", "ke_total")
+    })
     for key, slope in slopes.items():
         merged[f"slope_{key}"] = slope
     merged.attrs = {
