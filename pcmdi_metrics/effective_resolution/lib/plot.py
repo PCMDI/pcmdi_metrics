@@ -212,14 +212,8 @@ def plot_spectra_and_slope(
     if title:
         fig.suptitle(title, fontsize=11)
 
-    # Adjust layout with tighter top margin when custom limits are used
-    if xlim is not None or spec_ylim is not None:
-        # Use tighter layout with more aggressive top margin reduction
-        fig.tight_layout(rect=[0, 0, 1, 0.96], pad=0.5)
-        # Also adjust subplot spacing to reduce gap between title and plot
-        fig.subplots_adjust(top=0.94)
-    else:
-        fig.tight_layout()
+    # Use standard tight_layout - it works well for both default and custom limits
+    fig.tight_layout()
 
     if output_file:
         fig.savefig(output_file, dpi=150, bbox_inches="tight")
