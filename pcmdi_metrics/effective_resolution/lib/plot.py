@@ -214,7 +214,10 @@ def plot_spectra_and_slope(
 
     # Adjust layout with tighter top margin when custom limits are used
     if xlim is not None or spec_ylim is not None:
-        fig.tight_layout(rect=[0, 0, 1, 0.98])
+        # Use tighter layout with more aggressive top margin reduction
+        fig.tight_layout(rect=[0, 0, 1, 0.96], pad=0.5)
+        # Also adjust subplot spacing to reduce gap between title and plot
+        fig.subplots_adjust(top=0.94)
     else:
         fig.tight_layout()
 
