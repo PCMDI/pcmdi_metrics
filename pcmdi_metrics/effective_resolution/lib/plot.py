@@ -51,6 +51,7 @@ def plot_spectra_and_slope(
     rsphere: float = EARTH_RADIUS,
     xlim: tuple[float, float] | None = None,
     spec_ylim: tuple[float, float] | None = None,
+    xticks: Sequence[float] | None = None,
 ):
     """Two-panel compensated spectrum and slope figure (paper Figure 1).
 
@@ -85,6 +86,11 @@ def plot_spectra_and_slope(
         y-limits for the compensated spectrum panel. If ``None`` (default),
         automatically determined from data. To match Klaver et al. (2020)
         Figure 1, use ``(1e0, 1e2)`` or adjust based on model output.
+    xticks : sequence of float or None, optional
+        Custom x-axis (wavenumber) tick positions for both panels. If ``None``
+        (default), matplotlib automatically selects tick positions. To match
+        Klaver et al. (2020) Figure 1, use values like ``[13, 20, 32, 40, 60,
+        80, 100, 120, 160, 200, 240]`` or adjust based on the xlim range.
 
     Returns
     -------
@@ -93,10 +99,11 @@ def plot_spectra_and_slope(
     Examples
     --------
     >>> fig = plot_spectra_and_slope(diags, metrics["M"]["r1i1p1f1"])  # doctest: +SKIP
-    >>> # Match paper Figure 1 axis ranges:
+    >>> # Match paper Figure 1 axis ranges and ticks:
     >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
     ...     diags, metrics["M"]["r1i1p1f1"],
-    ...     xlim=(13, 240), spec_ylim=(1e0, 1e2), slope_ylim=(1, 5)
+    ...     xlim=(13, 240), spec_ylim=(1e0, 1e2), slope_ylim=(1, 5),
+    ...     xticks=[13, 20, 32, 40, 60, 80, 100, 120, 160, 200, 240]
     ... )
     """
     import matplotlib.pyplot as plt
@@ -169,10 +176,24 @@ def plot_spectra_and_slope(
     if spec_ylim is not None:
         ax_spec.set_ylim(*spec_ylim)
 
+    # Apply custom x-axis ticks if provided
+    if xticks is not None:
+        from matplotlib.ticker import FixedLocator, NullFormatter
+        ax_spec.xaxis.set_major_locator(FixedLocator(xticks))
+        ax_spec.xaxis.set_minor_locator(FixedLocator([]))
+        ax_spec.xaxis.set_minor_formatter(NullFormatter())
+
     ax_slope.set_ylim(*slope_ylim)
     ax_slope.set_ylabel(r"slope exponent $n$")
     ax_slope.set_xlabel("total wavenumber $l$")
     ax_slope.grid(alpha=0.2, which="both")
+
+    # Apply custom x-axis ticks to slope panel as well
+    if xticks is not None:
+        from matplotlib.ticker import FixedLocator, NullFormatter
+        ax_slope.xaxis.set_major_locator(FixedLocator(xticks))
+        ax_slope.xaxis.set_minor_locator(FixedLocator([]))
+        ax_slope.xaxis.set_minor_formatter(NullFormatter())
 
     # Secondary axis in eddy scale (km), as in the paper's top axis.
     ax_top = ax_spec.secondary_xaxis(
