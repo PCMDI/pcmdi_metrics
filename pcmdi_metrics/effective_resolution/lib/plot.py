@@ -178,8 +178,9 @@ def plot_spectra_and_slope(
 
     # Apply custom x-axis ticks if provided
     if xticks is not None:
-        from matplotlib.ticker import FixedLocator, NullFormatter
+        from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
         ax_spec.xaxis.set_major_locator(FixedLocator(xticks))
+        ax_spec.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f'{int(x)}' if x == int(x) else f'{x:g}'))
         ax_spec.xaxis.set_minor_locator(FixedLocator([]))
         ax_spec.xaxis.set_minor_formatter(NullFormatter())
 
@@ -190,8 +191,9 @@ def plot_spectra_and_slope(
 
     # Apply custom x-axis ticks to slope panel as well
     if xticks is not None:
-        from matplotlib.ticker import FixedLocator, NullFormatter
+        from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
         ax_slope.xaxis.set_major_locator(FixedLocator(xticks))
+        ax_slope.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f'{int(x)}' if x == int(x) else f'{x:g}'))
         ax_slope.xaxis.set_minor_locator(FixedLocator([]))
         ax_slope.xaxis.set_minor_formatter(NullFormatter())
 
