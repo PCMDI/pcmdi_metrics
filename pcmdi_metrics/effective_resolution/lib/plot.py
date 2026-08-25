@@ -153,6 +153,12 @@ def plot_spectra_and_slope(
     if slopes:
         _add_reference_laws(ax_spec, ax_slope, spectra, list(slopes), compensate)
 
+    # Apply axis limits BEFORE text placement so get_ylim() returns correct final value
+    if xlim is not None:
+        ax_spec.set_xlim(*xlim)
+    if spec_ylim is not None:
+        ax_spec.set_ylim(*spec_ylim)
+
     if metrics is not None and metrics.get("effective_wavenumber") is not None:
         for axis in (ax_spec, ax_slope):
             axis.axvline(metrics["effective_wavenumber"], color="k", lw=1.6, ls="--")
@@ -169,12 +175,6 @@ def plot_spectra_and_slope(
     ax_spec.set_ylabel(rf"$l^{{{compensate:g}}} E_l$")
     ax_spec.legend(fontsize=8, frameon=False)
     ax_spec.grid(alpha=0.2, which="both")
-
-    # Apply axis limits if provided
-    if xlim is not None:
-        ax_spec.set_xlim(*xlim)
-    if spec_ylim is not None:
-        ax_spec.set_ylim(*spec_ylim)
 
     # Apply custom x-axis ticks if provided
     if xticks is not None:
