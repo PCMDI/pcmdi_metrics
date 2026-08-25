@@ -184,6 +184,7 @@ def _add_reference_laws(ax_spec, ax_slope, spectra, keys, compensate):
     of the plotted spectra keeps them alongside the dominant curve rather than
     floating below it.
     """
+
     def get_anchor_value(key):
         component, level = key.split("_")
         spec = spectra[float(level)][f"ke_{component}"]
