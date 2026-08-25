@@ -211,7 +211,12 @@ def plot_spectra_and_slope(
 
     if title:
         fig.suptitle(title, fontsize=11)
-    fig.tight_layout()
+
+    # Adjust layout with tighter top margin when custom limits are used
+    if xlim is not None or spec_ylim is not None:
+        fig.tight_layout(rect=[0, 0, 1, 0.98])
+    else:
+        fig.tight_layout()
 
     if output_file:
         fig.savefig(output_file, dpi=150, bbox_inches="tight")
