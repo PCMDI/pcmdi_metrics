@@ -190,7 +190,7 @@ def create_extremes_parser():
         type=list,
         default=[None, None],
         help="List containing the start and end year",
-    ),
+    )
     parser.add_argument(
         "--covariate_path", type=str, default=None, help="Covariate file path"
     )
@@ -286,6 +286,17 @@ def create_extremes_parser():
         type=int,
         default=20,
         help="Return period, in years, for obtaining return values.",
+    )
+
+    parser.add_argument(
+        "--norm",
+        type=int,
+        default=0,
+        choices=[0, 1, 2],
+        help="Normalization method for GEV fitting: "
+        "0 = subtract mean and divide by std (default), "
+        "1 = divide by mean, "
+        "2 = no normalization",
     )
 
     return parser

@@ -51,6 +51,7 @@ regrid = parameter.regrid
 cov_file = parameter.covariate_path
 cov_name = parameter.covariate
 return_period = parameter.return_period
+norm = parameter.norm
 # Block extrema related settings
 annual_strict = parameter.annual_strict
 exclude_leap = parameter.exclude_leap
@@ -538,12 +539,26 @@ for model in model_loop_list:
             # Use all realizations
             print(model)
             meta = return_value.compute_rv_for_model(
-                filelist, cov_file, cov_name, nc_dir, return_period, meta, maxes=maxes
+                filelist,
+                cov_file,
+                cov_name,
+                nc_dir,
+                return_period,
+                meta,
+                maxes=maxes,
+                norm=norm,
             )
         elif len(filelist) == 1:
             # Return value from single realization
             meta = return_value.compute_rv_from_file(
-                filelist, cov_file, cov_name, nc_dir, return_period, meta, maxes=maxes
+                filelist,
+                cov_file,
+                cov_name,
+                nc_dir,
+                return_period,
+                meta,
+                maxes=maxes,
+                norm=norm,
             )
 
 rv_metrics_dict = compute_metrics.init_metrics_dict(
