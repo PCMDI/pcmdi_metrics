@@ -76,6 +76,8 @@ def compute_rv_for_model(
     return_period,
     meta,
     maxes=True,
+    n_jobs=8,  # Conservative number of cores
+    norm=0,
 ):
     # Similar to compute_rv_from_dataset, but to work on multiple realizations
     # from the same model
@@ -85,7 +87,14 @@ def compute_rv_for_model(
     #   cov_varname: string
     #   return_period: int
     #   maxes: bool
-    #   norm_opt - 0,1,2
+    #   norm: int - 0 (subtract mean, divide by std), 1 (divide by mean), 2 (raw)
+
+    slurm_cpus = os.environ.get("SLURM_CPUS_PER_TASK")
+
+    if (
+        slurm_cpus is not None
+    ):  # If we are in a SLURM environment, default to SLURM setting
+        n_jobs = int(slurm_cpus)
 
     nreal = len(filelist)
 
@@ -174,15 +183,66 @@ def compute_rv_for_model(
         else:
             rv_array = np.ones((lat * lon)) * np.nan
         se_array = rv_array.copy()
-        # Here's where we're doing the return value calculation
-        for j in range(0, lat * lon):
-            if np.sum(arr[:, j]) == 0:
-                continue
-            elif np.isnan(np.sum(arr[:, j])):
-                continue
+
+        # Pre-compute normalization factors for each grid cell
+        centers = np.full(lat * lon, np.nan)
+        spreads = np.full(lat * lon, np.nan)
+        for j in range(lat * lon):
+            data_valid = arr[:, j][np.isfinite(arr[:, j])]
+            if data_valid.size > 0 and not np.all(data_valid == data_valid[0]):
+                centers[j] = np.mean(data_valid)
+                spreads[j] = np.std(data_valid, ddof=1)
+
+        # Here's where we're doing the return value calculation with joblib
+        def calc_normalized_rv(j):
+            data = arr[:, j].squeeze()
+            if np.sum(data) == 0 or np.isnan(np.sum(data)):
+                return None, None
+
+            # Apply normalization
+            data_valid = data[np.isfinite(data)]
+            if data_valid.size == 0 or np.all(data_valid == data_valid[0]):
+                return None, None
+
+            center = centers[j]
+            spread = spreads[j]
+
+            if norm == 0:
+                data_norm = (data - center) / spread
+            elif norm == 1:
+                data_norm = data / center
+            else:  # norm == 2
+                data_norm = data
+
+            # Calculate return value with normalized data
             rv, se = calc_rv_py(
-                arr[:, j].squeeze(), cov, return_period, nreplicates=nreal, maxes=maxes
+                data_norm, cov, return_period, nreplicates=nreal, maxes=maxes
             )
+
+            if rv is None:
+                return None, None
+
+            # Denormalize results
+            if norm == 0:
+                rv = center + spread * np.asarray(rv)
+                se = spread * np.asarray(se)
+            elif norm == 1:
+                rv = center * np.asarray(rv)
+                se = abs(center) * np.asarray(se)
+            else:  # norm == 2
+                rv = np.asarray(rv)
+                se = np.asarray(se)
+
+            return rv, se
+
+        results = Parallel(n_jobs=n_jobs, prefer="processes")(
+            delayed(calc_normalized_rv)(j) for j in range(lat * lon)
+        )
+        rv_results, se_results = zip(*results)
+
+        # Unpack results
+        for j in range(lat * lon):
+            rv, se = rv_results[j], se_results[j]
             if rv is not None:
                 if nonstationary:
                     rv_array[i1:, j] = np.squeeze(rv)
