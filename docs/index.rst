@@ -103,6 +103,7 @@ BSD 3-Clause License. See `LICENSE <https://github.com/PCMDI/pcmdi_metrics/blob/
    :hidden:
    :caption: Links
 
-   PMP Results <https://pcmdi.llnl.gov/research/metrics/>
+   PMP Results (CMIP) <https://pcmdi.llnl.gov/research/metrics/>
+   PMP Results (AIMIP) <https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate/aimip/pages/v20260603/AIMIP_home.html>
    Source Code <https://github.com/PCMDI/pcmdi_metrics>
    Discussions <https://github.com/PCMDI/pcmdi_metrics/discussions>
