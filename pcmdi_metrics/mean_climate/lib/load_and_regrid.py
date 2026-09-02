@@ -55,6 +55,10 @@ def load_and_regrid(
                 print(
                     "pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied"
                 )
+            else:
+                print(
+                    "pr units detected but not adjusted, check to make sure native units are mm/day"
+                )
         else:
             ds[varname_in_file] = ds[varname_in_file] * 86400  # Assumed as kg m-2 s-1
         ds.attrs["units"] = "mm/day"
