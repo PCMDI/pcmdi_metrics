@@ -78,7 +78,7 @@ def eof_analysis_get_variance_mode(
     grid_area = calculate_grid_area(ds)
     area_weights = calculate_area_weights(grid_area)
     da = ds[data_var]
-    # Force dask-backed data to numpy to avoid O(n^2) memory usage for dask's SVD
+    # Force to use numpy instead of dask due to O(n^2) memory requirements
     if da.chunks is not None:
         da = da.load()
     solver = Eof(da, weights=area_weights)
