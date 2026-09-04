@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.utils.extract\_date\_components
+==============================================
+
+.. currentmodule:: pcmdi_metrics.utils
+
+.. autofunction:: extract_date_components

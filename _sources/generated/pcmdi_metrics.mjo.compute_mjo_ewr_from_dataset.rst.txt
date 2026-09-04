@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.mjo.compute\_mjo\_ewr\_from\_dataset
+===================================================
+
+.. currentmodule:: pcmdi_metrics.mjo
+
+.. autofunction:: compute_mjo_ewr_from_dataset

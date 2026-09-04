@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.sea\_ice.calc\_iiee\_annual\_cycle
+=================================================
+
+.. currentmodule:: pcmdi_metrics.sea_ice
+
+.. autofunction:: calc_iiee_annual_cycle
