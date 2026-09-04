@@ -255,7 +255,12 @@ def plot_climatology_diff(
                 corr = cor_xy(
                     ds_test_season[data_var_test], ds_ref_season[data_var_ref]
                 )
-                info_stats += f"\nCORR {corr:.2f}"
+                corr_str = f"{corr:.2f}"
+
+                if corr_str in ("1.00", "-1.00"):
+                    corr_str = f"{corr:.3f}"
+
+                info_stats += f"\nCORR {corr_str}"
             except Exception as e:
                 print(f"Error computing correlation: {e}")
                 corr = None
