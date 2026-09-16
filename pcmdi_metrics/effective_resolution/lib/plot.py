@@ -43,7 +43,7 @@ SPECTRUM_STYLE = {
 def plot_spectra_and_slope(
     diagnostics: dict[str, Any],
     metrics: dict[str, Any] | None = None,
-    compensate: float = 3.0,
+    compensate: float | None = 3.0,
     title: str = "",
     output_file: str | None = None,
     figsize: tuple[float, float] = (7.0, 8.0),
@@ -52,8 +52,9 @@ def plot_spectra_and_slope(
     xlim: tuple[float, float] | None = None,
     spec_ylim: tuple[float, float] | None = None,
     xticks: Sequence[float] | None = None,
+    show_detection_range: bool = True,
 ):
-    """Two-panel compensated spectrum and slope figure (paper Figure 1).
+    """Two-panel spectrum and slope figure (paper Figure 1 and Figure S3).
 
     Parameters
     ----------
@@ -65,9 +66,10 @@ def plot_spectra_and_slope(
         Inner metrics dict for the model/member, used to draw the final
         :math:`l_{eff}` line.  If ``None``, only per-spectrum detections are
         drawn.
-    compensate : float, optional
+    compensate : float or None, optional
         Exponent :math:`p` in the compensation :math:`l^{p} E_l`.  Default
-        ``3.0``, so a :math:`k^{-3}` spectrum plots flat.
+        ``3.0``, so a :math:`k^{-3}` spectrum plots flat (Figure 1).
+        Set to ``None`` or ``0`` for uncompensated spectra (Figure S3).
     title : str, optional
         Figure title.
     output_file : str or None, optional
@@ -83,14 +85,21 @@ def plot_spectra_and_slope(
         automatically determined from data. To match Klaver et al. (2020)
         Figure 1, use ``(13, 240)`` or similar depending on model resolution.
     spec_ylim : tuple of float or None, optional
-        y-limits for the compensated spectrum panel. If ``None`` (default),
-        automatically determined from data. To match Klaver et al. (2020)
-        Figure 1, use ``(1e0, 1e2)`` or adjust based on model output.
+        y-limits for the spectrum panel. If ``None`` (default),
+        automatically determined from data. For compensated spectra (Figure 1),
+        use ``(1e0, 1e2)``. For uncompensated (Figure S3), use ``(1e-2, 1e2)``
+        or adjust based on model output.
     xticks : sequence of float or None, optional
         Custom x-axis (wavenumber) tick positions for both panels. If ``None``
         (default), matplotlib automatically selects tick positions. To match
         Klaver et al. (2020) Figure 1, use values like ``[13, 20, 32, 40, 60,
         80, 100, 120, 160, 200, 240]`` or adjust based on the xlim range.
+    show_detection_range : bool, optional
+        If ``True`` (default), shade the region where detection is not performed
+        (wavenumbers below ``min_wavenumber`` from the criterion). This visually
+        indicates the valid detection range as described in Appendix S3: below
+        l=32, the spectrum is shallower than k^-3 and steepening detection is
+        not meaningful.
 
     Returns
     -------
@@ -98,6 +107,7 @@ def plot_spectra_and_slope(
 
     Examples
     --------
+    >>> # Compensated spectrum (Figure 1):
     >>> fig = plot_spectra_and_slope(diags, metrics["M"]["r1i1p1f1"])  # doctest: +SKIP
     >>> # Match paper Figure 1 axis ranges and ticks:
     >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
@@ -105,12 +115,20 @@ def plot_spectra_and_slope(
     ...     xlim=(13, 240), spec_ylim=(1e0, 1e2), slope_ylim=(1, 5),
     ...     xticks=[13, 20, 32, 40, 60, 80, 100, 120, 160, 200, 240]
     ... )
+    >>> # Uncompensated spectrum (Figure S3):
+    >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
+    ...     diags, metrics["M"]["r1i1p1f1"],
+    ...     compensate=None, xlim=(13, 240), spec_ylim=(1e-2, 1e2)
+    ... )
     """
     import matplotlib.pyplot as plt
 
     spectra = diagnostics["spectra"]
     slopes = diagnostics["slopes"]
     detections = diagnostics["detections"]
+
+    # Determine if we're doing compensation
+    do_compensate = compensate is not None and compensate != 0
 
     fig, (ax_spec, ax_slope) = plt.subplots(
         2, 1, figsize=figsize, sharex=True, gridspec_kw={"height_ratios": [2, 1]}
@@ -122,9 +140,14 @@ def plot_spectra_and_slope(
         ell = np.asarray(spec["wavenumber"].values, dtype=float)
         color, label = SPECTRUM_STYLE.get(key, ("0.4", key))
 
-        ax_spec.loglog(
-            ell, ell**compensate * np.asarray(spec.values), color=color, label=label
-        )
+        # Plot spectrum with or without compensation
+        if do_compensate:
+            ax_spec.loglog(
+                ell, ell**compensate * np.asarray(spec.values), color=color, label=label
+            )
+        else:
+            ax_spec.loglog(ell, np.asarray(spec.values), color=color, label=label)
+
         ax_slope.semilogx(ell, np.asarray(slope.values), color=color)
 
         detected = detections.get(key, {}).get("wavenumber")
@@ -153,6 +176,24 @@ def plot_spectra_and_slope(
     if slopes:
         _add_reference_laws(ax_spec, ax_slope, spectra, list(slopes), compensate)
 
+    # Show detection range boundary if requested
+    if show_detection_range and detections:
+        # Get min_wavenumber from any detection (all have same criterion)
+        criterion = next(iter(detections.values())).get("criterion", {})
+        min_wn = criterion.get("min_wavenumber")
+        if min_wn is not None:
+            # Shade the excluded region (wavenumbers below min_wavenumber)
+            for axis in (ax_spec, ax_slope):
+                axis.axvspan(
+                    0, min_wn,
+                    alpha=0.1, color="gray", zorder=-10,
+                    label=f"l < {min_wn}\n(excluded)" if axis == ax_slope else None
+                )
+                # Add vertical line at boundary
+                axis.axvline(
+                    min_wn, color="gray", ls=":", lw=1.0, alpha=0.5, zorder=-5
+                )
+
     # Apply axis limits BEFORE text placement so get_ylim() returns correct final value
     if xlim is not None:
         ax_spec.set_xlim(*xlim)
@@ -172,7 +213,12 @@ def plot_spectra_and_slope(
             fontsize=8,
         )
 
-    ax_spec.set_ylabel(rf"$l^{{{compensate:g}}} E_l$")
+    # Set y-axis label based on compensation
+    if do_compensate:
+        ax_spec.set_ylabel(rf"$l^{{{compensate:g}}} E_l$")
+    else:
+        ax_spec.set_ylabel(r"spectrum (m$^2$/s$^2$)")
+
     ax_spec.legend(fontsize=8, frameon=False)
     ax_spec.grid(alpha=0.2, which="both")
 
@@ -229,15 +275,24 @@ def _add_reference_laws(ax_spec, ax_slope, spectra, keys, compensate):
     inside the panel for any model and any units; anchoring to the *largest*
     of the plotted spectra keeps them alongside the dominant curve rather than
     floating below it.
+
+    For uncompensated spectra (compensate=None or 0), the reference lines are
+    drawn as pure power laws (k^-3 and k^-5/3).
     """
+    # Determine if we're doing compensation
+    do_compensate = compensate is not None and compensate != 0
 
     def get_anchor_value(key):
         component, level = key.split("_")
         spec = spectra[float(level)][f"ke_{component}"]
         wn = np.asarray(spec["wavenumber"].values, dtype=float)
-        compensated = wn**compensate * np.asarray(spec.values)
+        # Get the displayed value (compensated or not)
+        if do_compensate:
+            displayed = wn**compensate * np.asarray(spec.values)
+        else:
+            displayed = np.asarray(spec.values)
         l_val = float(np.clip(30.0, wn.min(), wn.max()))
-        return l_val, float(np.interp(l_val, wn, compensated)), wn
+        return l_val, float(np.interp(l_val, wn, displayed)), wn
 
     anchors = [get_anchor_value(k) for k in keys]
     anchor_l, anchor_y, ell = max(anchors, key=lambda x: x[1])
@@ -249,9 +304,16 @@ def _add_reference_laws(ax_spec, ax_slope, spectra, keys, compensate):
         (3.0, "orange", r"$k^{-3}$"),
     ):
         for factor, style, width in ((1.0, "-", 1.2), (1.1, "-.", 1.0)):
+            if do_compensate:
+                # Compensated: y = A * l^(p - n), where p=compensate, n=exponent
+                y_ref = anchor_y * (ell_ref / anchor_l) ** (compensate - factor * exponent)
+            else:
+                # Uncompensated: y = A * l^(-n), pure power law
+                y_ref = anchor_y * (ell_ref / anchor_l) ** (- factor * exponent)
+
             ax_spec.loglog(
                 ell_ref,
-                anchor_y * (ell_ref / anchor_l) ** (compensate - factor * exponent),
+                y_ref,
                 color=color,
                 lw=width,
                 ls=style,
@@ -321,7 +383,14 @@ def plot_resolution_scatter(
         dtype=float,
     )
 
-    x_max, y_max = np.nanmax(lbox) * 1.25, np.nanmax(leff) * 1.25
+    # Handle case where all effective resolutions are None
+    x_max = np.nanmax(lbox) * 1.25
+    if np.all(np.isnan(leff)):
+        # If all L_eff are None, use a reasonable default range based on typical ratios
+        y_max = x_max * 5.0  # Upper bound of typical ratio (~5)
+    else:
+        y_max = np.nanmax(leff) * 1.25
+
     xx, yy = np.meshgrid(np.linspace(1.0, x_max, 200), np.linspace(1.0, y_max, 200))
     contour = ax.contourf(
         xx, yy, yy / xx, levels=ratio_levels, cmap="YlGnBu", alpha=0.55
