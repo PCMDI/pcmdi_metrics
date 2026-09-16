@@ -177,6 +177,11 @@ def grid_box_distance_from_dataset(
     """
     try:
         bounds = np.asarray(get_latitude_bounds(ds).values, dtype=float)
+        # Handle malformed bounds with extra dimensions (e.g., time-varying bounds)
+        # CMIP6 data sometimes incorrectly includes time dimension in lat_bnds
+        if bounds.ndim == 3:
+            # Assume bounds don't actually vary - take first slice
+            bounds = bounds[0, :, :]
     except Exception:
         bounds = None
     return representative_grid_box_distance(

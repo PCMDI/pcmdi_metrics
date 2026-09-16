@@ -305,7 +305,9 @@ def vrtdiv_spectral_coefficients(
 
     vrt = np.zeros((ntrunc + 1, ntrunc + 1), dtype=complex)
     div = np.zeros_like(vrt)
-    scale = 0.5 / rsphere
+    # Scale factor for vorticity and divergence: 1/a where a is Earth's radius.
+    # The factor of 0.5 belongs in the KE formula (Eq. 1), not here.
+    scale = 1.0 / rsphere
     for m in range(min(ntrunc + 1, u_fourier.shape[1])):
         p, h = _legendre(m, ntrunc, mu)
         um = u_fourier[:, m] * weights
@@ -434,6 +436,133 @@ def _vertical_key(ds: xr.Dataset) -> str:
     raise KeyError(
         "Could not identify a vertical coordinate; pass plev_name explicitly"
     )
+
+
+def inverse_spectral_transform(
+    spectral_coeffs: np.ndarray,
+    lat: np.ndarray,
+    nlon: int,
+    ntrunc: int | None = None,
+    gridtype: Literal["auto", "regular", "gaussian"] = "auto",
+) -> np.ndarray:
+    """Inverse spherical harmonic transform to physical space.
+
+    Parameters
+    ----------
+    spectral_coeffs : ndarray
+        Complex spectral coefficients, shape ``(ntrunc + 1, ntrunc + 1)``
+        indexed ``[l, m]``.
+    lat : ndarray
+        Latitudes in degrees north, shape ``(nlat,)``.
+    nlon : int
+        Number of longitude points.
+    ntrunc : int or None, optional
+        Triangular truncation wavenumber.
+    gridtype : {"auto", "regular", "gaussian"}, optional
+        Latitude grid type.
+
+    Returns
+    -------
+    field : ndarray
+        Physical space field, shape ``(nlat, nlon)``.
+    """
+    nlat = lat.size
+    if ntrunc is None:
+        ntrunc = nlat - 1
+
+    mu = np.sin(np.deg2rad(lat))
+    field_fourier = np.zeros((nlat, nlon // 2 + 1), dtype=complex)
+
+    for m in range(min(ntrunc + 1, nlon // 2 + 1)):
+        p, _ = _legendre(m, ntrunc, mu)
+        # Sum over l for this m
+        for l in range(m, ntrunc + 1):
+            field_fourier[:, m] += spectral_coeffs[l, m] * p[l - m, :]
+
+    # Inverse Fourier transform
+    # irfft applies 1/n normalization, but the inverse Fourier series should not have it.
+    # Compensate by multiplying by nlon.
+    field = np.fft.irfft(field_fourier, n=nlon, axis=1) * nlon
+    return field
+
+
+def compute_vorticity_divergence_fields(
+    ds: xr.Dataset,
+    uvar: str = "ua",
+    vvar: str = "va",
+    ntrunc: int | None = None,
+    gridtype: Literal["auto", "regular", "gaussian"] = "auto",
+    rsphere: float = EARTH_RADIUS,
+) -> xr.Dataset:
+    """Compute vorticity and divergence fields in physical space.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset holding ``uvar`` and ``vvar`` as 2-D fields on a global
+        latitude-longitude grid.
+    uvar, vvar : str, optional
+        Names of the zonal and meridional wind variables.
+    ntrunc : int or None, optional
+        Triangular truncation wavenumber.
+    gridtype : {"auto", "regular", "gaussian"}, optional
+        Latitude grid type.
+    rsphere : float, optional
+        Sphere radius in metres.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset with ``vorticity`` and ``divergence`` fields in s^-1,
+        on the same (lat, lon) grid as the input.
+    """
+    lat_key = get_latitude_key(ds)
+    lon_key = get_longitude_key(ds)
+    lat = np.asarray(ds[lat_key].values, dtype=float)
+    lon = np.asarray(ds[lon_key].values, dtype=float)
+
+    nlon = len(lon)
+
+    # Compute spectral coefficients
+    ell, vrt, div = vrtdiv_spectral_coefficients(
+        ds[uvar].transpose(lat_key, lon_key).values,
+        ds[vvar].transpose(lat_key, lon_key).values,
+        lat,
+        ntrunc=ntrunc,
+        gridtype=gridtype,
+        rsphere=rsphere,
+    )
+
+    # Inverse transform to physical space
+    vorticity = inverse_spectral_transform(vrt, lat, nlon, ntrunc, gridtype)
+    divergence = inverse_spectral_transform(div, lat, nlon, ntrunc, gridtype)
+
+    # Create output dataset
+    out = xr.Dataset(
+        data_vars={
+            "vorticity": ((lat_key, lon_key), vorticity),
+            "divergence": ((lat_key, lon_key), divergence),
+        },
+        coords={
+            lat_key: ds[lat_key],
+            lon_key: ds[lon_key],
+        },
+    )
+    out["vorticity"].attrs = {
+        "long_name": "Vorticity",
+        "units": "s-1",
+        "description": "Vorticity from spherical harmonic decomposition",
+    }
+    out["divergence"].attrs = {
+        "long_name": "Divergence",
+        "units": "s-1",
+        "description": "Divergence from spherical harmonic decomposition",
+    }
+    out.attrs = {
+        "ntrunc": int(ell.max()),
+        "rsphere_m": rsphere,
+    }
+    return out
 
 
 def compute_ke_spectra(
@@ -619,4 +748,57 @@ def compute_ke_spectra_timeseries(
         attrs["n_times_averaged"] = out.sizes[time_key]
         out = out.mean(dim=time_key, keep_attrs=True)
     out.attrs = attrs
+    return out
+
+
+def compute_vorticity_divergence_timeseries(
+    ds: xr.Dataset,
+    uvar: str = "ua",
+    vvar: str = "va",
+    level_hpa: float | None = None,
+    plev_name: str | None = None,
+    **kwargs: Any,
+) -> xr.Dataset:
+    """Vorticity and divergence fields for every time step at one pressure level.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        Dataset with ``uvar`` and ``vvar`` on ``(time, [plev,] lat, lon)``.
+    uvar, vvar : str, optional
+        Wind variable names.
+    level_hpa : float or None, optional
+        Pressure level to select, **in hPa**.
+    plev_name : str or None, optional
+        Vertical coordinate name.
+    **kwargs
+        Forwarded to `compute_vorticity_divergence_fields`.
+
+    Returns
+    -------
+    xarray.Dataset
+        Dataset with ``vorticity`` and ``divergence`` fields, with a ``time``
+        dimension.
+    """
+    if level_hpa is not None:
+        ds = select_pressure_level(ds, level_hpa, plev_name=plev_name)
+
+    # Already a single 2-D field
+    if ds[uvar].ndim <= 2:
+        return compute_vorticity_divergence_fields(ds, uvar, vvar, **kwargs)
+
+    try:
+        time_key = get_time_key(ds)
+    except Exception:
+        time_key = None
+    if time_key is None or time_key not in ds.dims:
+        return compute_vorticity_divergence_fields(ds, uvar, vvar, **kwargs)
+
+    n_times = ds.sizes[time_key]
+    fields = [
+        compute_vorticity_divergence_fields(ds.isel({time_key: i}), uvar, vvar, **kwargs)
+        for i in range(n_times)
+    ]
+    out = xr.concat(fields, dim=time_key).assign_coords({time_key: ds[time_key]})
+    out.attrs = dict(fields[0].attrs)
     return out

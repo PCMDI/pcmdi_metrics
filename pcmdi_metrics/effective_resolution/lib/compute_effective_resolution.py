@@ -88,6 +88,8 @@ def compute_effective_resolution(
     exp: str | None = None,
     member: str | None = None,
     debug: bool = False,
+    save_interim_netcdf: bool = False,
+    output_dir: str = "./output",
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Compute effective-resolution metrics from an already-opened Dataset.
 
@@ -141,6 +143,22 @@ def compute_effective_resolution(
         Labels used as keys in the returned ``metrics`` dict.
     debug : bool, optional
         Print intermediate diagnostics.  Default ``False``.
+    save_interim_netcdf : bool, optional
+        If ``True``, save interim netCDF files containing:
+
+        1. KE spectra file (``ke_spectra_interim_{tag}.nc``): Contains all
+           rotational and divergent KE spectra (``ke_rot_250``, ``ke_div_250``,
+           ``ke_rot_500``, ``ke_div_500``) and spectral slopes in wavenumber space.
+
+        2. Vorticity/divergence file (``vorticity_divergence_{tag}.nc``): Contains
+           vorticity and divergence fields in physical space with dimensions
+           (time, lat, lon) for each pressure level (``vorticity_250``,
+           ``divergence_250``, ``vorticity_500``, ``divergence_500``).
+
+        Default ``False``.
+    output_dir : str, optional
+        Directory where interim netCDF files will be saved when
+        ``save_interim_netcdf=True``. Default ``"./output"``.
 
     Returns
     -------
@@ -198,6 +216,28 @@ def compute_effective_resolution(
     if debug:
         for level in levels:
             print(f"[effective_resolution] computed spectra at {level} hPa")
+
+    # Compute vorticity and divergence fields if saving interim netCDF
+    vortdiv_fields = {}
+    if save_interim_netcdf:
+        from .ke_spectra import compute_vorticity_divergence_timeseries
+
+        vortdiv_fields = {
+            float(level): compute_vorticity_divergence_timeseries(
+                ds,
+                uvar=uvar,
+                vvar=vvar,
+                level_hpa=float(level),
+                plev_name=plev_name,
+                ntrunc=ntrunc,
+                gridtype=gridtype,
+                rsphere=rsphere,
+            )
+            for level in levels
+        }
+        if debug:
+            for level in levels:
+                print(f"[effective_resolution] computed vorticity/divergence at {level} hPa")
 
     slopes: dict[str, xr.DataArray] = {}
     detections: dict[str, dict[str, Any]] = {}
@@ -296,6 +336,41 @@ def compute_effective_resolution(
         "detections": detections,
         "dataset": merged,
     }
+
+    # Save interim netCDF files if requested
+    if save_interim_netcdf:
+        os.makedirs(output_dir, exist_ok=True)
+        tag = "_".join(str(p) for p in (model, exp, member) if p not in (None, ""))
+
+        # Save KE spectra
+        filename = f"ke_spectra_interim_{tag}.nc"
+        filepath = os.path.join(output_dir, filename)
+        merged.to_netcdf(filepath)
+        if debug:
+            print(f"[compute_effective_resolution] Saved interim KE spectra: {filename}")
+
+        # Save vorticity and divergence fields in physical space
+        if vortdiv_fields:
+            # Merge all levels into one dataset with level-specific variable names
+            vortdiv_merged = xr.Dataset()
+            for level, fields in vortdiv_fields.items():
+                vortdiv_merged[f"vorticity_{int(level)}"] = fields["vorticity"]
+                vortdiv_merged[f"divergence_{int(level)}"] = fields["divergence"]
+
+            vortdiv_merged.attrs = {
+                "model": model,
+                "experiment": exp or "",
+                "member": member or "",
+                "description": "Vorticity and divergence fields from spherical harmonic decomposition",
+                "reference": REFERENCE,
+            }
+
+            vortdiv_filename = f"vorticity_divergence_{tag}.nc"
+            vortdiv_filepath = os.path.join(output_dir, vortdiv_filename)
+            vortdiv_merged.to_netcdf(vortdiv_filepath)
+            if debug:
+                print(f"[compute_effective_resolution] Saved vorticity/divergence fields: {vortdiv_filename}")
+
     return metrics, diagnostics
 
 
