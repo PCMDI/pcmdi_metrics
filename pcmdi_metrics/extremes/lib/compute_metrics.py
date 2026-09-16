@@ -40,8 +40,17 @@ class TimeSeriesData:
         return self.ds[self.ds_var]
 
     def rolling_5day(self):
-        # Use on daily data
-        return self.ds[self.ds_var].rolling(time=5).mean()
+        data = self.ds[self.ds_var]
+
+        if data.chunks is not None:
+            axis = data.get_axis_num("time")
+            time_chunks = data.chunks[axis]
+
+            if any(size < 5 for size in time_chunks):
+                target = max(5, max(time_chunks))
+                data = data.chunk({"time": target})
+
+        return data.rolling(time=5).mean()
 
 
 class SeasonalAverager:

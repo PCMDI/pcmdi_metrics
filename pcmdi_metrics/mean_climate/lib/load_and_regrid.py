@@ -50,10 +50,14 @@ def load_and_regrid(
     if varname == "pr":
         print("Adjust units for pr")
         if "units" in ds[varname_in_file].attrs:
-            if ds[varname_in_file].units == "kg m-2 s-1":
+            if ds[varname_in_file].units in ["kg m-2 s-1", "kg m**-2 s**-1", "kg/m2/s"]:
                 ds[varname_in_file] = ds[varname_in_file] * 86400
                 print(
                     "pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied"
+                )
+            else:
+                print(
+                    "pr units detected but not adjusted, check to make sure native units are mm/day"
                 )
         else:
             ds[varname_in_file] = ds[varname_in_file] * 86400  # Assumed as kg m-2 s-1
