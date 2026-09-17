@@ -247,6 +247,8 @@ def vrtdiv_spectral_coefficients(
         Triangular truncation wavenumber.  Default (``None``) is ``nlat - 1``.
         Accuracy degrades within roughly 10% of the truncation limit, so
         detections above ``0.85 * ntrunc`` should be treated with caution.
+        Klaver et al. note that they truncate below the model's nominal limit;
+        this implementation leaves that choice to the caller via ``ntrunc``.
     gridtype : {"auto", "regular", "gaussian"}, optional
         Latitude grid type.  ``"auto"`` (default) calls a grid regular when
         the latitudes are evenly spaced and Gaussian otherwise.
@@ -590,6 +592,8 @@ def compute_ke_spectra(
         and ``"va"`` (CMIP conventions).
     ntrunc : int or None, optional
         Triangular truncation wavenumber.  Default (``None``) is ``nlat - 1``.
+        Pass a smaller value to reproduce analyses that deliberately truncate
+        below the grid-implied limit.
     gridtype : {"auto", "regular", "gaussian"}, optional
         Latitude grid type.  Default ``"auto"``.
     rsphere : float, optional

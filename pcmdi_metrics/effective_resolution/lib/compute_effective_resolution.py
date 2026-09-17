@@ -76,7 +76,7 @@ def compute_effective_resolution(
     ntrunc: int | None = None,
     gridtype: Literal["auto", "regular", "gaussian"] = "auto",
     fit_window: int = 20,
-    fit_anchor: Literal["center", "right", "left"] = "center",
+    fit_anchor: Literal["center", "right", "left"] = "right",
     steepening_factor: float = 0.25,
     wavenumber_ratio: float = 2.0,
     min_wavenumber: int = 32,
@@ -112,7 +112,9 @@ def compute_effective_resolution(
     levels : tuple of float, optional
         Pressure levels to analyse, **in hPa**.  Default ``(250.0, 500.0)``.
     ntrunc : int or None, optional
-        Triangular truncation.  Default ``None`` (``nlat - 1``).
+        Triangular truncation.  Default ``None`` (``nlat - 1``).  Pass an
+        explicit smaller value when matching studies that truncate below the
+        model's grid-implied limit.
     gridtype : {"auto", "regular", "gaussian"}, optional
         Latitude grid type.  Default ``"auto"``.
     fit_window : int, optional

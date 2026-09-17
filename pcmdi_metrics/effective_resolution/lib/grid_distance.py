@@ -43,6 +43,59 @@ __all__ = [
 ]
 
 
+def _coerce_latitude_bounds(
+    lat: np.ndarray, lat_bounds: np.ndarray | None
+) -> np.ndarray | None:
+    """Return validated latitude bounds or ``None`` when they are unusable.
+
+    Some CMIP files carry malformed bounds variables, for example with an
+    unexpected leading dimension or with lower/upper bounds swapped.  Those
+    should not silently produce absurd grid-box distances; instead we fall back
+    to bounds inferred from the latitude centres.
+    """
+    if lat_bounds is None:
+        return None
+
+    bounds = np.asarray(lat_bounds, dtype=float)
+    if bounds.ndim == 3:
+        # Time-varying latitude bounds are not expected here; if the slices are
+        # actually identical, use the first one, otherwise ignore the bounds.
+        if bounds.shape[0] == 0:
+            return None
+        first = bounds[0]
+        if not np.allclose(bounds, first[None, ...], equal_nan=True):
+            return None
+        bounds = first
+
+    if bounds.ndim == 1:
+        if bounds.size != lat.size + 1 or not np.all(np.isfinite(bounds)):
+            return None
+        diffs = np.diff(bounds)
+        if not (np.all(diffs > 0) or np.all(diffs < 0)):
+            return None
+        return bounds
+
+    if bounds.ndim != 2 or bounds.shape != (lat.size, 2):
+        return None
+    if not np.all(np.isfinite(bounds)):
+        return None
+
+    lower = bounds[:, 0]
+    upper = bounds[:, 1]
+    if np.any(upper < lower):
+        return None
+
+    lower_diffs = np.diff(lower)
+    upper_diffs = np.diff(upper)
+    monotonic = (np.all(lower_diffs >= 0) and np.all(upper_diffs >= 0)) or (
+        np.all(lower_diffs <= 0) and np.all(upper_diffs <= 0)
+    )
+    if not monotonic:
+        return None
+
+    return bounds
+
+
 def representative_grid_box_distance(
     lat: np.ndarray,
     lon: np.ndarray | None = None,
@@ -122,7 +175,8 @@ def representative_grid_box_distance(
             f"nlon_per_lat has size {nlon_per_lat.size}, expected {lat.size}"
         )
 
-    edges = _latitude_edges(lat, lat_bounds)
+    bounds = _coerce_latitude_bounds(lat, lat_bounds)
+    edges = _latitude_edges(lat, bounds)
     dy = rsphere * np.deg2rad(np.abs(np.diff(edges)))
     dx = rsphere * np.cos(np.deg2rad(lat)) * (2.0 * np.pi / nlon_per_lat)
     diagonal = np.sqrt(dx**2 + dy**2)
@@ -137,7 +191,10 @@ def _latitude_edges(lat: np.ndarray, lat_bounds: np.ndarray | None) -> np.ndarra
     if lat_bounds is not None:
         bounds = np.asarray(lat_bounds, dtype=float)
         if bounds.ndim == 2:
-            return np.concatenate([bounds[:, 0], bounds[-1:, 1]])
+            edges = np.concatenate([bounds[:, 0], bounds[-1:, 1]])
+            if np.all(np.diff(edges) < 0):
+                return edges[::-1]
+            return edges
         return bounds
 
     mid = 0.5 * (lat[:-1] + lat[1:])
@@ -176,12 +233,10 @@ def grid_box_distance_from_dataset(
     `~pcmdi_metrics.effective_resolution.compute_effective_resolution` instead.
     """
     try:
-        bounds = np.asarray(get_latitude_bounds(ds).values, dtype=float)
-        # Handle malformed bounds with extra dimensions (e.g., time-varying bounds)
-        # CMIP6 data sometimes incorrectly includes time dimension in lat_bnds
-        if bounds.ndim == 3:
-            # Assume bounds don't actually vary - take first slice
-            bounds = bounds[0, :, :]
+        bounds = _coerce_latitude_bounds(
+            np.asarray(ds[get_latitude_key(ds)].values, dtype=float),
+            get_latitude_bounds(ds).values,
+        )
     except Exception:
         bounds = None
     return representative_grid_box_distance(
