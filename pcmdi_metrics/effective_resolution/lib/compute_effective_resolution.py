@@ -237,7 +237,9 @@ def compute_effective_resolution(
         }
         if debug:
             for level in levels:
-                print(f"[effective_resolution] computed vorticity/divergence at {level} hPa")
+                print(
+                    f"[effective_resolution] computed vorticity/divergence at {level} hPa"
+                )
 
     slopes: dict[str, xr.DataArray] = {}
     detections: dict[str, dict[str, Any]] = {}
@@ -347,7 +349,9 @@ def compute_effective_resolution(
         filepath = os.path.join(output_dir, filename)
         merged.to_netcdf(filepath)
         if debug:
-            print(f"[compute_effective_resolution] Saved interim KE spectra: {filename}")
+            print(
+                f"[compute_effective_resolution] Saved interim KE spectra: {filename}"
+            )
 
         # Save vorticity and divergence fields in physical space
         if vortdiv_fields:
@@ -369,7 +373,9 @@ def compute_effective_resolution(
             vortdiv_filepath = os.path.join(output_dir, vortdiv_filename)
             vortdiv_merged.to_netcdf(vortdiv_filepath)
             if debug:
-                print(f"[compute_effective_resolution] Saved vorticity/divergence fields: {vortdiv_filename}")
+                print(
+                    f"[compute_effective_resolution] Saved vorticity/divergence fields: {vortdiv_filename}"
+                )
 
     return metrics, diagnostics
 

@@ -476,8 +476,8 @@ def inverse_spectral_transform(
     for m in range(min(ntrunc + 1, nlon // 2 + 1)):
         p, _ = _legendre(m, ntrunc, mu)
         # Sum over l for this m
-        for l in range(m, ntrunc + 1):
-            field_fourier[:, m] += spectral_coeffs[l, m] * p[l - m, :]
+        for ll in range(m, ntrunc + 1):
+            field_fourier[:, m] += spectral_coeffs[ll, m] * p[ll - m, :]
 
     # Inverse Fourier transform
     # irfft applies 1/n normalization, but the inverse Fourier series should not have it.
@@ -796,7 +796,9 @@ def compute_vorticity_divergence_timeseries(
 
     n_times = ds.sizes[time_key]
     fields = [
-        compute_vorticity_divergence_fields(ds.isel({time_key: i}), uvar, vvar, **kwargs)
+        compute_vorticity_divergence_fields(
+            ds.isel({time_key: i}), uvar, vvar, **kwargs
+        )
         for i in range(n_times)
     ]
     out = xr.concat(fields, dim=time_key).assign_coords({time_key: ds[time_key]})

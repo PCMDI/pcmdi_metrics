@@ -185,14 +185,15 @@ def plot_spectra_and_slope(
             # Shade the excluded region (wavenumbers below min_wavenumber)
             for axis in (ax_spec, ax_slope):
                 axis.axvspan(
-                    0, min_wn,
-                    alpha=0.1, color="gray", zorder=-10,
-                    label=f"l < {min_wn}\n(excluded)" if axis == ax_slope else None
+                    0,
+                    min_wn,
+                    alpha=0.1,
+                    color="gray",
+                    zorder=-10,
+                    label=f"l < {min_wn}\n(excluded)" if axis == ax_slope else None,
                 )
                 # Add vertical line at boundary
-                axis.axvline(
-                    min_wn, color="gray", ls=":", lw=1.0, alpha=0.5, zorder=-5
-                )
+                axis.axvline(min_wn, color="gray", ls=":", lw=1.0, alpha=0.5, zorder=-5)
 
     # Apply axis limits BEFORE text placement so get_ylim() returns correct final value
     if xlim is not None:
@@ -225,8 +226,11 @@ def plot_spectra_and_slope(
     # Apply custom x-axis ticks if provided
     if xticks is not None:
         from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
+
         ax_spec.xaxis.set_major_locator(FixedLocator(xticks))
-        ax_spec.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f'{int(x)}' if x == int(x) else f'{x:g}'))
+        ax_spec.xaxis.set_major_formatter(
+            FuncFormatter(lambda x, pos: f"{int(x)}" if x == int(x) else f"{x:g}")
+        )
         ax_spec.xaxis.set_minor_locator(FixedLocator([]))
         ax_spec.xaxis.set_minor_formatter(NullFormatter())
 
@@ -238,8 +242,11 @@ def plot_spectra_and_slope(
     # Apply custom x-axis ticks to slope panel as well
     if xticks is not None:
         from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
+
         ax_slope.xaxis.set_major_locator(FixedLocator(xticks))
-        ax_slope.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: f'{int(x)}' if x == int(x) else f'{x:g}'))
+        ax_slope.xaxis.set_major_formatter(
+            FuncFormatter(lambda x, pos: f"{int(x)}" if x == int(x) else f"{x:g}")
+        )
         ax_slope.xaxis.set_minor_locator(FixedLocator([]))
         ax_slope.xaxis.set_minor_formatter(NullFormatter())
 
@@ -306,10 +313,12 @@ def _add_reference_laws(ax_spec, ax_slope, spectra, keys, compensate):
         for factor, style, width in ((1.0, "-", 1.2), (1.1, "-.", 1.0)):
             if do_compensate:
                 # Compensated: y = A * l^(p - n), where p=compensate, n=exponent
-                y_ref = anchor_y * (ell_ref / anchor_l) ** (compensate - factor * exponent)
+                y_ref = anchor_y * (ell_ref / anchor_l) ** (
+                    compensate - factor * exponent
+                )
             else:
                 # Uncompensated: y = A * l^(-n), pure power law
-                y_ref = anchor_y * (ell_ref / anchor_l) ** (- factor * exponent)
+                y_ref = anchor_y * (ell_ref / anchor_l) ** (-factor * exponent)
 
             ax_spec.loglog(
                 ell_ref,
