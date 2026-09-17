@@ -26,6 +26,10 @@ from pcmdi_metrics.utils import apply_landmask, check_monthly_time_axis
 
 
 def search_paths(paths, index1, index2, case_sensitive=False):
+    if len(paths) == 1:
+        if index1 in paths[0] and index2 in paths[0]:
+            return paths[0]
+
     def split_string(text):
         return set(re.split(r"[._ /]", text.lower() if not case_sensitive else text))
 
