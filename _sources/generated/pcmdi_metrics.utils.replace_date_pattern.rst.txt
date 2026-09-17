@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.utils.replace\_date\_pattern
+===========================================
+
+.. currentmodule:: pcmdi_metrics.utils
+
+.. autofunction:: replace_date_pattern

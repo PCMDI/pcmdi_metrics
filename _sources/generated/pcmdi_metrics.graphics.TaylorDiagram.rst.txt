@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.graphics.TaylorDiagram
+=====================================
+
+.. currentmodule:: pcmdi_metrics.graphics
+
+.. autofunction:: TaylorDiagram

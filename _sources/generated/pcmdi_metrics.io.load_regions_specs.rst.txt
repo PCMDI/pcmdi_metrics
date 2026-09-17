@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.io.load\_regions\_specs
+======================================
+
+.. currentmodule:: pcmdi_metrics.io
+
+.. autofunction:: load_regions_specs

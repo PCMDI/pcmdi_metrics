@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.graphics.portrait\_plot
+======================================
+
+.. currentmodule:: pcmdi_metrics.graphics
+
+.. autofunction:: portrait_plot

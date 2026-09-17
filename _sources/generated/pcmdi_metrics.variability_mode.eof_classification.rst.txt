@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.variability\_mode.eof\_classification
+====================================================
+
+.. currentmodule:: pcmdi_metrics.variability_mode
+
+.. autofunction:: eof_classification

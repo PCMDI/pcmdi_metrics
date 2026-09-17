@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.variability\_mode.NPO
+====================================
+
+.. currentmodule:: pcmdi_metrics.variability_mode
+
+.. autofunction:: NPO
