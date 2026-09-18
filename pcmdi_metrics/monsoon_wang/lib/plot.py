@@ -172,14 +172,15 @@ def plot_monsoon_wang_maps(
         projection = ccrs.PlateCarree(central_longitude=central_longitude)
 
     # Create a figure with a GridSpec layout
-    fig = plt.figure(figsize=fig_size, constrained_layout=True)
+    fig = plt.figure(figsize=fig_size)
     grid = fig.add_gridspec(
         nrows=2,
-        ncols=2,
-        width_ratios=[1, 0.05],
-        height_ratios=[1, 1],
-        wspace=0.1,
-        hspace=0.1,
+        ncols=1,
+        left=0.08,
+        right=0.79,
+        bottom=0.08,
+        top=0.90,
+        hspace=0.18,
     )
 
     # Create axes for the maps
@@ -206,9 +207,12 @@ def plot_monsoon_wang_maps(
         ax2.legend(loc=legend_loc, fontsize=8)
 
     # Add a shared discrete colorbar to the right
-    cbar_ax = fig.add_subplot(grid[:, 1])
+    cbar_ax = fig.add_axes([0.83, 0.12, 0.025, 0.74])
+
     cbar = fig.colorbar(
-        cm.ScalarMappable(norm=norm, cmap=cmap), cax=cbar_ax, orientation="vertical"
+        cm.ScalarMappable(norm=norm, cmap=cmap),
+        cax=cbar_ax,
+        orientation="vertical",
     )
     cbar.set_ticks(levels)
     cbar.ax.tick_params(labelsize=10)
@@ -217,11 +221,11 @@ def plot_monsoon_wang_maps(
 
     # Add a title
     if title is not None:
-        fig.suptitle(title, fontsize=16)
+        fig.suptitle(title, x=0.435, fontsize=16)
 
     # Save the figure if a save path is provided
     if save_path:
-        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+        plt.savefig(save_path, dpi=300, bbox_inches=None)
 
     plt.show()
 
