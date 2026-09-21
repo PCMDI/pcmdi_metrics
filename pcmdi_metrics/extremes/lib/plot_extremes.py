@@ -90,6 +90,7 @@ def plot_map_cartopy(
     # Generate plot
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=projection)
+    ax.set_global()
     im = ax.contourf(
         lons,
         lats,
