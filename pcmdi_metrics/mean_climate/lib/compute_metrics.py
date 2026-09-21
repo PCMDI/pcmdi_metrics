@@ -1,3 +1,4 @@
+import copy
 import re
 from collections import OrderedDict
 from typing import Any, Dict, Optional
@@ -67,8 +68,8 @@ def compute_metrics(
         return metrics_defs
 
     # Copy the dataset to avoid the original being changed
-    dm = dm.copy(deep=True)
-    do = do.copy(deep=True)
+    dm = copy.deepcopy(dm)
+    do = copy.deepcopy(do)
 
     # unify time and time bounds between observation and model
     if debug:
@@ -82,17 +83,19 @@ def compute_metrics(
 
         if debug:
             print("time and time bounds synced")
-            print("dm.time: ", dm["time"])
-            print("do.time: ", do["time"])
-
-            dm.to_netcdf("dm.nc")
-            do.to_netcdf("do.nc")
 
     metrics_dictionary = OrderedDict()
 
     # QC for bounds
     dm = dm.bounds.add_missing_bounds()
     do = do.bounds.add_missing_bounds()
+
+    if debug:
+        print("dm.time: ", dm["time"])
+        print("do.time: ", do["time"])
+
+        dm.to_netcdf(f"dm_{var}.nc")
+        do.to_netcdf(f"do_{var}.nc")
 
     float_format = "{:.5e}"
 

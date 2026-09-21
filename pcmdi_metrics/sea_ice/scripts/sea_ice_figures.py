@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+# This code produces a figure like Fig. 7 of Ivanova et al. (2016) "Moving beyond the Total Sea Ice Extent in Gauging Model Biases".
+
 import argparse
 import glob
 import json
@@ -43,6 +46,12 @@ for metrics_file in glob.glob(filelist):
     metrics["RESULTS"].update(results["RESULTS"])
 
 model_list.sort()
+
+if "EC-EARTH" in model_list:
+    model_list.remove("EC-EARTH")
+if "BNU-ESM" in model_list:
+    model_list.remove("BNU-ESM")
+
 tmp = model_list[0]
 reference_data_set = list(metrics["RESULTS"][tmp]["arctic"]["model_mean"].keys())[0]
 
@@ -58,7 +67,7 @@ sector_list = [
     "South Pacific Sector",
 ]
 sector_short = ["ca", "na", "np", "io", "sa", "sp"]
-fig7, ax7 = plt.subplots(6, 1, figsize=(5, 9))
+fig, axes = plt.subplots(6, 1, figsize=(5, 9))
 mlabels = model_list
 ind = np.arange(len(mlabels))  # the x locations for the groups
 width = 0.3
@@ -115,19 +124,19 @@ for inds, sector in enumerate(sector_list):
         mark_size = 3
     else:
         mark_size = 1
-    ax7[inds].bar(ind - width / 2.0, mse_clim, width, color="b", label="Ann. Cycle")
-    ax7[inds].bar(ind, mse_ext, width, color="r", label="Ann. Mean")
+    axes[inds].bar(ind - width / 2.0, mse_clim, width, color="b", label="Ann. Cycle")
+    axes[inds].bar(ind, mse_ext, width, color="r", label="Ann. Mean")
 
     # X axis label
     if inds == len(sector_list) - 1:
-        ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=7)
+        axes[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=7)
     else:
-        ax7[inds].set_xticks(ind + width / 2.0, labels="")
+        axes[inds].set_xticks(ind + width / 2.0, labels="")
 
     # Y axis
     datamax = np.nanmax(np.concatenate((np.array(mse_clim), np.array(mse_ext))))
     ymax = (datamax) * 1.3
-    ax7[inds].set_ylim(0.0, ymax)
+    axes[inds].set_ylim(0.0, ymax)
 
     if ymax < 0.1:
         ticks = np.linspace(0, 0.1, 6)
@@ -144,12 +153,12 @@ for inds, sector in enumerate(sector_list):
     else:
         ticks = range(0, round(ymax))
         labels = [str(round(x, 0)) for x in ticks]
-    ax7[inds].set_yticks(ticks, labels, fontsize=8)
+    axes[inds].set_yticks(ticks, labels, fontsize=8)
 
     # labels etc
-    ax7[inds].set_ylabel("10${^1}{^2}$km${^4}$", size=8)
-    ax7[inds].grid(True, linestyle=":")
-    ax7[inds].annotate(
+    axes[inds].set_ylabel("10${^1}{^2}$km${^4}$", size=8)
+    axes[inds].grid(True, linestyle=":")
+    axes[inds].annotate(
         sector,
         (0.35, 0.8),
         xycoords="axes fraction",
@@ -157,7 +166,7 @@ for inds, sector in enumerate(sector_list):
     )
 
 # Add legend, save figure
-ax7[0].legend(loc="upper right", fontsize=6)
+axes[0].legend(loc="upper right", fontsize=6)
 plt.suptitle("Mean Square Error relative to " + reference_data_set, y=0.91)
 figfile = os.path.join(metrics_output_path, "MSE_bar_chart.png")
 plt.savefig(figfile)

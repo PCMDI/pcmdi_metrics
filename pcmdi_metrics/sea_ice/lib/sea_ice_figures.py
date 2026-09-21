@@ -1,18 +1,19 @@
 import os
 
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import matplotlib.colors as colors
 import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 import regionmask
 
-from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key
 
 
 def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -55,7 +56,10 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
         )
         ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
         ax.coastlines(color=[0.3, 0.3, 0.3])
-        ax.set_facecolor([0.55, 0.55, 0.6])
+        # ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_facecolor([0, 85 / 255, 182 / 255])
+        land = cfeature.LAND.with_scale("110m")
+        ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
         ax.set_title("Feb\n" + model.replace("_", " "), fontsize=12)
         ax.annotate(
             "NA",
@@ -113,7 +117,11 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
         )
         ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
         ax.coastlines(color=[0.3, 0.3, 0.3])
-        ax.set_facecolor([0.55, 0.55, 0.6])
+        # ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_facecolor([0, 85 / 255, 182 / 255])
+        land = cfeature.LAND.with_scale("110m")
+        ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
         ax.set_title("Sep\n" + model.replace("_", " "), fontsize=12)
         ax.annotate(
             "NA",
@@ -167,8 +175,8 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
 
 
 def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
@@ -219,7 +227,11 @@ def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model)
         )
         ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
         ax.coastlines(color=[0.3, 0.3, 0.3])
-        ax.set_facecolor([0.55, 0.55, 0.6])
+        # ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_facecolor([0, 85 / 255, 182 / 255])
+        land = cfeature.LAND.with_scale("110m")
+        ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
         ax.set_title("Sep\n" + model.replace("_", " "), fontsize=12)
         ax.annotate(
             "SP",
@@ -277,7 +289,11 @@ def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model)
         )
         ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
         ax.coastlines(color=[0.3, 0.3, 0.3])
-        ax.set_facecolor([0.55, 0.55, 0.6])
+        # ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_facecolor([0, 85 / 255, 182 / 255])
+        land = cfeature.LAND.with_scale("110m")
+        ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
         ax.set_title("Feb\n" + model.replace("_", " "), fontsize=12)
         ax.annotate(
             "SP",
@@ -331,8 +347,8 @@ def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model)
 
 
 def create_annual_mean_map_arctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -379,7 +395,11 @@ def create_annual_mean_map_arctic(ds, var_ice, metrics_output_path, meta, model)
         )
         ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
         ax.coastlines(color=[0.3, 0.3, 0.3])
-        ax.set_facecolor([0.55, 0.55, 0.6])
+        # ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_facecolor([0, 85 / 255, 182 / 255])
+        land = cfeature.LAND.with_scale("110m")
+        ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
         ax.set_title("Annual mean\n" + model.replace("_", " "), fontsize=12)
         ax.annotate(
             "NA",
@@ -433,8 +453,8 @@ def create_annual_mean_map_arctic(ds, var_ice, metrics_output_path, meta, model)
 
 
 def create_annual_mean_map_antarctic(ds, var_ice, metrics_output_path, meta, model):
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
@@ -489,7 +509,11 @@ def create_annual_mean_map_antarctic(ds, var_ice, metrics_output_path, meta, mod
         )
         ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
         ax.coastlines(color=[0.3, 0.3, 0.3])
-        ax.set_facecolor([0.55, 0.55, 0.6])
+        # ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_facecolor([0, 85 / 255, 182 / 255])
+        land = cfeature.LAND.with_scale("110m")
+        ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
         ax.set_title("Annual mean\n" + model.replace("_", " "), fontsize=12)
         ax.annotate(
             "SP",
@@ -546,8 +570,8 @@ def create_arctic_map(
     ds, obs, var_ice, var_obs, metrics_output_path, meta, model, title
 ):
     # Load and process data
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -621,12 +645,16 @@ def create_arctic_map(
                 )
             ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
-            ax.set_facecolor([0.55, 0.55, 0.6])
+            # ax.set_facecolor([0.55, 0.55, 0.6])
+            ax.set_facecolor([0, 85 / 255, 182 / 255])
+            land = cfeature.LAND.with_scale("110m")
+            ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
             ax.set_title("")
         pos1 = [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2]  # row
         pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
-        xvar = lib.find_lon(obs)
-        yvar = lib.find_lat(obs)
+        xvar = get_longitude_key(obs)
+        yvar = get_latitude_key(obs)
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
             obs[var_obs].isel({"time": mo}).plot(
@@ -657,7 +685,11 @@ def create_arctic_map(
                 )
             ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
-            ax.set_facecolor([0.55, 0.55, 0.6])
+            # ax.set_facecolor([0.55, 0.55, 0.6])
+            ax.set_facecolor([0, 85 / 255, 182 / 255])
+            land = cfeature.LAND.with_scale("110m")
+            ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
             ax.set_title(months[mo], fontsize=18)
 
         plt.suptitle(title, fontsize=26)
@@ -703,8 +735,8 @@ def create_antarctic_map(
     ds, obs, var_ice, var_obs, metrics_output_path, meta, model, title
 ):
     # Load and process data
-    xvar = lib.find_lon(ds)
-    yvar = lib.find_lat(ds)
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
@@ -783,12 +815,15 @@ def create_antarctic_map(
                 )
             ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
-            ax.set_facecolor([0.55, 0.55, 0.6])
+            ax.set_facecolor([0, 85 / 255, 182 / 255])  # blue ocean
+            land = cfeature.LAND.with_scale("110m")
+            ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
             ax.set_title("")
         pos1 = [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2]  # row
         pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
-        xvar = lib.find_lon(obs)
-        yvar = lib.find_lat(obs)
+        xvar = get_longitude_key(obs)
+        yvar = get_latitude_key(obs)
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
             obs[var_obs].isel({"time": mo}).plot(
@@ -819,7 +854,11 @@ def create_antarctic_map(
                 )
             ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
-            ax.set_facecolor([0.55, 0.55, 0.6])
+            # ax.set_facecolor([0.55, 0.55, 0.6])
+            ax.set_facecolor([0, 85 / 255, 182 / 255])
+            land = cfeature.LAND.with_scale("110m")
+            ax.add_feature(land, facecolor=(0.55, 0.55, 0.6))  # light gray land
+
             ax.set_title(months[mo], fontsize=18)
         plt.suptitle(title, fontsize=26)
         cbar = plt.colorbar(
