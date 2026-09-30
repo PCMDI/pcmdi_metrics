@@ -4,7 +4,7 @@ Hadley Cell Metrics
 Compute Hadley cell edge positions and meridional stream function.
 
 Created By: Kristin Chang (December 2025)
-Last Updated: August 2026
+Last Updated: September 2026
 
 References:
 Hur, I., Yoo, C., Yeh, S.-W., Kim, Y.-H., & Seo, K.-H. (2024). Processes driving the intermodel spread of the Southern Hemisphere Hadley Circulation expansion in CMIP6 models. Journal of Geophysical Research: Atmospheres, 129, e2024JD041726. https://doi.org/10.1029/2024JD041726
@@ -245,10 +245,8 @@ def compute_hadley_edges(
     # Annual mean
     psi_ann = psi.resample({time_dim: "YE"}).mean()
 
-    # Select 500 hPa level
-    lev_units = psi[lev_dim].attrs.get("units", "Pa")
-    lev_500 = 500 if lev_units == "hPa" else 50000
-    psi_500 = psi_ann.sel({lev_dim: lev_500})
+    # Select 500 hPa level using helper to handle floating-point precision
+    psi_500 = _extract_level(psi_ann, level=500, lev_dim=lev_dim)
 
     # Calculate edges for each year
     edge_nh = xr.apply_ufunc(
@@ -324,6 +322,121 @@ def _find_edge_position(
     return edge
 
 
+def _extract_level(
+    data: xr.DataArray,
+    level: float,
+    lev_dim: str = "plev",
+    tolerance_pct: float = 0.1,
+    debug: bool = False,
+):
+    """
+    Extract a specific pressure level from data, handling floating-point precision issues.
+
+    This function robustly extracts a pressure level from xarray data by first attempting
+    exact selection, then falling back to nearest-neighbor selection if the exact value
+    doesn't exist due to floating-point precision issues. It validates that the nearest
+    level is within an acceptable tolerance.
+
+    Parameters
+    ----------
+    data : xr.DataArray or xr.Dataset
+        Input data with pressure level coordinate.
+    level : float
+        Target pressure level in hPa.
+    lev_dim : str, optional
+        Name of the pressure level dimension. Default is "plev".
+    tolerance_pct : float, optional
+        Maximum acceptable percentage difference between requested and actual level.
+        Default is 0.1%.
+    debug : bool, optional
+        If True, print diagnostic information. Default is False.
+
+    Returns
+    -------
+    xr.DataArray or xr.Dataset
+        Data extracted at the specified pressure level.
+
+    Raises
+    ------
+    ValueError
+        If lev_dim is not in coordinates, or if nearest level exceeds tolerance.
+
+    Examples
+    --------
+    >>> psi_500 = _extract_level(psi, 500, lev_dim="plev")
+    """
+
+    def find_nearest(array, value):
+        """Find the nearest value in array to the target value."""
+        array = np.asarray(array)
+        idx = (np.abs(array - value)).argmin()
+        return array[idx]
+
+    # Validate inputs
+    if level is None:
+        return data
+
+    level = float(level)
+
+    # Check if level dimension exists
+    if lev_dim not in data.coords:
+        raise ValueError(
+            f"ERROR: {lev_dim} is not in the data coordinates.\n"
+            f"Available coordinates: {list(data.coords.keys())}"
+        )
+
+    # Determine units and convert level to match data units
+    lev_units = data[lev_dim].attrs.get("units", "Pa")
+    if lev_units == "Pa" or np.max(data[lev_dim].values) > 10000:
+        level_in_data_units = level * 100  # Convert hPa to Pa
+        units_str = "Pa"
+    else:
+        level_in_data_units = level  # Already in hPa
+        units_str = "hPa"
+
+    if debug:
+        print(f"Extracting level: {level} hPa ({level_in_data_units} {units_str})")
+        print(f"Available levels: {data[lev_dim].values}")
+
+    # Try exact selection first
+    try:
+        result = data.sel({lev_dim: level_in_data_units})
+        if debug:
+            print("Exact level found")
+        return result
+    except (KeyError, ValueError) as ex:
+        # Exact level not found, use nearest neighbor
+        if debug:
+            print(f"Exact level not found: {ex}")
+
+        nearest_level = find_nearest(data[lev_dim].values, level_in_data_units)
+
+        diff_percentage = (
+            abs(nearest_level - level_in_data_units) / level_in_data_units * 100
+        )
+
+        if debug or diff_percentage > 0.01:  # Always warn if difference > 0.01%
+            print(f"WARNING: Exact level {level_in_data_units} {units_str} not found")
+            print(f"  Requested level: {level_in_data_units} {units_str}")
+            print(f"  Nearest level:   {nearest_level} {units_str}")
+            print(f"  Difference:      {diff_percentage:.4f}%")
+
+        if diff_percentage < tolerance_pct:
+            result = data.sel({lev_dim: level_in_data_units}, method="nearest")
+            if debug:
+                print("  Difference is within acceptable tolerance")
+            return result
+        else:
+            raise ValueError(
+                f"ERROR: Nearest level differs by {diff_percentage:.4f}%, "
+                f"exceeding tolerance of {tolerance_pct}%.\n"
+                f"Requested: {level_in_data_units} {units_str}, "
+                f"Nearest: {nearest_level} {units_str}"
+            )
+
+    return result
+
+
 def compute_seasonal_climatology(
     psi: xr.DataArray,
     model_name: str,
@@ -371,10 +484,8 @@ def compute_seasonal_climatology(
         dim=xr.DataArray(seasons, dims="season", name="season"),
     )
 
-    # Extract 500 hPa
-    lev_units = psi[lev_dim].attrs.get("units", "Pa")
-    lev_500 = 500 if lev_units == "hPa" else 50000
-    clim_psi500 = clim_all.sel({lev_dim: lev_500})
+    # Extract 500 hPa using helper to handle floating-point precision
+    clim_psi500 = _extract_level(clim_all, level=500, lev_dim=lev_dim)
 
     # Plot
     plot_path = _plot_seasonal_psi(clim_all, model_name, output_path, lev_dim, lat_dim)
