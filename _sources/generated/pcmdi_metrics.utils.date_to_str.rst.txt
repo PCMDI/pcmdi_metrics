@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.utils.date\_to\_str
+==================================
+
+.. currentmodule:: pcmdi_metrics.utils
+
+.. autofunction:: date_to_str
