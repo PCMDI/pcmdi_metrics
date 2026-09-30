@@ -35,3 +35,4 @@ from .sort_human import sort_human
 from .string_constructor import StringConstructor, fill_template
 from .tree_dict import tree
 from .xr_to_cdms2 import cdms2_to_xarray, xarray_to_cdms2
+from .extract_level import extract_level
