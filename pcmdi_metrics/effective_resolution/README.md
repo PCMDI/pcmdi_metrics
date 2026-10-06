@@ -150,6 +150,32 @@ The paper uses pre-publication HighResMIP labels; the ESGF `source_id` values di
 - `demo_effective_resolution.ipynb` — runnable notebook demonstration on synthetic data, no input files needed
 - `param/myParam_effective_resolution.py` — example parameter file for the driver
 
+## Critical Data Requirements
+
+**IMPORTANT**: This diagnostic **requires native grid data** (CMIP convention: `gn` grid label). Using regridded data (`gr`, `gm`, etc.) will produce **incorrect results** because:
+
+1. Regridding destroys high-wavenumber information that the diagnostic measures
+2. The grid box distance calculation will reflect the regridded mesh, not the model's true resolution
+3. Systematic negative bias is expected when using regridded data
+
+**Symptoms of regridded data:**
+- Regular latitude spacing (e.g., 1° × 1° grid like 181×360)
+- Effective resolution much finer than expected
+- Grid box distance inconsistent with model's nominal resolution
+- File name contains `_gr_` or similar grid label
+
+**To verify data quality:**
+```python
+# Check grid regularity - native grids are often irregular (Gaussian, reduced, etc.)
+print(ds.lat.diff('lat'))  # Should vary for Gaussian grids
+print(ds.lon.diff('lon'))  # May vary per latitude for reduced grids
+```
+
+**Where to find native grid data:**
+- CMIP6/HighResMIP: Look for grid label `gn` in file names
+- Model output archives: Use files before any post-processing regridding
+- ESGF search: Filter by `grid_label='gn'`
+
 ## References
 
 - Klaver, R., Haarsma, R., Vidale, P. L., & Hazeleger, W. (2020). Effective resolution in high resolution global atmospheric models for climate studies. *Atmos. Sci. Lett.*, 21, e952. https://doi.org/10.1002/asl.952
