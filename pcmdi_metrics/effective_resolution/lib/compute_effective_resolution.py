@@ -76,7 +76,7 @@ def compute_effective_resolution(
     ntrunc: int | None = None,
     gridtype: Literal["auto", "regular", "gaussian"] = "auto",
     fit_window: int = 20,
-    fit_anchor: Literal["center", "right", "left"] = "right",
+    fit_anchor: Literal["center", "right", "left"] = "center",
     steepening_factor: float = 0.25,
     wavenumber_ratio: float = 2.0,
     min_wavenumber: int = 32,
@@ -122,6 +122,11 @@ def compute_effective_resolution(
     fit_anchor : {"center", "right", "left"}, optional
         Window anchoring for the slope fit; see
         `~pcmdi_metrics.effective_resolution.lib.spectral_slope.fit_spectral_slope`.
+        Default ``"center"`` matches the visual presentation in Klaver et al.
+        Figure 1, where slope curves appear centered relative to steepening
+        detection points.  ``"right"`` anchoring was the initial implementation
+        choice based on literal reading of the paper's text but produces
+        systematic negative bias (~3-25%) relative to published Table 1 values.
     steepening_factor : float, optional
         Fractional exponent increase defining steepening.  Default ``0.25``,
         described by the authors as ad hoc; vary it to test sensitivity.
