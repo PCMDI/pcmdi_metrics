@@ -152,7 +152,7 @@ The paper uses pre-publication HighResMIP labels; the ESGF `source_id` values di
 
 ## Critical Data Requirements
 
-**IMPORTANT**: This diagnostic **requires native grid data** (CMIP convention: `gn` grid label). Using regridded data (`gr`, `gm`, etc.) will produce **incorrect results** because:
+**IMPORTANT**: This diagnostic **requires native grid data** (CMIP convention: `gn` grid label). Using regridded data (`gr`) will produce inconsistant results to the reference paper because:
 
 1. Regridding destroys high-wavenumber information that the diagnostic measures
 2. The grid box distance calculation will reflect the regridded mesh, not the model's true resolution
@@ -182,4 +182,3 @@ print(ds.lon.diff('lon'))  # May vary per latitude for reduced grids
 - Bourke, W. (1972). An efficient, one-level, primitive-equation spectral model. *Mon. Weather Rev.*, 100, 683–689.
 - Skamarock, W. C. (2004). Evaluating mesoscale NWP models using kinetic energy spectra. *Mon. Weather Rev.*, 132, 3019–3032.
 - Abdalla, S., Isaksen, L., Janssen, P., & Wedi, N. (2013). Effective spectral resolution of ECMWF atmospheric forecast models. *ECMWF Newsletter*, 137, 19–22.
-- Callies, J., Ferrari, R., & Bühler, O. (2014). Transition from geostrophic turbulence to inertia–gravity waves in the atmospheric energy spectrum. *PNAS*, 111, 17033–17038.
