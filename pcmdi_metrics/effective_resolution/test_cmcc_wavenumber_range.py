@@ -196,8 +196,12 @@ for r in results:
     if "error" in r and isinstance(r["error"], str):
         print(f"{r['max_wavenumber']:>8.1f} | {r['error']}")
     else:
+        # Format None values as empty strings
+        div_str = f"{r['div_250']:>3.0f}" if r["div_250"] is not None else "   "
+        rot250_str = f"{r['rot_250']:>7.0f}" if r["rot_250"] is not None else "       "
+        rot500_str = f"{r['rot_500']:>7.0f}" if r["rot_500"] is not None else "       "
         print(
-            f"{r['max_wavenumber']:>8.1f} | {r['l_eff']:>6.0f} | {r['L_eff']:>8.1f} | {r['error_km']:>9.1f} | {r['div_250']:>3} | {r['rot_250']:>7} | {r['rot_500']:>7}"
+            f"{r['max_wavenumber']:>8.1f} | {r['l_eff']:>6.0f} | {r['L_eff']:>8.1f} | {r['error_km']:>9.1f} | {div_str} | {rot250_str} | {rot500_str}"
         )
 
 print("-" * 70)
