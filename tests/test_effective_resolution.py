@@ -287,6 +287,8 @@ def test_select_pressure_level_rejects_a_missing_level():
 
 def test_compute_effective_resolution_end_to_end():
     """The full chain runs and returns the documented structure."""
+    import pandas as pd
+
     rng = np.random.default_rng(0)
     nlat, nlon = 64, 128
     lat = np.linspace(-88.0, 88.0, nlat)
@@ -296,13 +298,17 @@ def test_compute_effective_resolution_end_to_end():
     for degree in (5, 12, 25):
         u, v = nondivergent_wind(degree, 3, lat, lon)
         wind += rng.normal(size=(2, 2, 1, 1)) * np.stack([u, v])[None, :] * degree**-1.5
+
+    # Use datetime coordinates for temporal_averaging='slopes'
+    time_coords = pd.date_range("2014-03-01", periods=2, freq="6H")
+
     ds = xr.Dataset(
         {
             "ua": (("time", "plev", "lat", "lon"), wind),
             "va": (("time", "plev", "lat", "lon"), wind[:, ::-1]),
         },
         coords={
-            "time": np.arange(2),
+            "time": ("time", time_coords),
             "plev": np.array([25000.0, 50000.0]),
             "lat": lat,
             "lon": lon,
@@ -339,6 +345,6 @@ def test_compute_effective_resolution_accepts_an_explicit_grid_box_distance():
     )
     ds["plev"].attrs["units"] = "Pa"
     metrics, _ = compute_effective_resolution(
-        ds, model="TEST", grid_box_distance_km=40.8
+        ds, model="TEST", grid_box_distance_km=40.8, temporal_averaging="spectra"
     )
     assert metrics["TEST"]["unspecified"]["grid_box_distance_km"] == 40.8
