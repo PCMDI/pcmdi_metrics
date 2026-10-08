@@ -39,6 +39,12 @@ The spherical-harmonic transform is done in NumPy, forming vorticity and diverge
 | `steepening_wavenumber_range` | — | Min/max over the three spectra — the error bar of the paper's Figure 2 |
 | `is_upper_limit` | — | `True` when steepening is already present at `min_wavenumber`, so the value bounds rather than resolves `l_eff` |
 
+## Documentation and Examples
+
+- **Demo Notebook**: [demo_effective_resolution.ipynb](demo_effective_resolution.ipynb) - Comprehensive examples with synthetic data
+- **Discrepancy Analysis**: [DISCREPANCY_ANALYSIS.md](DISCREPANCY_ANALYSIS.md) - Systematic comparison with Klaver et al. (2020) reference values
+- **Test Notebooks**: [tests/](tests/) - Real model examples (ECMWF, MPI-ESM, CMCC, HadGEM3)
+
 ## Public API
 
 ```python
@@ -54,12 +60,14 @@ Pure computation API accepting an already-opened xarray Dataset. Performs no fil
 
 ```python
 metrics, diagnostics = compute_effective_resolution(
-    ds,                      # (time, plev, lat, lon) on the model's NATIVE grid
+    ds,                          # (time, plev, lat, lon) on the model's NATIVE grid
     uvar="ua",
     vvar="va",
-    levels=(250.0, 500.0),   # hPa, whatever units the plev axis uses
-    steepening_factor=0.25,  # the paper's ad hoc threshold
+    levels=(250.0, 500.0),       # hPa, whatever units the plev axis uses
+    temporal_averaging='slopes',  # 'slopes' (Klaver et al.) or 'spectra' (original)
+    steepening_factor=0.25,      # the paper's ad hoc threshold
     min_wavenumber=32,
+    max_wavenumber=None,         # optional: restrict detection range
     model="HadGEM3-GC31-HM",
     member="r1i1p1f1",
 )
