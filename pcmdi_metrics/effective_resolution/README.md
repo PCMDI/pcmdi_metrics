@@ -39,6 +39,12 @@ The spherical-harmonic transform is done in NumPy, forming vorticity and diverge
 | `steepening_wavenumber_range` | — | Min/max over the three spectra — the error bar of the paper's Figure 2 |
 | `is_upper_limit` | — | `True` when steepening is already present at `min_wavenumber`, so the value bounds rather than resolves `l_eff` |
 
+## Documentation and Examples
+
+- **Demo Notebook**: [demo_effective_resolution.ipynb](demo_effective_resolution.ipynb) - Comprehensive examples with synthetic data
+- **Discrepancy Analysis**: [DISCREPANCY_ANALYSIS.md](DISCREPANCY_ANALYSIS.md) - Systematic comparison with Klaver et al. (2020) reference values
+- **Test Notebooks**: [tests/](tests/) - Real model examples (ECMWF, MPI-ESM, CMCC, HadGEM3)
+
 ## Public API
 
 ```python
@@ -54,12 +60,14 @@ Pure computation API accepting an already-opened xarray Dataset. Performs no fil
 
 ```python
 metrics, diagnostics = compute_effective_resolution(
-    ds,                      # (time, plev, lat, lon) on the model's NATIVE grid
+    ds,                          # (time, plev, lat, lon) on the model's NATIVE grid
     uvar="ua",
     vvar="va",
-    levels=(250.0, 500.0),   # hPa, whatever units the plev axis uses
-    steepening_factor=0.25,  # the paper's ad hoc threshold
+    levels=(250.0, 500.0),       # hPa, whatever units the plev axis uses
+    temporal_averaging='slopes',  # 'slopes' (Klaver et al.) or 'spectra' (original)
+    steepening_factor=0.25,      # the paper's ad hoc threshold
     min_wavenumber=32,
+    max_wavenumber=None,         # optional: restrict detection range
     model="HadGEM3-GC31-HM",
     member="r1i1p1f1",
 )
@@ -150,10 +158,35 @@ The paper uses pre-publication HighResMIP labels; the ESGF `source_id` values di
 - `demo_effective_resolution.ipynb` — runnable notebook demonstration on synthetic data, no input files needed
 - `param/myParam_effective_resolution.py` — example parameter file for the driver
 
+## Critical Data Requirements
+
+**IMPORTANT**: This diagnostic **requires native grid data** (CMIP convention: `gn` grid label). Using regridded data (`gr`) will produce inconsistant results to the reference paper because:
+
+1. Regridding destroys high-wavenumber information that the diagnostic measures
+2. The grid box distance calculation will reflect the regridded mesh, not the model's true resolution
+3. Systematic negative bias is expected when using regridded data
+
+**Symptoms of regridded data:**
+- Regular latitude spacing (e.g., 1° × 1° grid like 181×360)
+- Effective resolution much finer than expected
+- Grid box distance inconsistent with model's nominal resolution
+- File name contains `_gr_` or similar grid label
+
+**To verify data quality:**
+```python
+# Check grid regularity - native grids are often irregular (Gaussian, reduced, etc.)
+print(ds.lat.diff('lat'))  # Should vary for Gaussian grids
+print(ds.lon.diff('lon'))  # May vary per latitude for reduced grids
+```
+
+**Where to find native grid data:**
+- CMIP6/HighResMIP: Look for grid label `gn` in file names
+- Model output archives: Use files before any post-processing regridding
+- ESGF search: Filter by `grid_label='gn'`
+
 ## References
 
 - Klaver, R., Haarsma, R., Vidale, P. L., & Hazeleger, W. (2020). Effective resolution in high resolution global atmospheric models for climate studies. *Atmos. Sci. Lett.*, 21, e952. https://doi.org/10.1002/asl.952
 - Bourke, W. (1972). An efficient, one-level, primitive-equation spectral model. *Mon. Weather Rev.*, 100, 683–689.
 - Skamarock, W. C. (2004). Evaluating mesoscale NWP models using kinetic energy spectra. *Mon. Weather Rev.*, 132, 3019–3032.
 - Abdalla, S., Isaksen, L., Janssen, P., & Wedi, N. (2013). Effective spectral resolution of ECMWF atmospheric forecast models. *ECMWF Newsletter*, 137, 19–22.
-- Callies, J., Ferrari, R., & Bühler, O. (2014). Transition from geostrophic turbulence to inertia–gravity waves in the atmospheric energy spectrum. *PNAS*, 111, 17033–17038.

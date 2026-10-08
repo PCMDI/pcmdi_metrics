@@ -84,6 +84,7 @@ def compute_effective_resolution(
     rsphere: float = EARTH_RADIUS,
     plev_name: str | None = None,
     grid_box_distance_km: float | None = None,
+    temporal_averaging: Literal["spectra", "slopes"] = "slopes",
     model: str = "model",
     exp: str | None = None,
     member: str | None = None,
@@ -141,6 +142,15 @@ def compute_effective_resolution(
         ``None`` (default) it is derived from ``ds``'s own grid.  Pass an
         explicit value for reduced Gaussian or octahedral grids, where the
         Dataset's rectilinear coordinates misrepresent the mesh.
+    temporal_averaging : {"spectra", "slopes"}, optional
+        Temporal averaging strategy.  Default ``"slopes"`` matches Klaver et al.
+        (2020) Appendix S3: compute spectrum for each month separately, fit
+        slopes to each monthly spectrum, then average the slopes across months.
+        ``"spectra"`` uses the original implementation: average spectra across
+        all time steps first, then fit a single slope curve.  The two methods
+        produce different results because fitting is a non-linear operation.
+        Use ``"slopes"`` (default) for published-paper agreement; ``"spectra"``
+        for backward compatibility with earlier PMP versions.
     model, exp, member : str or None, optional
         Labels used as keys in the returned ``metrics`` dict.
     debug : bool, optional
@@ -201,23 +211,124 @@ def compute_effective_resolution(
     >>> metrics["HadGEM3-GC31-HM"]["r1i1p1f1"]["effective_wavenumber"]  # doctest: +SKIP
     108.0
     """
-    spectra = {
-        float(level): compute_ke_spectra_timeseries(
-            ds,
-            uvar=uvar,
-            vvar=vvar,
-            level_hpa=float(level),
-            time_mean=True,
-            plev_name=plev_name,
-            ntrunc=ntrunc,
-            gridtype=gridtype,
-            rsphere=rsphere,
+    # Compute spectra and slopes based on temporal averaging strategy
+    if temporal_averaging == "spectra":
+        # Original implementation: average spectra first, then fit slopes
+        spectra = {
+            float(level): compute_ke_spectra_timeseries(
+                ds,
+                uvar=uvar,
+                vvar=vvar,
+                level_hpa=float(level),
+                time_mean=True,
+                plev_name=plev_name,
+                ntrunc=ntrunc,
+                gridtype=gridtype,
+                rsphere=rsphere,
+            )
+            for level in levels
+        }
+        if debug:
+            for level in levels:
+                print(f"[effective_resolution] computed spectra at {level} hPa")
+
+        slopes: dict[str, xr.DataArray] = {}
+        for level, component in SPECTRUM_KEYS:
+            if float(level) not in spectra:
+                continue
+            key = f"{component}_{int(level)}"
+            slopes[key] = fit_spectral_slope(
+                spectra[float(level)][f"ke_{component}"],
+                window=fit_window,
+                anchor=fit_anchor,
+            )
+
+    elif temporal_averaging == "slopes":
+        # Klaver et al. (2020) Appendix S3: compute monthly spectra,
+        # fit slopes to each month, then average slopes
+        from pcmdi_metrics.io import get_time_key
+
+        time_key = get_time_key(ds)
+
+        # Group data by month
+        ds_grouped = ds.groupby(f"{time_key}.month")
+        months = sorted(ds_grouped.groups.keys())
+
+        if debug:
+            print(f"[effective_resolution] processing {len(months)} months: {months}")
+
+        # Compute spectra for all months to get a reference spectrum for final output
+        spectra = {
+            float(level): compute_ke_spectra_timeseries(
+                ds,
+                uvar=uvar,
+                vvar=vvar,
+                level_hpa=float(level),
+                time_mean=True,
+                plev_name=plev_name,
+                ntrunc=ntrunc,
+                gridtype=gridtype,
+                rsphere=rsphere,
+            )
+            for level in levels
+        }
+
+        # Compute per-month slopes
+        monthly_slopes: dict[str, list[xr.DataArray]] = {
+            f"{comp}_{int(lev)}": [] for lev, comp in SPECTRUM_KEYS
+        }
+
+        for month in months:
+            month_ds = ds_grouped[month]
+            if debug:
+                print(f"[effective_resolution]   month {month}: computing spectra...")
+
+            # Compute spectrum for this month
+            month_spectra = {
+                float(level): compute_ke_spectra_timeseries(
+                    month_ds,
+                    uvar=uvar,
+                    vvar=vvar,
+                    level_hpa=float(level),
+                    time_mean=True,
+                    plev_name=plev_name,
+                    ntrunc=ntrunc,
+                    gridtype=gridtype,
+                    rsphere=rsphere,
+                )
+                for level in levels
+            }
+
+            # Fit slopes for this month
+            for level, component in SPECTRUM_KEYS:
+                if float(level) not in month_spectra:
+                    continue
+                key = f"{component}_{int(level)}"
+                month_slope = fit_spectral_slope(
+                    month_spectra[float(level)][f"ke_{component}"],
+                    window=fit_window,
+                    anchor=fit_anchor,
+                )
+                monthly_slopes[key].append(month_slope)
+
+        # Average slopes across months
+        slopes: dict[str, xr.DataArray] = {}
+        for key, slope_list in monthly_slopes.items():
+            if len(slope_list) > 0:
+                # Stack slopes along a new dimension and take mean
+                stacked = xr.concat(slope_list, dim="month")
+                slopes[key] = stacked.mean(dim="month")
+                slopes[key].attrs = slope_list[0].attrs
+                slopes[key].attrs["temporal_averaging"] = "monthly_averaged"
+                if debug:
+                    print(
+                        f"[effective_resolution]   averaged {len(slope_list)} monthly slopes for {key}"
+                    )
+
+    else:
+        raise ValueError(
+            f"temporal_averaging must be 'spectra' or 'slopes', got {temporal_averaging!r}"
         )
-        for level in levels
-    }
-    if debug:
-        for level in levels:
-            print(f"[effective_resolution] computed spectra at {level} hPa")
 
     # Compute vorticity and divergence fields if saving interim netCDF
     vortdiv_fields = {}
@@ -243,17 +354,12 @@ def compute_effective_resolution(
                     f"[effective_resolution] computed vorticity/divergence at {level} hPa"
                 )
 
-    slopes: dict[str, xr.DataArray] = {}
+    # Detect steepening from the slopes
     detections: dict[str, dict[str, Any]] = {}
     for level, component in SPECTRUM_KEYS:
-        if float(level) not in spectra:
-            continue
         key = f"{component}_{int(level)}"
-        slopes[key] = fit_spectral_slope(
-            spectra[float(level)][f"ke_{component}"],
-            window=fit_window,
-            anchor=fit_anchor,
-        )
+        if key not in slopes:
+            continue
         detections[key] = detect_steepening(
             slopes[key],
             steepening_factor=steepening_factor,
