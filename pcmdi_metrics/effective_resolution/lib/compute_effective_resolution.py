@@ -601,3 +601,242 @@ def process_effective_resolution(params: dict[str, Any]) -> dict[str, Any]:
         )
 
     return metrics
+
+
+def compute_effective_resolution_scalar(
+    field: xr.DataArray,
+    field_name: str | None = None,
+    ntrunc: int | None = None,
+    gridtype: Literal["auto", "regular", "gaussian"] = "auto",
+    fit_window: int = 20,
+    fit_anchor: Literal["center", "right", "left"] = "right",
+    steepening_factor: float = 0.25,
+    wavenumber_ratio: float = 2.0,
+    min_wavenumber: int = 32,
+    rsphere: float = EARTH_RADIUS,
+    grid_box_distance_km: float | None = None,
+    model: str = "model",
+    member: str | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Compute effective resolution from a single 2D scalar field.
+
+    This function extends the wind-based effective resolution diagnostic to work
+    with any 2D atmospheric or oceanic field. Instead of kinetic energy spectra
+    from vorticity/divergence, it computes a power spectrum directly from the
+    field's variance at each wavenumber.
+
+    Parameters
+    ----------
+    field : xarray.DataArray
+        2D spatial field with dimensions (lat, lon) or (time, lat, lon).
+        If time dimension is present, will average over time before computing
+        spectrum. Examples: temperature, geopotential height, precipitation,
+        sea surface temperature, etc.
+    field_name : str, optional
+        Name of the field for labeling. Default is ``field.name`` or ``'field'``.
+    ntrunc : int or None, optional
+        Triangular truncation wavenumber. Default ``None`` is ``nlat - 1``.
+    gridtype : {"auto", "regular", "gaussian"}, optional
+        Grid type for selecting quadrature weights. Default ``"auto"`` attempts
+        to detect grid type automatically.
+    fit_window, fit_anchor, steepening_factor, wavenumber_ratio, min_wavenumber :
+        Same as `compute_effective_resolution()`. Control slope fitting and
+        steepening detection behavior.
+    rsphere : float, optional
+        Earth radius in meters. Default is `EARTH_RADIUS`.
+    grid_box_distance_km : float or None, optional
+        Explicit grid box distance. Default ``None`` computes from coordinates.
+    model : str, optional
+        Model identifier for output structure. Default ``"model"``.
+    member : str or None, optional
+        Member identifier for output structure. Default ``None`` uses
+        ``"unspecified"``.
+
+    Returns
+    -------
+    metrics : dict
+        Nested ``{model: {member: {...}}}`` structure containing:
+
+        - ``effective_wavenumber`` : float or None
+            Detected steepening wavenumber.
+        - ``effective_resolution_km`` : float or None
+            Effective resolution length scale in km.
+        - ``grid_box_distance_km`` : float
+            Nominal grid spacing.
+        - ``resolution_ratio`` : float or None
+            Ratio L_eff / L_box.
+        - ``resolution_ratio_dx_convention`` : float or None
+            Ratio in Skamarock (2004) dx convention.
+        - ``is_upper_limit`` : bool
+            True if steepening detected at minimum wavenumber (upper limit only).
+        - ``steepening_wavenumber`` : dict
+            Single-element dict ``{field_name: l_eff}``.
+        - ``steepening_eddy_scale_km`` : dict
+            Single-element dict ``{field_name: L_eff}``.
+        - ``field_name`` : str
+            Name of analyzed field.
+        - ``analysis_type`` : str
+            Set to ``'scalar_field'`` to distinguish from wind analysis.
+        - ``criterion`` : dict
+            Detection parameters used.
+        - ``reference`` : str
+            Citation string.
+
+    diagnostics : dict
+        Contains:
+
+        - ``spectrum`` : xarray.Dataset
+            Power spectrum with ``power_spectrum``, ``wavenumber``, ``eddy_scale``.
+        - ``slope`` : xarray.DataArray
+            Fitted spectral slope n(l).
+        - ``detection`` : dict
+            Steepening detection information.
+
+    Notes
+    -----
+    **Physical Interpretation**
+
+    - **Wind fields**: KE spectrum → resolved kinetic energy scales
+    - **Scalar fields**: Power spectrum → resolved variance scales
+
+    "Effective resolution" = scale below which variance is artificially damped
+    by numerical diffusion, filters, or parameterizations.
+
+    **Differences from Wind-Based Analysis**
+
+    - Single spectrum instead of rotational/divergent decomposition
+    - No 2-of-3 confirmation rule (only one spectrum available)
+    - Physical meaning depends on the field being analyzed
+
+    **Use Cases**
+
+    - Temperature: Identify resolved temperature gradient scales
+    - Geopotential: Understand resolved pressure system scales
+    - Precipitation: Effective resolution of precipitation patterns
+    - SST: Resolved ocean surface temperature scales
+    - Any 2D field: General spectral analysis
+
+    Examples
+    --------
+    >>> # Temperature at 500 hPa
+    >>> import xarray as xr
+    >>> ds = xr.open_dataset('model_output.nc')
+    >>> temp = ds['ta'].sel(plev=50000)
+    >>> metrics, diags = compute_effective_resolution_scalar(
+    ...     temp,
+    ...     field_name='temperature_500hPa',
+    ...     model='HadGEM3-GC31-HM',
+    ...     member='r1i1p1f1'
+    ... )
+    >>> print(f"Effective resolution: {metrics['HadGEM3-GC31-HM']['r1i1p1f1']['effective_resolution_km']:.1f} km")  # doctest: +SKIP
+
+    >>> # Sea surface temperature (with time dimension)
+    >>> sst = ds['tos']  # (time, lat, lon)
+    >>> metrics, diags = compute_effective_resolution_scalar(
+    ...     sst,
+    ...     field_name='SST',
+    ...     model='CESM2'
+    ... )  # doctest: +SKIP
+
+    See Also
+    --------
+    compute_effective_resolution : Wind-based effective resolution
+    compute_power_spectrum : Low-level power spectrum computation
+    """
+    from .grid_distance import grid_box_distance_from_dataset
+    from .ke_spectra import EARTH_RADIUS, compute_power_spectrum, eddy_scale
+    from .spectral_slope import detect_steepening, fit_spectral_slope
+
+    # Extract coordinates
+    lat_key = "lat" if "lat" in field.dims else get_latitude_key(field)
+    lat = field[lat_key].values
+
+    # Time average if present
+    time_key = get_time_key(field) if "time" in field.dims else None
+    if time_key:
+        field_2d = field.mean(dim=time_key).values
+    else:
+        field_2d = field.values
+
+    # Ensure 2D
+    if field_2d.ndim != 2:
+        raise ValueError(
+            f"Field must be 2D (lat, lon) or 3D (time, lat, lon), got shape {field.shape} with dims {field.dims}"
+        )
+
+    # Determine field name
+    if field_name is None:
+        field_name = str(field.name) if field.name else "field"
+
+    # Compute power spectrum
+    spectrum_ds = compute_power_spectrum(
+        field_2d, lat, ntrunc=ntrunc, gridtype=gridtype, rsphere=rsphere
+    )
+
+    # Fit spectral slope (reuse existing function!)
+    slope = fit_spectral_slope(
+        spectrum_ds["power_spectrum"], window=fit_window, anchor=fit_anchor
+    )
+
+    # Detect steepening (reuse existing function!)
+    detection = detect_steepening(
+        slope,
+        steepening_factor=steepening_factor,
+        wavenumber_ratio=wavenumber_ratio,
+        min_wavenumber=min_wavenumber,
+    )
+
+    # Extract effective wavenumber
+    l_eff = detection["wavenumber"]
+
+    # Compute metrics
+    if l_eff is not None:
+        l_eff_km = float(eddy_scale(l_eff, rsphere))
+    else:
+        l_eff_km = None
+
+    # Grid box distance
+    if grid_box_distance_km is None:
+        # Use the dataset-based function which handles coordinates properly
+        grid_box_distance_km = grid_box_distance_from_dataset(field.to_dataset(name='temp'), rsphere)
+
+    # Resolution ratio
+    ratio = None if l_eff_km is None else float(l_eff_km / grid_box_distance_km)
+
+    # Package metrics (same structure as wind-based analysis)
+    inner = {
+        "effective_wavenumber": l_eff,
+        "effective_resolution_km": l_eff_km,
+        "grid_box_distance_km": float(grid_box_distance_km),
+        "resolution_ratio": ratio,
+        "resolution_ratio_dx_convention": (
+            None if ratio is None else float(ratio_to_dx_convention(ratio))
+        ),
+        "is_upper_limit": bool(detection["is_upper_limit"]),
+        "steepening_wavenumber": {field_name: l_eff},
+        "steepening_eddy_scale_km": {
+            field_name: None if l_eff is None else float(eddy_scale(l_eff, rsphere))
+        },
+        "field_name": field_name,
+        "analysis_type": "scalar_field",
+        "criterion": {
+            "fit_window": fit_window,
+            "fit_anchor": fit_anchor,
+            "steepening_factor": steepening_factor,
+            "wavenumber_ratio": wavenumber_ratio,
+            "min_wavenumber": min_wavenumber,
+        },
+        "reference": REFERENCE,
+    }
+
+    # Package diagnostics
+    diagnostics = {
+        "spectrum": spectrum_ds,
+        "slope": slope,
+        "detection": detection,
+    }
+
+    # Return in standard structure
+    metrics = {model: {member if member else "unspecified": inner}}
+
+    return metrics, diagnostics

@@ -19,6 +19,14 @@ Klaver, R., Haarsma, R., Vidale, P. L., & Hazeleger, W. (2020). Effective
     https://doi.org/10.1002/asl.952
 """
 
-from .lib import compute_effective_resolution, process_effective_resolution  # noqa
+from .lib import (  # noqa
+    compute_effective_resolution,
+    compute_effective_resolution_scalar,
+    process_effective_resolution,
+)
 
-__all__ = ["compute_effective_resolution", "process_effective_resolution"]
+__all__ = [
+    "compute_effective_resolution",
+    "compute_effective_resolution_scalar",
+    "process_effective_resolution",
+]

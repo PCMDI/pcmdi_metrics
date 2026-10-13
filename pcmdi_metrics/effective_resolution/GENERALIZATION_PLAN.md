@@ -429,11 +429,11 @@ def compute_effective_resolution(
 
 ### Phase 1: Core Functionality (Priority 1)
 1. ✅ Create this plan document
-2. ⬜ Implement `field_to_spherical_harmonics()` in `lib/ke_spectra.py`
-3. ⬜ Implement `compute_power_spectrum()` in `lib/ke_spectra.py`
-4. ⬜ Add unit tests for spherical harmonic transform and power spectrum
-5. ⬜ Implement `compute_effective_resolution_scalar()` in `lib/compute_effective_resolution.py`
-6. ⬜ Add unit tests for full scalar resolution computation
+2. ✅ Implement `field_to_spherical_harmonics()` in `lib/ke_spectra.py`
+3. ✅ Implement `compute_power_spectrum()` in `lib/ke_spectra.py`
+4. ✅ Add unit tests for spherical harmonic transform and power spectrum
+5. ✅ Implement `compute_effective_resolution_scalar()` in `lib/compute_effective_resolution.py`
+6. ✅ Add unit tests for full scalar resolution computation
 
 ### Phase 2: Integration and Testing (Priority 1)
 7. ⬜ Create test with synthetic scalar field (2D Gaussian, known spectrum)
