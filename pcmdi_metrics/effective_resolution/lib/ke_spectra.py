@@ -56,7 +56,9 @@ __all__ = [
     "EARTH_RADIUS",
     "compute_ke_spectra",
     "compute_ke_spectra_timeseries",
+    "compute_power_spectrum",
     "eddy_scale",
+    "field_to_spherical_harmonics",
     "select_pressure_level",
     "sum_over_m",
     "vrtdiv_spectral_coefficients",
@@ -318,6 +320,191 @@ def vrtdiv_spectral_coefficients(
         div[m:, m] = scale * (1j * m * (p * um).sum(1) - (h * vm).sum(1))
 
     return np.arange(ntrunc + 1), vrt, div
+
+
+def field_to_spherical_harmonics(
+    field: np.ndarray,
+    lat: np.ndarray,
+    ntrunc: int | None = None,
+    gridtype: Literal["auto", "regular", "gaussian"] = "auto",
+) -> np.ndarray:
+    """Transform 2D scalar field to spherical harmonic coefficients.
+
+    This is a simpler version of the wind→vorticity/divergence transform,
+    projecting a single scalar field onto the spherical harmonic basis.
+
+    Parameters
+    ----------
+    field : ndarray, shape (nlat, nlon)
+        2D scalar field (e.g., temperature, geopotential height, precipitation).
+    lat : ndarray, shape (nlat,)
+        Latitude in degrees.
+    ntrunc : int or None, optional
+        Triangular truncation wavenumber. Default ``None`` is ``nlat - 1``.
+    gridtype : {"auto", "regular", "gaussian"}, optional
+        Grid type for selecting quadrature weights. Default ``"auto"`` attempts
+        to detect whether latitude spacing is regular or Gaussian.
+
+    Returns
+    -------
+    coeffs : ndarray, shape (ntrunc+1, ntrunc+1), complex
+        Spherical harmonic coefficients :math:`C_{l,m}` where
+        ``coeffs[l, m] = C_lm`` for ``m <= l``, and 0 otherwise.
+
+    Notes
+    -----
+    For a scalar field :math:`\\phi(\\theta, \\lambda)` with spherical harmonic
+    expansion:
+
+    .. math::
+        \\phi(\\theta,\\lambda) = \\sum_l \\sum_{m=-l}^l C_{l,m} Y_{l,m}(\\theta,\\lambda)
+
+    This computes the coefficients :math:`C_{l,m}` via:
+
+    1. FFT in longitude direction
+    2. Legendre transform in latitude direction with appropriate quadrature weights
+
+    See Also
+    --------
+    vrtdiv_spectral_coefficients : Wind field → vorticity/divergence coefficients
+    compute_power_spectrum : Field → power spectrum (uses this function)
+    """
+    nlat, nlon = field.shape
+    if ntrunc is None:
+        ntrunc = nlat - 1
+
+    lat = np.asarray(lat, dtype=float)
+    mu = np.sin(np.deg2rad(lat))
+
+    # Determine grid type and get quadrature weights
+    if gridtype == "auto":
+        dlat = np.diff(lat)
+        if np.std(dlat) < 0.1 * np.abs(dlat.mean()):
+            gridtype = "regular"
+        else:
+            gridtype = "gaussian"
+
+    weights = _quadrature_weights(lat, gridtype)
+
+    # FFT in longitude
+    field_fourier = np.fft.rfft(field, axis=1)
+
+    # Legendre transform in latitude
+    coeffs = np.zeros((ntrunc + 1, ntrunc + 1), dtype=complex)
+
+    for m in range(min(ntrunc + 1, field_fourier.shape[1])):
+        # Get Legendre polynomials P_lm(mu)
+        p, _ = _legendre(m, ntrunc, mu)  # We only need P, not H
+
+        # Project field_fourier[:, m] onto Legendre basis
+        field_m = field_fourier[:, m] * weights
+        coeffs[m:, m] = (p * field_m).sum(1) / nlon
+
+    return coeffs
+
+
+def compute_power_spectrum(
+    field: np.ndarray,
+    lat: np.ndarray,
+    ntrunc: int | None = None,
+    gridtype: Literal["auto", "regular", "gaussian"] = "auto",
+    rsphere: float = EARTH_RADIUS,
+) -> xr.Dataset:
+    """Compute power spectrum of a 2D scalar field via spherical harmonics.
+
+    Parameters
+    ----------
+    field : ndarray, shape (nlat, nlon)
+        2D scalar field (e.g., temperature, geopotential height, precipitation).
+    lat : ndarray, shape (nlat,)
+        Latitude in degrees.
+    ntrunc : int or None, optional
+        Triangular truncation wavenumber. Default ``None`` is ``nlat - 1``.
+    gridtype : {"auto", "regular", "gaussian"}, optional
+        Grid type for selecting quadrature weights.
+    rsphere : float, optional
+        Earth radius in meters. Default is `EARTH_RADIUS`.
+
+    Returns
+    -------
+    ds : xarray.Dataset
+        Dataset containing:
+        - ``power_spectrum`` (wavenumber,): Power :math:`E(l) = \\sum_m |C_{l,m}|^2`
+        - ``wavenumber`` (wavenumber,): Total wavenumber :math:`l`
+        - ``eddy_scale`` (wavenumber,): Half-wavelength scale in km
+
+    Notes
+    -----
+    For a scalar field :math:`\\phi` with spherical harmonic expansion
+    :math:`\\phi = \\sum_l \\sum_m C_{l,m} Y_{l,m}`, the power spectrum is:
+
+    .. math::
+        E(l) = \\sum_{m=-l}^{l} |C_{l,m}|^2
+
+    This represents the variance of the field at each total wavenumber :math:`l`.
+
+    **Physical Interpretation**:
+        - :math:`E(l)` = variance of field at wavenumber :math:`l`
+        - Steepening = loss of variance at small scales
+        - Effective resolution = scale below which variance is artificially damped
+
+    **Differences from Kinetic Energy Spectra**:
+        - Wind fields: KE spectrum from vorticity/divergence decomposition
+        - Scalar fields: Direct power spectrum from field variance
+        - Both use same methodology for detecting spectral steepening
+
+    Examples
+    --------
+    >>> # Temperature field
+    >>> temp = np.random.randn(96, 192)
+    >>> lat = np.linspace(-89.0, 89.0, 96)
+    >>> ds = compute_power_spectrum(temp, lat)
+    >>> ds['power_spectrum']  # doctest: +SKIP
+    <xarray.DataArray 'power_spectrum' (wavenumber: 96)>
+
+    See Also
+    --------
+    field_to_spherical_harmonics : Transform field → spherical harmonic coefficients
+    compute_ke_spectra : Wind fields → kinetic energy spectra
+    """
+    # Transform to spherical harmonic coefficients
+    coeffs = field_to_spherical_harmonics(field, lat, ntrunc, gridtype)
+
+    ntrunc = coeffs.shape[0] - 1
+    ell = np.arange(ntrunc + 1, dtype=float)
+
+    # Compute power spectrum E(l) = sum_m |C_lm|^2
+    # Use sum_over_m which handles the m=-l to m=l summation correctly
+    power = sum_over_m(coeffs)
+
+    # Compute eddy scale
+    scale_km = eddy_scale(ell, rsphere, formula="exact") / 1000.0  # Convert m to km
+
+    # Package as xarray Dataset
+    ds = xr.Dataset(
+        {
+            "power_spectrum": (["wavenumber"], power),
+            "eddy_scale": (["wavenumber"], scale_km),
+        },
+        coords={"wavenumber": (["wavenumber"], ell)},
+    )
+
+    ds["power_spectrum"].attrs = {
+        "long_name": "Power spectrum",
+        "units": "(field units)²",
+        "description": "Variance at each total wavenumber l",
+    }
+    ds["eddy_scale"].attrs = {
+        "long_name": "Eddy scale",
+        "units": "km",
+        "description": "Half-wavelength scale",
+    }
+    ds["wavenumber"].attrs = {
+        "long_name": "Total wavenumber",
+        "units": "1",
+    }
+
+    return ds
 
 
 def sum_over_m(coeffs: np.ndarray) -> np.ndarray:
