@@ -270,6 +270,30 @@ After testing 5 major hypotheses across temporal averaging, truncation, fit para
 
 The implementation is scientifically sound and follows the published methodology. Discrepancies likely arise from undocumented parameters or data differences. Future work should focus on cross-validation with other implementations and direct communication with paper authors.
 
+## Resolution of Investigation (2026-10-12)
+
+**Communication with lead author (Remko Klaver) confirmed the source of discrepancies:**
+
+The reference paper's Table 1 values were determined through **visual inspection and expert interpretation** of spectral plots, not by strictly applying the stated 25% steepening criterion algorithmically. The diagnostic procedure incorporated:
+
+1. **Visual assessment** of "broader spectral behavior" and "progressive deterioration" across wavenumber ranges
+2. **Physical interpretation** to distinguish model characteristics from atmospheric dynamics
+3. **Expert judgment** to exclude local fluctuations deemed minor deviations
+4. **Consideration of contiguous ranges** showing sustained steepening rather than single-point criterion satisfaction
+
+For example, in CMCC-CM2-VHR4, local flattening around l=155 (where the slope temporarily drops below the 25% threshold) was interpreted as a minor deviation and excluded from the final determination, while the broader steepening trend was considered indicative of model resolution limits.
+
+### Conclusion
+
+**No code changes are needed.** The discrepancies are methodological, not implementation errors:
+
+- **Reference approach**: Expert interpretation with physical reasoning, benefits from domain knowledge, not reproducible
+- **This implementation**: Automated algorithmic detection, objective and reproducible, appropriate for systematic model intercomparison
+
+Both methodologies are scientifically valid. This implementation correctly applies the stated criterion and provides consistent, reproducible results suitable for comparing effective resolution across climate models. Results should be interpreted relative to each other rather than expecting exact reproduction of Table 1 values.
+
+**Differences of 10-30% from reference values are expected and acceptable given the fundamentally different detection approaches.**
+
 ---
 
 **References**:
