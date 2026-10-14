@@ -56,7 +56,10 @@ __all__ = [
     "EARTH_RADIUS",
     "compute_ke_spectra",
     "compute_ke_spectra_timeseries",
+    "compute_power_spectrum",
+    "compute_power_spectrum_timeseries",
     "eddy_scale",
+    "field_to_spherical_harmonics",
     "select_pressure_level",
     "sum_over_m",
     "vrtdiv_spectral_coefficients",
@@ -318,6 +321,296 @@ def vrtdiv_spectral_coefficients(
         div[m:, m] = scale * (1j * m * (p * um).sum(1) - (h * vm).sum(1))
 
     return np.arange(ntrunc + 1), vrt, div
+
+
+def field_to_spherical_harmonics(
+    field: np.ndarray,
+    lat: np.ndarray,
+    ntrunc: int | None = None,
+    gridtype: Literal["auto", "regular", "gaussian"] = "auto",
+) -> np.ndarray:
+    """Transform 2D scalar field to spherical harmonic coefficients.
+
+    This is a simpler version of the wind→vorticity/divergence transform,
+    projecting a single scalar field onto the spherical harmonic basis.
+
+    Parameters
+    ----------
+    field : ndarray, shape (nlat, nlon)
+        2D scalar field (e.g., temperature, geopotential height, precipitation).
+    lat : ndarray, shape (nlat,)
+        Latitude in degrees.
+    ntrunc : int or None, optional
+        Triangular truncation wavenumber. Default ``None`` is ``nlat - 1``.
+    gridtype : {"auto", "regular", "gaussian"}, optional
+        Grid type for selecting quadrature weights. Default ``"auto"`` attempts
+        to detect whether latitude spacing is regular or Gaussian.
+
+    Returns
+    -------
+    coeffs : ndarray, shape (ntrunc+1, ntrunc+1), complex
+        Spherical harmonic coefficients :math:`C_{l,m}` where
+        ``coeffs[l, m] = C_lm`` for ``m <= l``, and 0 otherwise.
+
+    Notes
+    -----
+    For a scalar field :math:`\\phi(\\theta, \\lambda)` with spherical harmonic
+    expansion:
+
+    .. math::
+        \\phi(\\theta,\\lambda) = \\sum_l \\sum_{m=-l}^l C_{l,m} Y_{l,m}(\\theta,\\lambda)
+
+    This computes the coefficients :math:`C_{l,m}` via:
+
+    1. FFT in longitude direction
+    2. Legendre transform in latitude direction with appropriate quadrature weights
+
+    See Also
+    --------
+    vrtdiv_spectral_coefficients : Wind field → vorticity/divergence coefficients
+    compute_power_spectrum : Field → power spectrum (uses this function)
+    """
+    nlat, nlon = field.shape
+    if ntrunc is None:
+        ntrunc = nlat - 1
+
+    lat = np.asarray(lat, dtype=float)
+    mu = np.sin(np.deg2rad(lat))
+
+    # Determine grid type and get quadrature weights
+    if gridtype == "auto":
+        dlat = np.diff(lat)
+        if np.std(dlat) < 0.1 * np.abs(dlat.mean()):
+            gridtype = "regular"
+        else:
+            gridtype = "gaussian"
+
+    weights = _quadrature_weights(lat, gridtype)
+
+    # FFT in longitude
+    field_fourier = np.fft.rfft(field, axis=1)
+
+    # Legendre transform in latitude
+    coeffs = np.zeros((ntrunc + 1, ntrunc + 1), dtype=complex)
+
+    for m in range(min(ntrunc + 1, field_fourier.shape[1])):
+        # Get Legendre polynomials P_lm(mu)
+        p, _ = _legendre(m, ntrunc, mu)  # We only need P, not H
+
+        # Project field_fourier[:, m] onto Legendre basis
+        field_m = field_fourier[:, m] * weights
+        coeffs[m:, m] = (p * field_m).sum(1) / nlon
+
+    return coeffs
+
+
+def compute_power_spectrum(
+    field: np.ndarray,
+    lat: np.ndarray,
+    ntrunc: int | None = None,
+    gridtype: Literal["auto", "regular", "gaussian"] = "auto",
+    rsphere: float = EARTH_RADIUS,
+) -> xr.Dataset:
+    """Compute power spectrum of a 2D scalar field via spherical harmonics.
+
+    Parameters
+    ----------
+    field : ndarray, shape (nlat, nlon)
+        2D scalar field (e.g., temperature, geopotential height, precipitation).
+    lat : ndarray, shape (nlat,)
+        Latitude in degrees.
+    ntrunc : int or None, optional
+        Triangular truncation wavenumber. Default ``None`` is ``nlat - 1``.
+    gridtype : {"auto", "regular", "gaussian"}, optional
+        Grid type for selecting quadrature weights.
+    rsphere : float, optional
+        Earth radius in meters. Default is `EARTH_RADIUS`.
+
+    Returns
+    -------
+    ds : xarray.Dataset
+        Dataset containing:
+        - ``power_spectrum`` (wavenumber,): Power :math:`E(l) = \\sum_m |C_{l,m}|^2`
+        - ``wavenumber`` (wavenumber,): Total wavenumber :math:`l`
+        - ``eddy_scale`` (wavenumber,): Half-wavelength scale in km
+
+    Notes
+    -----
+    For a scalar field :math:`\\phi` with spherical harmonic expansion
+    :math:`\\phi = \\sum_l \\sum_m C_{l,m} Y_{l,m}`, the power spectrum is:
+
+    .. math::
+        E(l) = \\sum_{m=-l}^{l} |C_{l,m}|^2
+
+    This represents the variance of the field at each total wavenumber :math:`l`.
+
+    **Physical Interpretation**:
+        - :math:`E(l)` = variance of field at wavenumber :math:`l`
+        - Steepening = loss of variance at small scales
+        - Effective resolution = scale below which variance is artificially damped
+
+    **Differences from Kinetic Energy Spectra**:
+        - Wind fields: KE spectrum from vorticity/divergence decomposition
+        - Scalar fields: Direct power spectrum from field variance
+        - Both use same methodology for detecting spectral steepening
+
+    Examples
+    --------
+    >>> # Temperature field
+    >>> temp = np.random.randn(96, 192)
+    >>> lat = np.linspace(-89.0, 89.0, 96)
+    >>> ds = compute_power_spectrum(temp, lat)
+    >>> ds['power_spectrum']  # doctest: +SKIP
+    <xarray.DataArray 'power_spectrum' (wavenumber: 96)>
+
+    See Also
+    --------
+    field_to_spherical_harmonics : Transform field → spherical harmonic coefficients
+    compute_ke_spectra : Wind fields → kinetic energy spectra
+    """
+    # Transform to spherical harmonic coefficients
+    coeffs = field_to_spherical_harmonics(field, lat, ntrunc, gridtype)
+
+    ntrunc = coeffs.shape[0] - 1
+    ell = np.arange(ntrunc + 1, dtype=float)
+
+    # Compute power spectrum E(l) = sum_m |C_lm|^2
+    # Use sum_over_m which handles the m=-l to m=l summation correctly
+    power = sum_over_m(coeffs)
+
+    # Compute eddy scale
+    scale_km = eddy_scale(ell, rsphere, formula="exact") / 1000.0  # Convert m to km
+
+    # Package as xarray Dataset
+    ds = xr.Dataset(
+        {
+            "power_spectrum": (["wavenumber"], power),
+            "eddy_scale": (["wavenumber"], scale_km),
+        },
+        coords={"wavenumber": (["wavenumber"], ell)},
+    )
+
+    ds["power_spectrum"].attrs = {
+        "long_name": "Power spectrum",
+        "units": "(field units)²",
+        "description": "Variance at each total wavenumber l",
+    }
+    ds["eddy_scale"].attrs = {
+        "long_name": "Eddy scale",
+        "units": "km",
+        "description": "Half-wavelength scale",
+    }
+    ds["wavenumber"].attrs = {
+        "long_name": "Total wavenumber",
+        "units": "1",
+    }
+
+    return ds
+
+
+def compute_power_spectrum_timeseries(
+    field: xr.DataArray,
+    time_mean: bool = True,
+    **kwargs: Any,
+) -> xr.Dataset:
+    """Power spectrum for every time step, optionally averaged.
+
+    Computes power spectrum for each timestep then averages the spectra.
+    This is the scientifically correct approach for time-varying fields,
+    following Klaver et al. (2020) methodology: averaging spectra preserves
+    transient variance, while averaging fields first would suppress small-scale
+    variability.
+
+    Parameters
+    ----------
+    field : xarray.DataArray
+        Scalar field with dimensions ``(time, lat, lon)`` or ``(lat, lon)``.
+        If no time dimension exists, falls back to `compute_power_spectrum`.
+    time_mean : bool, optional
+        If ``True`` (default), average the spectra over time *after* computing
+        them. Averaging spectra rather than fields is what the paper does;
+        averaging the fields first would destroy the transient variance the
+        diagnostic lives on.
+    **kwargs
+        Forwarded to `compute_power_spectrum` (``ntrunc``, ``gridtype``,
+        ``rsphere``).
+
+    Returns
+    -------
+    xarray.Dataset
+        As `compute_power_spectrum`, with a leading ``time`` dimension when
+        ``time_mean`` is ``False``.
+
+    Notes
+    -----
+    **Critical for Scientific Correctness**
+
+    This function ensures proper time averaging for spectral analysis:
+
+    ❌ **Wrong approach (suppresses variance):**
+        field_mean = field.mean(dim='time')
+        spectrum = compute_power_spectrum(field_mean)
+
+    ✅ **Correct approach (this function):**
+        spectra = [compute_power_spectrum(field[t]) for t in times]
+        spectrum_mean = mean(spectra)
+
+    The difference matters: averaging fields first loses transient fluctuations
+    that dominate variance at small scales, leading to systematically smoother
+    spectra and biased effective resolution estimates.
+
+    Examples
+    --------
+    >>> # Temperature with time dimension
+    >>> temp = xr.DataArray(
+    ...     np.random.randn(10, 96, 192),
+    ...     dims=['time', 'lat', 'lon'],
+    ...     coords={'lat': np.linspace(-89, 89, 96)}
+    ... )
+    >>> spec = compute_power_spectrum_timeseries(temp)  # doctest: +SKIP
+    >>> spec.attrs['n_times_averaged']  # doctest: +SKIP
+    10
+
+    See Also
+    --------
+    compute_power_spectrum : Single-timestep power spectrum
+    compute_ke_spectra_timeseries : Time-averaged KE spectra for winds
+    """
+    from pcmdi_metrics.io import get_latitude_key, get_time_key
+
+    # Get latitude coordinate
+    lat_key = "lat" if "lat" in field.dims else get_latitude_key(field)
+    lat = field[lat_key].values
+
+    # Check for time dimension
+    try:
+        time_key = get_time_key(field)
+    except Exception:
+        time_key = None
+
+    # No time dimension or already 2D: fall back to single spectrum
+    if time_key is None or time_key not in field.dims or field.ndim <= 2:
+        return compute_power_spectrum(field.values, lat, **kwargs)
+
+    # Loop over time and compute spectrum for each timestep
+    n_times = field.sizes[time_key]
+    spectra = []
+    for i in range(n_times):
+        field_2d = field.isel({time_key: i}).values
+        spec = compute_power_spectrum(field_2d, lat, **kwargs)
+        spectra.append(spec)
+
+    # Concatenate along time dimension
+    out = xr.concat(spectra, dim=time_key).assign_coords({time_key: field[time_key]})
+    attrs = dict(spectra[0].attrs)
+
+    # Average over time if requested
+    if time_mean:
+        attrs["n_times_averaged"] = out.sizes[time_key]
+        out = out.mean(dim=time_key, keep_attrs=True)
+
+    out.attrs = attrs
+    return out
 
 
 def sum_over_m(coeffs: np.ndarray) -> np.ndarray:

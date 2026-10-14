@@ -19,6 +19,29 @@ Klaver, R., Haarsma, R., Vidale, P. L., & Hazeleger, W. (2020). Effective
     https://doi.org/10.1002/asl.952
 """
 
-from .lib import compute_effective_resolution, process_effective_resolution  # noqa
+# Primary diagnostic APIs
+from .lib import (  # noqa
+    compute_effective_resolution,
+    compute_effective_resolution_scalar,
+    process_effective_resolution,
+)
 
-__all__ = ["compute_effective_resolution", "process_effective_resolution"]
+# Spectral computation APIs (promoted from .lib for easier access)
+from .lib import (  # noqa
+    compute_ke_spectra,
+    compute_ke_spectra_timeseries,
+    compute_power_spectrum,
+    compute_power_spectrum_timeseries,
+)
+
+__all__ = [
+    # Full diagnostic computation
+    "compute_effective_resolution",
+    "compute_effective_resolution_scalar",
+    "process_effective_resolution",
+    # Spectral analysis (standalone)
+    "compute_ke_spectra",
+    "compute_ke_spectra_timeseries",
+    "compute_power_spectrum",
+    "compute_power_spectrum_timeseries",
+]

@@ -18,6 +18,7 @@ Supporting utilities (also available but considered internal):
 from .compute_effective_resolution import (  # noqa
     SPECTRUM_KEYS,
     compute_effective_resolution,
+    compute_effective_resolution_scalar,
     process_effective_resolution,
 )
 
@@ -31,7 +32,10 @@ from .ke_spectra import (  # noqa
     EARTH_RADIUS,
     compute_ke_spectra,
     compute_ke_spectra_timeseries,
+    compute_power_spectrum,
+    compute_power_spectrum_timeseries,
     eddy_scale,
+    field_to_spherical_harmonics,
     select_pressure_level,
     sum_over_m,
     vrtdiv_spectral_coefficients,
@@ -47,11 +51,15 @@ from .spectral_slope import (  # noqa
 __all__ = [
     # Primary public API
     "compute_effective_resolution",
+    "compute_effective_resolution_scalar",
     "process_effective_resolution",
     "SPECTRUM_KEYS",
     # Spectra
     "compute_ke_spectra",
     "compute_ke_spectra_timeseries",
+    "compute_power_spectrum",
+    "compute_power_spectrum_timeseries",
+    "field_to_spherical_harmonics",
     "vrtdiv_spectral_coefficients",
     "sum_over_m",
     "select_pressure_level",

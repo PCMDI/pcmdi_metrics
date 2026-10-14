@@ -44,6 +44,7 @@ def plot_spectra_and_slope(
     diagnostics: dict[str, Any],
     metrics: dict[str, Any] | None = None,
     compensate: float | None = 3.0,
+    flatten: bool | None = None,
     title: str = "",
     output_file: str | None = None,
     figsize: tuple[float, float] = (7.0, 8.0),
@@ -70,6 +71,13 @@ def plot_spectra_and_slope(
         Exponent :math:`p` in the compensation :math:`l^{p} E_l`.  Default
         ``3.0``, so a :math:`k^{-3}` spectrum plots flat (Figure 1).
         Set to ``None`` or ``0`` for uncompensated spectra (Figure S3).
+        Overridden by ``flatten`` if both are provided.
+    flatten : bool or None, optional
+        If ``True`` (default), plot l³E(l) flattened spectrum for better
+        visualization of spectral slope changes. If ``False``, plot raw E(l)
+        spectrum. This is a convenience parameter that sets ``compensate=3.0``
+        when ``True`` and ``compensate=None`` when ``False``. If ``None``,
+        falls back to the ``compensate`` parameter value.
     title : str, optional
         Figure title.
     output_file : str or None, optional
@@ -86,9 +94,9 @@ def plot_spectra_and_slope(
         Figure 1, use ``(13, 240)`` or similar depending on model resolution.
     spec_ylim : tuple of float or None, optional
         y-limits for the spectrum panel. If ``None`` (default),
-        automatically determined from data. For compensated spectra (Figure 1),
-        use ``(1e0, 1e2)``. For uncompensated (Figure S3), use ``(1e-2, 1e2)``
-        or adjust based on model output.
+        automatically determined from data. For flattened spectra (default),
+        use ``(1e0, 1e2)``. For raw spectra (``flatten=False``), use
+        ``(1e-2, 1e2)`` or adjust based on model output.
     xticks : sequence of float or None, optional
         Custom x-axis (wavenumber) tick positions for both panels. If ``None``
         (default), matplotlib automatically selects tick positions. To match
@@ -107,15 +115,20 @@ def plot_spectra_and_slope(
 
     Examples
     --------
-    >>> # Compensated spectrum (Figure 1):
+    >>> # Flattened spectrum (default, Figure 1):
     >>> fig = plot_spectra_and_slope(diags, metrics["M"]["r1i1p1f1"])  # doctest: +SKIP
+    >>> # Raw spectrum (Figure S3):
+    >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
+    ...     diags, metrics["M"]["r1i1p1f1"],
+    ...     flatten=False, spec_ylim=(1e-2, 1e2)
+    ... )
     >>> # Match paper Figure 1 axis ranges and ticks:
     >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
     ...     diags, metrics["M"]["r1i1p1f1"],
     ...     xlim=(13, 240), spec_ylim=(1e0, 1e2), slope_ylim=(1, 5),
     ...     xticks=[13, 20, 32, 40, 60, 80, 100, 120, 160, 200, 240]
     ... )
-    >>> # Uncompensated spectrum (Figure S3):
+    >>> # Legacy: Using compensate parameter directly (still supported):
     >>> fig = plot_spectra_and_slope(  # doctest: +SKIP
     ...     diags, metrics["M"]["r1i1p1f1"],
     ...     compensate=None, xlim=(13, 240), spec_ylim=(1e-2, 1e2)
@@ -126,6 +139,10 @@ def plot_spectra_and_slope(
     spectra = diagnostics["spectra"]
     slopes = diagnostics["slopes"]
     detections = diagnostics["detections"]
+
+    # Handle flatten parameter - it takes precedence over compensate
+    if flatten is not None:
+        compensate = 3.0 if flatten else None
 
     # Determine if we're doing compensation
     do_compensate = compensate is not None and compensate != 0
