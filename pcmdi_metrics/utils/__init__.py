@@ -16,6 +16,7 @@ from .dates import (
     replace_date_pattern,
 )
 from .download import download_files_from_github
+from .extract_level import extract_level
 from .grid import (
     calculate_area_weights,
     calculate_grid_area,

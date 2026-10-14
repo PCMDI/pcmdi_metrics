@@ -4,7 +4,7 @@ Hadley Cell Metrics
 Compute Hadley cell edge positions and meridional stream function.
 
 Created By: Kristin Chang (December 2025)
-Last Updated: August 2026
+Last Updated: September 2026
 
 References:
 Hur, I., Yoo, C., Yeh, S.-W., Kim, Y.-H., & Seo, K.-H. (2024). Processes driving the intermodel spread of the Southern Hemisphere Hadley Circulation expansion in CMIP6 models. Journal of Geophysical Research: Atmospheres, 129, e2024JD041726. https://doi.org/10.1029/2024JD041726
@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from scipy import integrate, stats
+
+from pcmdi_metrics.utils import extract_level
 
 
 def hadley_cell_metrics(
@@ -245,10 +247,8 @@ def compute_hadley_edges(
     # Annual mean
     psi_ann = psi.resample({time_dim: "YE"}).mean()
 
-    # Select 500 hPa level
-    lev_units = psi[lev_dim].attrs.get("units", "Pa")
-    lev_500 = 500 if lev_units == "hPa" else 50000
-    psi_500 = psi_ann.sel({lev_dim: lev_500})
+    # Select 500 hPa level using helper to handle floating-point precision
+    psi_500 = extract_level(psi_ann, level=500, lev_dim=lev_dim)
 
     # Calculate edges for each year
     edge_nh = xr.apply_ufunc(
@@ -371,10 +371,8 @@ def compute_seasonal_climatology(
         dim=xr.DataArray(seasons, dims="season", name="season"),
     )
 
-    # Extract 500 hPa
-    lev_units = psi[lev_dim].attrs.get("units", "Pa")
-    lev_500 = 500 if lev_units == "hPa" else 50000
-    clim_psi500 = clim_all.sel({lev_dim: lev_500})
+    # Extract 500 hPa using helper to handle floating-point precision
+    clim_psi500 = extract_level(clim_all, level=500, lev_dim=lev_dim)
 
     # Plot
     plot_path = _plot_seasonal_psi(clim_all, model_name, output_path, lev_dim, lat_dim)
