@@ -43,6 +43,8 @@ To make it easier to run these demos, we recommend cloning the `PMP GitHub repos
    examples/sea_ice_iiee_metrics
    examples/Demo_10_qbo_mjo
    examples/Demo_11_hadley_cell_metrics
+   examples/Demo_12_effective_resolution
+   examples/Demo_12b_scalar_effective_resolution
 
 Plots
 ~~~~~
