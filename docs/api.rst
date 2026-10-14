@@ -28,12 +28,32 @@ integration into workflows, while maintaining consistency with the package’s e
 Atmospheric Circulation & Dynamics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+**Effective Resolution Diagnostics:**
+
 .. autosummary::
     :toctree: generated/
 
     effective_resolution.compute_effective_resolution
     effective_resolution.compute_effective_resolution_scalar
     effective_resolution.process_effective_resolution
+
+**Spectral Analysis (Standalone):**
+
+Compute kinetic energy or power spectra without running the full effective resolution diagnostic.
+Useful for turbulence analysis, model evaluation, or custom spectral studies.
+
+.. autosummary::
+    :toctree: generated/
+
+    effective_resolution.compute_ke_spectra
+    effective_resolution.compute_ke_spectra_timeseries
+    effective_resolution.compute_power_spectrum
+
+**Other Diagnostics:**
+
+.. autosummary::
+    :toctree: generated/
+
     hadley_cell.hadley_cell_metrics
     qbo.compute_qbo_mjo_metrics
 
