@@ -31,6 +31,7 @@ from .lib import (  # noqa
     compute_ke_spectra,
     compute_ke_spectra_timeseries,
     compute_power_spectrum,
+    compute_power_spectrum_timeseries,
 )
 
 __all__ = [
@@ -42,4 +43,5 @@ __all__ = [
     "compute_ke_spectra",
     "compute_ke_spectra_timeseries",
     "compute_power_spectrum",
+    "compute_power_spectrum_timeseries",
 ]

@@ -818,25 +818,12 @@ def compute_effective_resolution_scalar(
     compute_effective_resolution : Wind-based effective resolution
     compute_power_spectrum : Low-level power spectrum computation
     """
-    from pcmdi_metrics.io import get_latitude_key, get_time_key
-
     from .grid_distance import grid_box_distance_from_dataset
-    from .ke_spectra import compute_power_spectrum, eddy_scale
+    from .ke_spectra import compute_power_spectrum_timeseries, eddy_scale
     from .spectral_slope import detect_steepening, fit_spectral_slope
 
-    # Extract coordinates
-    lat_key = "lat" if "lat" in field.dims else get_latitude_key(field)
-    lat = field[lat_key].values
-
-    # Time average if present
-    time_key = get_time_key(field) if "time" in field.dims else None
-    if time_key:
-        field_2d = field.mean(dim=time_key).values
-    else:
-        field_2d = field.values
-
-    # Ensure 2D
-    if field_2d.ndim != 2:
+    # Ensure field has correct dimensions
+    if field.ndim < 2 or field.ndim > 3:
         raise ValueError(
             f"Field must be 2D (lat, lon) or 3D (time, lat, lon), got shape {field.shape} with dims {field.dims}"
         )
@@ -845,9 +832,12 @@ def compute_effective_resolution_scalar(
     if field_name is None:
         field_name = str(field.name) if field.name else "field"
 
-    # Compute power spectrum
-    spectrum_ds = compute_power_spectrum(
-        field_2d, lat, ntrunc=ntrunc, gridtype=gridtype, rsphere=rsphere
+    # Compute power spectrum with proper time averaging
+    # CRITICAL: Use compute_power_spectrum_timeseries to ensure scientifically
+    # correct time averaging (average spectra, not fields). This preserves
+    # transient variance that would be lost if we averaged fields first.
+    spectrum_ds = compute_power_spectrum_timeseries(
+        field, time_mean=True, ntrunc=ntrunc, gridtype=gridtype, rsphere=rsphere
     )
 
     # Fit spectral slope (reuse existing function!)

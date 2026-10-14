@@ -57,6 +57,7 @@ __all__ = [
     "compute_ke_spectra",
     "compute_ke_spectra_timeseries",
     "compute_power_spectrum",
+    "compute_power_spectrum_timeseries",
     "eddy_scale",
     "field_to_spherical_harmonics",
     "select_pressure_level",
@@ -505,6 +506,111 @@ def compute_power_spectrum(
     }
 
     return ds
+
+
+def compute_power_spectrum_timeseries(
+    field: xr.DataArray,
+    time_mean: bool = True,
+    **kwargs: Any,
+) -> xr.Dataset:
+    """Power spectrum for every time step, optionally averaged.
+
+    Computes power spectrum for each timestep then averages the spectra.
+    This is the scientifically correct approach for time-varying fields,
+    following Klaver et al. (2020) methodology: averaging spectra preserves
+    transient variance, while averaging fields first would suppress small-scale
+    variability.
+
+    Parameters
+    ----------
+    field : xarray.DataArray
+        Scalar field with dimensions ``(time, lat, lon)`` or ``(lat, lon)``.
+        If no time dimension exists, falls back to `compute_power_spectrum`.
+    time_mean : bool, optional
+        If ``True`` (default), average the spectra over time *after* computing
+        them. Averaging spectra rather than fields is what the paper does;
+        averaging the fields first would destroy the transient variance the
+        diagnostic lives on.
+    **kwargs
+        Forwarded to `compute_power_spectrum` (``ntrunc``, ``gridtype``,
+        ``rsphere``).
+
+    Returns
+    -------
+    xarray.Dataset
+        As `compute_power_spectrum`, with a leading ``time`` dimension when
+        ``time_mean`` is ``False``.
+
+    Notes
+    -----
+    **Critical for Scientific Correctness**
+
+    This function ensures proper time averaging for spectral analysis:
+
+    ❌ **Wrong approach (suppresses variance):**
+        field_mean = field.mean(dim='time')
+        spectrum = compute_power_spectrum(field_mean)
+
+    ✅ **Correct approach (this function):**
+        spectra = [compute_power_spectrum(field[t]) for t in times]
+        spectrum_mean = mean(spectra)
+
+    The difference matters: averaging fields first loses transient fluctuations
+    that dominate variance at small scales, leading to systematically smoother
+    spectra and biased effective resolution estimates.
+
+    Examples
+    --------
+    >>> # Temperature with time dimension
+    >>> temp = xr.DataArray(
+    ...     np.random.randn(10, 96, 192),
+    ...     dims=['time', 'lat', 'lon'],
+    ...     coords={'lat': np.linspace(-89, 89, 96)}
+    ... )
+    >>> spec = compute_power_spectrum_timeseries(temp)  # doctest: +SKIP
+    >>> spec.attrs['n_times_averaged']  # doctest: +SKIP
+    10
+
+    See Also
+    --------
+    compute_power_spectrum : Single-timestep power spectrum
+    compute_ke_spectra_timeseries : Time-averaged KE spectra for winds
+    """
+    from pcmdi_metrics.io import get_latitude_key, get_time_key
+
+    # Get latitude coordinate
+    lat_key = "lat" if "lat" in field.dims else get_latitude_key(field)
+    lat = field[lat_key].values
+
+    # Check for time dimension
+    try:
+        time_key = get_time_key(field)
+    except Exception:
+        time_key = None
+
+    # No time dimension or already 2D: fall back to single spectrum
+    if time_key is None or time_key not in field.dims or field.ndim <= 2:
+        return compute_power_spectrum(field.values, lat, **kwargs)
+
+    # Loop over time and compute spectrum for each timestep
+    n_times = field.sizes[time_key]
+    spectra = []
+    for i in range(n_times):
+        field_2d = field.isel({time_key: i}).values
+        spec = compute_power_spectrum(field_2d, lat, **kwargs)
+        spectra.append(spec)
+
+    # Concatenate along time dimension
+    out = xr.concat(spectra, dim=time_key).assign_coords({time_key: field[time_key]})
+    attrs = dict(spectra[0].attrs)
+
+    # Average over time if requested
+    if time_mean:
+        attrs["n_times_averaged"] = out.sizes[time_key]
+        out = out.mean(dim=time_key, keep_attrs=True)
+
+    out.attrs = attrs
+    return out
 
 
 def sum_over_m(coeffs: np.ndarray) -> np.ndarray:
