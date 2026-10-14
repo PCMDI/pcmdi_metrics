@@ -25,6 +25,9 @@ integration into workflows, while maintaining consistency with the package’s e
    - ``effective_resolution`` APIs are available in version ``v4.2.2`` or later.
 
 
+Atmospheric Circulation & Dynamics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autosummary::
     :toctree: generated/
 
@@ -32,24 +35,55 @@ integration into workflows, while maintaining consistency with the package’s e
     effective_resolution.compute_effective_resolution_scalar
     effective_resolution.process_effective_resolution
     hadley_cell.hadley_cell_metrics
-    mjo.compute_mjo_ewr_from_dataset
     qbo.compute_qbo_mjo_metrics
-    sea_ice.calc_iiee_annual_cycle
+
+Tropical Variability
+^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+    :toctree: generated/
+
+    mjo.compute_mjo_ewr_from_dataset
+
+Extratropical Variability Modes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+    :toctree: generated/
+
     variability_mode.NAO
     variability_mode.NAM
     variability_mode.SAM
-    variability_mode.PSA1
-    variability_mode.PSA2
     variability_mode.PNA
     variability_mode.NPO
+    variability_mode.PSA1
+    variability_mode.PSA2
+    variability_mode.eof_classification
+
+Climate Oscillations
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+    :toctree: generated/
+
     variability_mode.PDO
     variability_mode.NPGO
     variability_mode.AMO
-    variability_mode.eof_classification
+
+Cryosphere
+^^^^^^^^^^
+
+.. autosummary::
+    :toctree: generated/
+
+    sea_ice.calc_iiee_annual_cycle
 
 
 Custom calendars
 ~~~~~~~~~~~~~~~~
+
+Functions for computing seasonal averages and departures with custom calendar definitions.
+
 .. autosummary::
     :toctree: generated/
 
@@ -60,6 +94,9 @@ Custom calendars
 
 Data load
 ~~~~~~~~~
+
+Load climate model and observational datasets using xCDAT.
+
 .. autosummary::
     :toctree: generated/
 
@@ -68,6 +105,9 @@ Data load
 
 Date
 ~~~~
+
+Utilities for date string formatting, parsing, and finding overlapping time periods.
+
 .. autosummary::
     :toctree: generated/
 
@@ -78,6 +118,9 @@ Date
 
 Land-sea mask
 ~~~~~~~~~~~~~
+
+Create and apply land-sea masks to datasets for ocean-only or land-only analysis.
+
 .. autosummary::
     :toctree: generated/
 
@@ -89,7 +132,7 @@ Land-sea mask
 Graphics
 ~~~~~~~~
 
-Example usages of the following plotting functions are available in the `demo notebooks <demo-notebooks.html#plots>`_.
+Plotting functions for model evaluation and intercomparison. Example usages are available in the `demo notebooks <demo-notebooks.html#plots>`_.
 
 .. autosummary::
     :toctree: generated/
@@ -101,6 +144,9 @@ Example usages of the following plotting functions are available in the `demo no
 
 Grid and regrid
 ~~~~~~~~~~~~~~~
+
+Functions for creating target grids and regridding datasets to different spatial resolutions.
+
 .. autosummary::
     :toctree: generated/
 
@@ -110,6 +156,9 @@ Grid and regrid
 
 Region handling
 ~~~~~~~~~~~~~~~
+
+Tools for defining, loading, and subsetting spatial regions from global datasets.
+
 .. autosummary::
     :toctree: generated/
 
@@ -119,7 +168,10 @@ Region handling
 
 
 Retrieve data from xarray Dataset
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Helper functions for extracting coordinates, axes, and metadata from xarray Datasets.
+
 .. autosummary::
     :toctree: generated/
 
@@ -140,7 +192,10 @@ Retrieve data from xarray Dataset
 
 
 Quality control (QC) and repair
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Functions for checking and repairing time axes in climate datasets.
+
 .. autosummary::
     :toctree: generated/
 
@@ -151,6 +206,9 @@ Quality control (QC) and repair
 
 Miscellaneous tools
 ~~~~~~~~~~~~~~~~~~~
+
+General utility functions for file system operations and template string formatting.
+
 .. autosummary::
     :toctree: generated/
 
@@ -162,7 +220,7 @@ Miscellaneous tools
 Viewer
 ~~~~~~
 
-Viewer is available in `pcmdi_metrics (> v3.9.1)` or higher.
+Generate interactive HTML output viewer for multi-model metric results. Available in `pcmdi_metrics (> v3.9.1)` or higher.
 
 .. autosummary::
     :toctree: generated/
