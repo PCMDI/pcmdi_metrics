@@ -1,0 +1,3 @@
+[submodule "arm_diag/arm-gcm-diagnostics"]
+	path = pcmdi_metrics/arm_diag/arm-gcm-diagnostics
+	url = https://github.com/ARM-DOE/arm-gcm-diagnostics
