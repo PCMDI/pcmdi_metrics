@@ -818,8 +818,10 @@ def compute_effective_resolution_scalar(
     compute_effective_resolution : Wind-based effective resolution
     compute_power_spectrum : Low-level power spectrum computation
     """
+    from pcmdi_metrics.io import get_latitude_key, get_time_key
+
     from .grid_distance import grid_box_distance_from_dataset
-    from .ke_spectra import EARTH_RADIUS, compute_power_spectrum, eddy_scale
+    from .ke_spectra import compute_power_spectrum, eddy_scale
     from .spectral_slope import detect_steepening, fit_spectral_slope
 
     # Extract coordinates
