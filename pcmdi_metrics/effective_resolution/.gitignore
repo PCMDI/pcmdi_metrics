@@ -1,10 +1,10 @@
 # Temporary investigation files
-CMCC_parameter_sensitivity.md
-diagnose_anchor_effect.py
+/CMCC_parameter_sensitivity.md
+/diagnose_anchor_effect.py
 
 # Generated output files
-output/
-demo_effective_resolution.html
+/output/
+/demo_effective_resolution.html
 
 # Temporary/cleanup directories
-_to_delete/
+/_to_delete/
