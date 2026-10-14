@@ -58,17 +58,10 @@ Extratropical Variability Modes
     variability_mode.NPO
     variability_mode.PSA1
     variability_mode.PSA2
-    variability_mode.eof_classification
-
-Climate Oscillations
-^^^^^^^^^^^^^^^^^^^^^
-
-.. autosummary::
-    :toctree: generated/
-
     variability_mode.PDO
     variability_mode.NPGO
     variability_mode.AMO
+    variability_mode.eof_classification
 
 Cryosphere
 ^^^^^^^^^^
