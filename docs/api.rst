@@ -18,7 +18,7 @@ capabilities available through a cleaner, more flexible and accessible for users
 additional diagnostics and metric calculations will be exposed in a way that supports both programmatic use and 
 integration into workflows, while maintaining consistency with the package’s existing design and documentation conventions.
 
-The `variability_mode.eof_classification` and `sea_ice.calc_iiee_annual_cycle` APIs are available in `pcmdi_metrics` version `v4.1` and later. 
+The `variability_mode.eof_classification` and `sea_ice.calc_iiee_annual_cycle` APIs are available in `pcmdi_metrics` version `v4.1` and later.
 The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` version `v4.1.1` and later. `variability_mode`, `qbo`, and `hadley_cell` APIs are available in version `v4.2` or later.
 
 
@@ -40,6 +40,26 @@ The `mjo.compute_mjo_ewr_from_dataset` API is available in `pcmdi_metrics` versi
     variability_mode.NPGO
     variability_mode.AMO
     variability_mode.eof_classification
+
+
+Effective Resolution
+~~~~~~~~~~~~~~~~~~~~
+
+The effective resolution diagnostic estimates the smallest spatial scale a climate model plausibly resolves,
+following Klaver et al. (2020). Available in `pcmdi_metrics` version `v4.3` and later.
+
+**Wind-based analysis** (original): Requires u and v wind fields at 250 and 500 hPa. Uses kinetic energy spectra
+of rotational and divergent components with 2-of-3 confirmation rule across multiple spectra.
+
+**Scalar field analysis** (new): Works with any single 2D atmospheric or oceanic field (temperature, geopotential,
+precipitation, SST, etc.). Uses power spectrum of field variance with single-spectrum detection.
+
+.. autosummary::
+    :toctree: generated/
+
+    effective_resolution.compute_effective_resolution
+    effective_resolution.compute_effective_resolution_scalar
+    effective_resolution.process_effective_resolution
 
 Custom calendars
 ~~~~~~~~~~~~~~~~
