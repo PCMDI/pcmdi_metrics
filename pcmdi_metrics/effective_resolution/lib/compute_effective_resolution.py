@@ -68,6 +68,79 @@ SPECTRUM_KEYS: tuple[tuple[int, str], ...] = ((250, "div"), (250, "rot"), (500, 
 REFERENCE = "Klaver et al. (2020), doi:10.1002/asl.952"
 
 
+def _package_metrics_dict(
+    l_eff: float | None,
+    l_eff_km: float | None,
+    grid_box_distance_km: float,
+    ratio: float | None,
+    is_upper_limit: bool,
+    fit_window: int,
+    fit_anchor: str,
+    steepening_factor: float,
+    wavenumber_ratio: float,
+    min_wavenumber: int,
+    rsphere: float = EARTH_RADIUS,
+    **extra_fields,
+) -> dict[str, Any]:
+    """Package metrics dict with common fields.
+
+    Helper to eliminate duplication between wind-based and scalar analyses.
+
+    Parameters
+    ----------
+    l_eff : float or None
+        Effective wavenumber
+    l_eff_km : float or None
+        Effective resolution in km
+    grid_box_distance_km : float
+        Grid box distance
+    ratio : float or None
+        Resolution ratio
+    is_upper_limit : bool
+        Whether detection is at minimum wavenumber
+    fit_window : int
+        Slope fitting window size
+    fit_anchor : str
+        Slope fitting anchor position
+    steepening_factor : float
+        Steepening threshold
+    wavenumber_ratio : float
+        Wavenumber ratio for steepening
+    min_wavenumber : int
+        Minimum wavenumber for detection
+    rsphere : float
+        Sphere radius
+    **extra_fields
+        Additional fields to include (e.g., n_confirm, field_name, analysis_type)
+
+    Returns
+    -------
+    dict
+        Metrics dictionary with all common fields
+    """
+    inner = {
+        "effective_wavenumber": l_eff,
+        "effective_resolution_km": l_eff_km,
+        "grid_box_distance_km": float(grid_box_distance_km),
+        "resolution_ratio": ratio,
+        "resolution_ratio_dx_convention": (
+            None if ratio is None else float(ratio_to_dx_convention(ratio))
+        ),
+        "is_upper_limit": bool(is_upper_limit),
+        "criterion": {
+            "fit_window": fit_window,
+            "fit_anchor": fit_anchor,
+            "steepening_factor": steepening_factor,
+            "wavenumber_ratio": wavenumber_ratio,
+            "min_wavenumber": min_wavenumber,
+        },
+        "reference": REFERENCE,
+    }
+    # Add any analysis-specific fields
+    inner.update(extra_fields)
+    return inner
+
+
 def compute_effective_resolution(
     ds: xr.Dataset,
     uvar: str = "ua",
@@ -380,25 +453,33 @@ def compute_effective_resolution(
         grid_box_distance_km = grid_box_distance_from_dataset(ds, rsphere=rsphere)
     ratio = None if l_eff_km is None else float(l_eff_km / grid_box_distance_km)
 
-    inner: dict[str, Any] = {
-        "effective_wavenumber": l_eff,
-        "effective_resolution_km": l_eff_km,
-        "grid_box_distance_km": float(grid_box_distance_km),
-        "resolution_ratio": ratio,
-        "resolution_ratio_dx_convention": (
-            None if ratio is None else float(ratio_to_dx_convention(ratio))
-        ),
-        "is_upper_limit": bool(
-            l_eff is not None
-            and any(
-                d["is_upper_limit"]
-                for d in detections.values()
-                if d["wavenumber"] is not None and d["wavenumber"] <= l_eff
-            )
-        ),
-        "n_spectra_steepening": len(detected),
-        "steepening_wavenumber": {k: d["wavenumber"] for k, d in detections.items()},
-        "steepening_eddy_scale_km": {
+    # Compute is_upper_limit for wind-based analysis
+    is_upper_limit = bool(
+        l_eff is not None
+        and any(
+            d["is_upper_limit"]
+            for d in detections.values()
+            if d["wavenumber"] is not None and d["wavenumber"] <= l_eff
+        )
+    )
+
+    # Use helper to package common metrics
+    inner = _package_metrics_dict(
+        l_eff=l_eff,
+        l_eff_km=l_eff_km,
+        grid_box_distance_km=grid_box_distance_km,
+        ratio=ratio,
+        is_upper_limit=is_upper_limit,
+        fit_window=fit_window,
+        fit_anchor=fit_anchor,
+        steepening_factor=steepening_factor,
+        wavenumber_ratio=wavenumber_ratio,
+        min_wavenumber=min_wavenumber,
+        rsphere=rsphere,
+        # Wind-specific fields
+        n_spectra_steepening=len(detected),
+        steepening_wavenumber={k: d["wavenumber"] for k, d in detections.items()},
+        steepening_eddy_scale_km={
             k: (
                 None
                 if d["wavenumber"] is None
@@ -406,19 +487,13 @@ def compute_effective_resolution(
             )
             for k, d in detections.items()
         },
-        "steepening_wavenumber_range": (
+        steepening_wavenumber_range=(
             [float(detected[0]), float(detected[-1])] if detected else None
         ),
-        "criterion": {
-            "fit_window": fit_window,
-            "fit_anchor": fit_anchor,
-            "steepening_factor": steepening_factor,
-            "wavenumber_ratio": wavenumber_ratio,
-            "min_wavenumber": min_wavenumber,
-            "n_confirm": n_confirm,
-        },
-        "reference": REFERENCE,
-    }
+    )
+    # Add n_confirm to criterion sub-dict
+    inner["criterion"]["n_confirm"] = n_confirm
+
     if exp is not None:
         inner["exp"] = exp
 
@@ -798,36 +873,34 @@ def compute_effective_resolution_scalar(
     # Grid box distance
     if grid_box_distance_km is None:
         # Use the dataset-based function which handles coordinates properly
-        grid_box_distance_km = grid_box_distance_from_dataset(field.to_dataset(name='temp'), rsphere)
+        grid_box_distance_km = grid_box_distance_from_dataset(
+            field.to_dataset(name="temp"), rsphere
+        )
 
     # Resolution ratio
     ratio = None if l_eff_km is None else float(l_eff_km / grid_box_distance_km)
 
-    # Package metrics (same structure as wind-based analysis)
-    inner = {
-        "effective_wavenumber": l_eff,
-        "effective_resolution_km": l_eff_km,
-        "grid_box_distance_km": float(grid_box_distance_km),
-        "resolution_ratio": ratio,
-        "resolution_ratio_dx_convention": (
-            None if ratio is None else float(ratio_to_dx_convention(ratio))
-        ),
-        "is_upper_limit": bool(detection["is_upper_limit"]),
-        "steepening_wavenumber": {field_name: l_eff},
-        "steepening_eddy_scale_km": {
+    # Use helper to package common metrics
+    inner = _package_metrics_dict(
+        l_eff=l_eff,
+        l_eff_km=l_eff_km,
+        grid_box_distance_km=grid_box_distance_km,
+        ratio=ratio,
+        is_upper_limit=detection["is_upper_limit"],
+        fit_window=fit_window,
+        fit_anchor=fit_anchor,
+        steepening_factor=steepening_factor,
+        wavenumber_ratio=wavenumber_ratio,
+        min_wavenumber=min_wavenumber,
+        rsphere=rsphere,
+        # Scalar-specific fields
+        steepening_wavenumber={field_name: l_eff},
+        steepening_eddy_scale_km={
             field_name: None if l_eff is None else float(eddy_scale(l_eff, rsphere))
         },
-        "field_name": field_name,
-        "analysis_type": "scalar_field",
-        "criterion": {
-            "fit_window": fit_window,
-            "fit_anchor": fit_anchor,
-            "steepening_factor": steepening_factor,
-            "wavenumber_ratio": wavenumber_ratio,
-            "min_wavenumber": min_wavenumber,
-        },
-        "reference": REFERENCE,
-    }
+        field_name=field_name,
+        analysis_type="scalar_field",
+    )
 
     # Package diagnostics
     diagnostics = {
