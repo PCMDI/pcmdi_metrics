@@ -3,18 +3,44 @@
 # Test script for unified mean climate driver
 #
 # This script demonstrates how to test the unified driver with minimal resources
+#
+# IMPORTANT: You must have your pcmdi_metrics conda environment activated before running this script!
+#   conda activate pmp_devel_20260714  # or your environment name
 
 echo "=================================================="
 echo "Testing Mean Climate Unified Driver"
 echo "=================================================="
 
+# Check if we have the required Python packages
+python -c "import xarray" 2>/dev/null || {
+    echo "ERROR: Required Python packages not found!"
+    echo "Please activate your pcmdi_metrics conda environment first:"
+    echo "  conda activate pmp_devel_20260714  # or your environment name"
+    exit 1
+}
+
+# Get paths relative to this script
+# test is in: pcmdi_metrics/mean_climate/test
+# driver is in: pcmdi_metrics/mean_climate
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DRIVER_SCRIPT="${SCRIPT_DIR}/../mean_climate_unified_driver.py"
+REPO_DIR="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+
+# Set PYTHONPATH so the driver can import pcmdi_metrics
+export PYTHONPATH="${REPO_DIR}:${PYTHONPATH}"
+
+echo "Repository: ${REPO_DIR}"
+echo "Driver script: ${DRIVER_SCRIPT}"
+echo "PYTHONPATH: ${PYTHONPATH}"
+echo ""
+
 # Set up test directories
-TEST_DIR="/pscratch/sd/l/lee1043/git/pcmdi_metrics/pcmdi_metrics/mean_climate/test/test_unified_output"
+TEST_DIR="${REPO_DIR}/pcmdi_metrics/mean_climate/test/test_unified_output"
 mkdir -p ${TEST_DIR}
 
 # Configuration
 REF_CATALOGUE="/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_latest.json"
-MODEL_CATALOGUE="/pscratch/sd/l/lee1043/git/pcmdi_metrics/sample_setups/pcmdi/data_search/models_path_CMIP6_historical_mon.json"
+MODEL_CATALOGUE="${REPO_DIR}/sample_setups/pcmdi/data_search/models_path_CMIP6_historical_mon.json"
 REF_DATA_HEAD="/global/cfs/projectdirs/m4581/obs4MIPs"
 
 echo ""
@@ -28,7 +54,7 @@ echo ""
 echo "=================================================="
 echo "Test 1: Display help message"
 echo "=================================================="
-mean_climate_unified_driver.py --help
+python "${DRIVER_SCRIPT}" --help
 
 echo ""
 echo "=================================================="
@@ -40,7 +66,7 @@ echo "  Models: 1 model, first member only"
 echo "  Time period: 1980-01 to 1984-12 (5 years)"
 echo ""
 
-mean_climate_unified_driver.py \
+python "${DRIVER_SCRIPT}" \
     --mode unified \
     --working_dir ${TEST_DIR}/work \
     --output_path ${TEST_DIR}/output \
@@ -86,7 +112,7 @@ echo ""
 TEST3_DIR="${TEST_DIR}/test3"
 mkdir -p ${TEST3_DIR}
 
-mean_climate_unified_driver.py \
+python "${DRIVER_SCRIPT}" \
     --mode annual_cycle \
     --working_dir ${TEST3_DIR}/work \
     --output_path ${TEST3_DIR}/output \

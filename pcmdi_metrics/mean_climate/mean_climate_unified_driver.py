@@ -182,14 +182,14 @@ def create_unified_parser():
         "--base_ref_ac_path",
         type=str,
         default=None,
-        help="Base path for reference annual cycle outputs (use %(var) for variable)",
+        help="Base path for reference annual cycle outputs (use %%(var) for variable)",
     )
 
     parser.add_argument(
         "--base_model_ac_path",
         type=str,
         default=None,
-        help="Base path for model annual cycle outputs (use %(var) for variable)",
+        help="Base path for model annual cycle outputs (use %%(var) for variable)",
     )
 
     # Version and metadata
