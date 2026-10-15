@@ -1,0 +1,23 @@
+{
+  "description": "Example configuration for unified mean climate driver",
+  "working_dir": "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/unified_workflow/output",
+  "output_path": "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/unified_workflow/output/json",
+  "ref_catalogue": "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_latest.json",
+  "model_catalogue": "/pscratch/sd/l/lee1043/git/pcmdi_metrics/sample_setups/pcmdi/data_search/models_path_CMIP6_historical_mon.json",
+  "ref_data_head": "/global/cfs/projectdirs/m4581/obs4MIPs",
+  "variables": ["pr", "tas", "psl"],
+  "models": null,
+  "first_member_only": true,
+  "start": "1980-01",
+  "end": "2014-12",
+  "target_grid": "2.5x2.5",
+  "regions": ["global", "NHEX", "SHEX", "TROPICS"],
+  "default_ref_only": false,
+  "all_ref_variables": false,
+  "target_ref": null,
+  "is_ref_input_annual_cycle": false,
+  "is_model_input_annual_cycle": false,
+  "rad_diagnostic_variables": ["rt", "rst", "rstcre", "rltcre"],
+  "num_models": null,
+  "debug": false
+}
