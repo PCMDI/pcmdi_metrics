@@ -72,7 +72,46 @@ python "${DRIVER_SCRIPT}" --help
 
 echo ""
 echo "=================================================="
-echo "Test 2: Run unified mode with minimal data"
+echo "Test 2: Run annual_cycle mode only"
+echo "=================================================="
+echo "  Mode: annual_cycle"
+echo "  Variable: tas (temperature)"
+echo "  Models: 1 model"
+echo ""
+
+TEST2_DIR="${TEST_DIR}/test2"
+mkdir -p ${TEST2_DIR}
+
+python "${DRIVER_SCRIPT}" \
+    --mode annual_cycle \
+    --working_dir ${TEST2_DIR}/work \
+    --output_path ${TEST2_DIR}/output \
+    --ref_catalogue ${REF_CATALOGUE} \
+    --model_catalogue ${MODEL_CATALOGUE} \
+    --ref_data_head ${REF_DATA_HEAD} \
+    --variables tas \
+    --num_models 1 \
+    --first_member_only \
+    --start 1980-01 \
+    --end 1982-12
+
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "=================================================="
+    echo "Test 2: PASSED"
+    echo "=================================================="
+    echo "Annual cycles generated in: ${TEST2_DIR}/work/"
+else
+    echo ""
+    echo "=================================================="
+    echo "Test 2: FAILED"
+    echo "=================================================="
+    exit 1
+fi
+
+echo ""
+echo "=================================================="
+echo "Test 3: Run unified mode with minimal data"
 echo "=================================================="
 echo "  Mode: unified"
 echo "  Variable: pr (precipitation)"
@@ -98,7 +137,7 @@ python "${DRIVER_SCRIPT}" \
 if [ $? -eq 0 ]; then
     echo ""
     echo "=================================================="
-    echo "Test 2: PASSED"
+    echo "Test 3: PASSED"
     echo "=================================================="
     echo "Output files:"
     ls -lh ${TEST_DIR}/output/*.json 2>/dev/null || echo "  No JSON files found"
@@ -108,48 +147,9 @@ if [ $? -eq 0 ]; then
 else
     echo ""
     echo "=================================================="
-    echo "Test 2: FAILED"
-    echo "=================================================="
-    echo "Check error log: ${TEST_DIR}/work/error_log.txt"
-    exit 1
-fi
-
-echo ""
-echo "=================================================="
-echo "Test 3: Run annual_cycle mode only"
-echo "=================================================="
-echo "  Mode: annual_cycle"
-echo "  Variable: tas (temperature)"
-echo "  Models: 1 model"
-echo ""
-
-TEST3_DIR="${TEST_DIR}/test3"
-mkdir -p ${TEST3_DIR}
-
-python "${DRIVER_SCRIPT}" \
-    --mode annual_cycle \
-    --working_dir ${TEST3_DIR}/work \
-    --output_path ${TEST3_DIR}/output \
-    --ref_catalogue ${REF_CATALOGUE} \
-    --model_catalogue ${MODEL_CATALOGUE} \
-    --ref_data_head ${REF_DATA_HEAD} \
-    --variables tas \
-    --num_models 1 \
-    --first_member_only \
-    --start 1980-01 \
-    --end 1982-12
-
-if [ $? -eq 0 ]; then
-    echo ""
-    echo "=================================================="
-    echo "Test 3: PASSED"
-    echo "=================================================="
-    echo "Annual cycles generated in: ${TEST3_DIR}/work/"
-else
-    echo ""
-    echo "=================================================="
     echo "Test 3: FAILED"
     echo "=================================================="
+    echo "Check error log: ${TEST_DIR}/work/error_log.txt"
     exit 1
 fi
 
