@@ -9,7 +9,7 @@ echo "Testing Mean Climate Unified Driver"
 echo "=================================================="
 
 # Set up test directories
-TEST_DIR="/pscratch/sd/l/lee1043/git/pcmdi_metrics/test_unified_output"
+TEST_DIR="/pscratch/sd/l/lee1043/git/pcmdi_metrics/pcmdi_metrics/mean_climate/test/test_unified_output"
 mkdir -p ${TEST_DIR}
 
 # Configuration
@@ -28,7 +28,7 @@ echo ""
 echo "=================================================="
 echo "Test 1: Display help message"
 echo "=================================================="
-python pcmdi_metrics/mean_climate/mean_climate_unified_driver.py --help
+mean_climate_unified_driver.py --help
 
 echo ""
 echo "=================================================="
@@ -40,7 +40,7 @@ echo "  Models: 1 model, first member only"
 echo "  Time period: 1980-01 to 1984-12 (5 years)"
 echo ""
 
-python pcmdi_metrics/mean_climate/mean_climate_unified_driver.py \
+mean_climate_unified_driver.py \
     --mode unified \
     --working_dir ${TEST_DIR}/work \
     --output_path ${TEST_DIR}/output \
@@ -86,7 +86,7 @@ echo ""
 TEST3_DIR="${TEST_DIR}/test3"
 mkdir -p ${TEST3_DIR}
 
-python pcmdi_metrics/mean_climate/mean_climate_unified_driver.py \
+mean_climate_unified_driver.py \
     --mode annual_cycle \
     --working_dir ${TEST3_DIR}/work \
     --output_path ${TEST3_DIR}/output \
