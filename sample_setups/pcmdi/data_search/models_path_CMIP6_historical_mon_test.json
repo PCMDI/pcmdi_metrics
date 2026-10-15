@@ -1,0 +1,10 @@
+{
+  "ACCESS-CM2": {
+    "r1i1p1f1": {
+      "pr": {
+        "path": "/global/cfs/cdirs/m3522/cmip6/CMIP6/CMIP/CSIRO/ACCESS-CM2/historical/r1i1p1f1/Amon/pr/gn/latest",
+        "filename": "pr_Amon_ACCESS-CM2_historical_r1i1p1f1_gn_*.nc"
+      }
+    }
+  }
+}

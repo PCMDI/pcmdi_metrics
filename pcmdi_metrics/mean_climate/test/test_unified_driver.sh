@@ -40,8 +40,22 @@ mkdir -p ${TEST_DIR}
 
 # Configuration
 REF_CATALOGUE="/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_latest.json"
-MODEL_CATALOGUE="${REPO_DIR}/sample_setups/pcmdi/data_search/models_path_CMIP6_historical_mon.json"
+MODEL_CATALOGUE="${REPO_DIR}/sample_setups/pcmdi/data_search/models_path_CMIP6_historical_mon_test.json"
 REF_DATA_HEAD="/global/cfs/projectdirs/m4581/obs4MIPs"
+
+# Check if catalogues exist
+if [ ! -f "${REF_CATALOGUE}" ]; then
+    echo "ERROR: Reference catalogue not found: ${REF_CATALOGUE}"
+    echo "Please update the path in this script or create the catalogue file."
+    exit 1
+fi
+
+if [ ! -f "${MODEL_CATALOGUE}" ]; then
+    echo "ERROR: Model catalogue not found: ${MODEL_CATALOGUE}"
+    echo "Please create a model catalogue file or run the catalogue generation script."
+    echo "See: ${REPO_DIR}/sample_setups/pcmdi/data_search/generate_model_catalogue_xsearch.py"
+    exit 1
+fi
 
 echo ""
 echo "Test Configuration:"
