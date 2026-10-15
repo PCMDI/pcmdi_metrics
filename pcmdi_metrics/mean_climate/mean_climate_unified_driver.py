@@ -19,23 +19,17 @@ Usage:
 
 import argparse
 import datetime
-import json
 import logging
 import os
 import sys
-from typing import Dict, List, Optional
 
-from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.mean_climate.lib_unified import (
-    calculate_and_save_metrics,
+    calculate_metrics_for_models,
+    generate_annual_cycles_for_references,
     get_model_catalogue,
     get_ref_catalogue,
-    get_ref_data_path,
-    get_unique_bases,
     multi_level_dict,
-    print_dict,
-    process_models,
-    process_references,
+    setup_interim_paths,
 )
 from pcmdi_metrics.utils import create_land_sea_mask, create_target_grid
 
@@ -245,205 +239,6 @@ def setup_logging(working_dir: str, debug: bool = False) -> None:
     )
 
 
-def remove_nested_key(data, target_key):
-    """Remove specific keys from nested dictionary structure."""
-    if isinstance(data, dict):
-        for key in list(data.keys()):
-            if key == target_key:
-                del data[key]
-            else:
-                remove_nested_key(data[key], target_key)
-    elif isinstance(data, list):
-        for item in data:
-            remove_nested_key(item, target_key)
-
-
-def generate_annual_cycles(
-    variables: List[str],
-    refs_dict: Dict,
-    models_dict: Dict,
-    models: List[str],
-    common_grid,
-    start: str,
-    end: str,
-    version: str,
-    interim_output_path_dict: Dict,
-    rad_diagnostic_variables: List[str],
-    is_ref_input_annual_cycle: bool,
-    is_model_input_annual_cycle: bool,
-    default_ref_only: bool,
-    target_ref: Optional[str],
-    first_member_only: bool,
-    regions: List[str],
-) -> tuple:
-    """
-    Generate annual cycles for references and models.
-
-    Returns:
-        tuple: (anncyc_ref_dict, anncyc_model_run_dict, encountered_variables)
-    """
-    print("\n" + "="*80)
-    print("STEP 1: GENERATING ANNUAL CYCLES")
-    print("="*80 + "\n")
-
-    variables_level_dict = get_unique_bases(variables)
-    variables_unique = list(variables_level_dict.keys())
-
-    print(f"Processing {len(variables_unique)} unique variables: {variables_unique}")
-
-    encountered_variables = set()
-    anncyc_ref_dict = multi_level_dict()
-    anncyc_model_run_dict = multi_level_dict()
-
-    for var in variables_unique:
-        try:
-            print(f"\n--- Processing variable: {var} ---")
-            encountered_variables.add(var)
-            levels = variables_level_dict[var]
-            print(f"Levels: {levels}")
-
-            if var in refs_dict:
-                refs = list(refs_dict[var].keys())
-                print(f"Available references: {refs}")
-
-                # Handle default reference selection
-                if "default" in refs:
-                    print(f"Default reference: {refs_dict[var]['default']}")
-                    if default_ref_only:
-                        refs = [refs_dict[var]["default"]]
-                    else:
-                        refs.remove("default")
-
-                # Handle target reference selection
-                if target_ref is not None:
-                    if target_ref in refs:
-                        refs = [target_ref]
-                    else:
-                        refs = []
-
-                if is_ref_input_annual_cycle:
-                    print(f"Loading pre-computed annual cycles for {var}")
-                    for ref in refs:
-                        ref_data_path = get_ref_data_path(refs_dict, var, ref)
-                        print(f"  {ref}: {ref_data_path}")
-                        anncyc_ref_dict[var][ref] = xcdat_open(ref_data_path)
-                else:
-                    print(f"Generating annual cycles for references: {refs}")
-                    anncyc_ref_dict = process_references(
-                        var,
-                        refs,
-                        rad_diagnostic_variables,
-                        levels,
-                        common_grid,
-                        start,
-                        end,
-                        version,
-                        interim_output_path_dict,
-                        refs_dict,
-                        anncyc_ref_dict,
-                        encountered_variables,
-                    )
-
-                print(f"Completed reference processing for {var}")
-
-        except Exception as e:
-            print(f"Error processing variable {var}: {e}")
-            logging.error(f"Error processing variable {var}: {str(e)}")
-
-    return anncyc_ref_dict, anncyc_model_run_dict, encountered_variables
-
-
-def calculate_metrics(
-    variables: List[str],
-    refs_dict: Dict,
-    models_dict: Dict,
-    models: List[str],
-    common_grid,
-    start: str,
-    end: str,
-    version: str,
-    interim_output_path_dict: Dict,
-    rad_diagnostic_variables: List[str],
-    anncyc_ref_dict: Dict,
-    anncyc_model_run_dict: Dict,
-    encountered_variables: set,
-    regions: List[str],
-    output_path: str,
-    first_member_only: bool,
-    is_model_input_annual_cycle: bool,
-    default_ref_only: bool,
-    target_ref: Optional[str],
-) -> Dict:
-    """
-    Calculate metrics by comparing models to references.
-
-    Returns:
-        Dict: metrics_dict containing computed metrics
-    """
-    print("\n" + "="*80)
-    print("STEP 2: CALCULATING METRICS")
-    print("="*80 + "\n")
-
-    variables_level_dict = get_unique_bases(variables)
-    variables_unique = list(variables_level_dict.keys())
-
-    metrics_dict = multi_level_dict()
-
-    for var in variables_unique:
-        try:
-            print(f"\n--- Calculating metrics for variable: {var} ---")
-            levels = variables_level_dict[var]
-
-            if var in refs_dict:
-                refs = list(refs_dict[var].keys())
-
-                # Apply same reference selection logic as in annual cycle generation
-                if "default" in refs:
-                    if default_ref_only:
-                        refs = [refs_dict[var]["default"]]
-                    else:
-                        refs.remove("default")
-
-                if target_ref is not None:
-                    if target_ref in refs:
-                        refs = [target_ref]
-                    else:
-                        refs = []
-
-                print(f"Processing {len(models)} models against {len(refs)} references")
-
-                process_models(
-                    var,
-                    models,
-                    models_dict,
-                    rad_diagnostic_variables,
-                    levels,
-                    common_grid,
-                    refs,
-                    start,
-                    end,
-                    version,
-                    interim_output_path_dict,
-                    anncyc_model_run_dict,
-                    encountered_variables,
-                    regions,
-                    anncyc_ref_dict,
-                    refs_dict,
-                    output_path,
-                    metrics_dict,
-                    first_member_only=first_member_only,
-                    is_model_input_annual_cycle=is_model_input_annual_cycle,
-                )
-
-                print(f"Completed metrics calculation for {var}")
-
-        except Exception as e:
-            print(f"Error calculating metrics for {var}: {e}")
-            logging.error(f"Error calculating metrics for {var}: {str(e)}")
-
-    return metrics_dict
-
-
 def main():
     """Main execution function."""
     parser = create_unified_parser()
@@ -452,25 +247,26 @@ def main():
     # Setup
     setup_logging(args.working_dir, args.debug)
 
-    print("="*80)
+    print("=" * 80)
     print("MEAN CLIMATE UNIFIED DRIVER")
-    print("="*80)
+    print("=" * 80)
     print(f"Mode: {args.mode}")
     print(f"Working directory: {args.working_dir}")
     print(f"Output path: {args.output_path}")
     print(f"Reference catalogue: {args.ref_catalogue}")
     print(f"Model catalogue: {args.model_catalogue}")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     # Create output directories
     os.makedirs(args.working_dir, exist_ok=True)
     os.makedirs(args.output_path, exist_ok=True)
 
     # Set version
-    if args.version is None:
-        version = datetime.datetime.now().strftime("v%Y%m%d")
-    else:
-        version = args.version
+    version = (
+        args.version
+        if args.version
+        else datetime.datetime.now().strftime("v%Y%m%d")
+    )
     print(f"Version: {version}\n")
 
     # Load catalogues
@@ -493,13 +289,10 @@ def main():
     print(f"Variables to process: {variables}")
 
     # Determine models to process
-    if args.models is None:
-        models = sorted(list(models_dict.keys()))
-    else:
-        models = args.models
+    models = args.models if args.models else sorted(list(models_dict.keys()))
 
     if args.num_models is not None:
-        models = models[:args.num_models]
+        models = models[: args.num_models]
         print(f"Limiting to {args.num_models} models for testing")
 
     print(f"Models to process ({len(models)}): {models}\n")
@@ -512,51 +305,28 @@ def main():
     print(f"Target grid: {args.target_grid}\n")
 
     # Setup interim output paths
-    syear = args.start.split("-")[0]
-    eyear = args.end.split("-")[0]
+    interim_output_path_dict, syear, eyear = setup_interim_paths(
+        args.working_dir,
+        args.start,
+        args.end,
+        args.base_ref_ac_path,
+        args.base_model_ac_path,
+    )
 
-    if args.base_ref_ac_path is None:
-        base_ref_ac_path = os.path.join(
-            args.working_dir, f"clim_refs_{syear}-{eyear}", "%(var)"
-        )
-    else:
-        base_ref_ac_path = args.base_ref_ac_path
-
-    if args.base_model_ac_path is None:
-        base_model_ac_path = os.path.join(
-            args.working_dir, f"clim_models_{syear}-{eyear}", "%(var)"
-        )
-    else:
-        base_model_ac_path = args.base_model_ac_path
-
-    interim_output_path_dict = {
-        "ref": {
-            "path_ac": f"{base_ref_ac_path}/gn",
-            "path_ac_interp": f"{base_ref_ac_path}/gr",
-        },
-        "model": {
-            "path_ac": f"{base_model_ac_path}/gn",
-            "path_ac_interp": f"{base_model_ac_path}/gr",
-        },
-    }
-
-    # Optional: Remove problematic datasets (can be made configurable)
-    # remove_nested_key(refs_dict, "MSWEP-V280-Past")
-    # remove_nested_key(refs_dict, "MSWEP-V280-Past-nogauge")
-    # remove_nested_key(refs_dict, "PRISM-M3")
+    # Initialize dictionaries
+    anncyc_ref_dict = multi_level_dict()
+    encountered_variables = set()
 
     # Execute based on mode
-    if args.mode == "unified":
-        # Run both steps
-        print("\n" + "="*80)
-        print("RUNNING UNIFIED MODE (Annual Cycles + Metrics)")
-        print("="*80 + "\n")
+    if args.mode in ["unified", "annual_cycle"]:
+        # Generate annual cycles for references
+        print("\n" + "=" * 80)
+        print("STEP 1: GENERATING ANNUAL CYCLES FOR REFERENCES")
+        print("=" * 80 + "\n")
 
-        anncyc_ref_dict, anncyc_model_run_dict, encountered_variables = generate_annual_cycles(
+        anncyc_ref_dict, encountered_variables = generate_annual_cycles_for_references(
             variables=variables,
             refs_dict=refs_dict,
-            models_dict=models_dict,
-            models=models,
             common_grid=common_grid,
             start=args.start,
             end=args.end,
@@ -564,80 +334,30 @@ def main():
             interim_output_path_dict=interim_output_path_dict,
             rad_diagnostic_variables=args.rad_diagnostic_variables,
             is_ref_input_annual_cycle=args.is_ref_input_annual_cycle,
-            is_model_input_annual_cycle=args.is_model_input_annual_cycle,
-            default_ref_only=args.default_ref_only,
-            target_ref=args.target_ref,
-            first_member_only=args.first_member_only,
-            regions=args.regions,
-        )
-
-        metrics_dict = calculate_metrics(
-            variables=variables,
-            refs_dict=refs_dict,
-            models_dict=models_dict,
-            models=models,
-            common_grid=common_grid,
-            start=args.start,
-            end=args.end,
-            version=version,
-            interim_output_path_dict=interim_output_path_dict,
-            rad_diagnostic_variables=args.rad_diagnostic_variables,
-            anncyc_ref_dict=anncyc_ref_dict,
-            anncyc_model_run_dict=anncyc_model_run_dict,
-            encountered_variables=encountered_variables,
-            regions=args.regions,
-            output_path=args.output_path,
-            first_member_only=args.first_member_only,
-            is_model_input_annual_cycle=args.is_model_input_annual_cycle,
             default_ref_only=args.default_ref_only,
             target_ref=args.target_ref,
         )
 
-    elif args.mode == "annual_cycle":
-        # Run only annual cycle generation
-        print("\n" + "="*80)
-        print("RUNNING ANNUAL CYCLE MODE ONLY")
-        print("="*80 + "\n")
-
-        anncyc_ref_dict, anncyc_model_run_dict, encountered_variables = generate_annual_cycles(
-            variables=variables,
-            refs_dict=refs_dict,
-            models_dict=models_dict,
-            models=models,
-            common_grid=common_grid,
-            start=args.start,
-            end=args.end,
-            version=version,
-            interim_output_path_dict=interim_output_path_dict,
-            rad_diagnostic_variables=args.rad_diagnostic_variables,
-            is_ref_input_annual_cycle=args.is_ref_input_annual_cycle,
-            is_model_input_annual_cycle=args.is_model_input_annual_cycle,
-            default_ref_only=args.default_ref_only,
-            target_ref=args.target_ref,
-            first_member_only=args.first_member_only,
-            regions=args.regions,
-        )
-
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("ANNUAL CYCLE GENERATION COMPLETED")
-        print("="*80)
-        print(f"Annual cycles saved to: {args.working_dir}")
-        print("To run metrics calculation, use --mode metrics")
+        print("=" * 80)
+        print(f"Annual cycles saved to: {args.working_dir}/clim_*_{syear}-{eyear}/")
 
-    elif args.mode == "metrics":
-        # Run only metrics calculation (requires pre-computed annual cycles)
-        print("\n" + "="*80)
-        print("RUNNING METRICS MODE ONLY")
-        print("="*80)
-        print("NOTE: This assumes annual cycles have been pre-computed")
-        print("="*80 + "\n")
+        if args.mode == "annual_cycle":
+            # Stop here if only generating annual cycles
+            print("\nTo calculate metrics, run with --mode metrics")
+            return
 
-        # Initialize empty dictionaries and load from interim outputs
-        anncyc_ref_dict = multi_level_dict()
+    # Calculate metrics (for unified and metrics modes)
+    if args.mode in ["unified", "metrics"]:
+        print("\n" + "=" * 80)
+        print("STEP 2: CALCULATING METRICS")
+        print("=" * 80 + "\n")
+
+        # Initialize model dict
         anncyc_model_run_dict = multi_level_dict()
-        encountered_variables = set()
 
-        metrics_dict = calculate_metrics(
+        metrics_dict = calculate_metrics_for_models(
             variables=variables,
             refs_dict=refs_dict,
             models_dict=models_dict,
@@ -654,15 +374,17 @@ def main():
             regions=args.regions,
             output_path=args.output_path,
             first_member_only=args.first_member_only,
-            is_model_input_annual_cycle=True,  # Assume ACs are pre-computed
+            is_model_input_annual_cycle=(
+                args.is_model_input_annual_cycle or args.mode == "metrics"
+            ),
             default_ref_only=args.default_ref_only,
             target_ref=args.target_ref,
         )
 
     # Final summary
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("EXECUTION COMPLETED SUCCESSFULLY")
-    print("="*80)
+    print("=" * 80)
     print(f"Mode: {args.mode}")
     print(f"Variables processed: {len(variables)}")
     print(f"Models processed: {len(models)}")
@@ -671,7 +393,7 @@ def main():
         print(f"Metrics JSON files: {args.output_path}/*.json")
     if args.mode in ["unified", "annual_cycle"]:
         print(f"Annual cycles: {args.working_dir}/clim_*_{syear}-{eyear}/")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
 
 if __name__ == "__main__":
