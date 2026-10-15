@@ -210,6 +210,16 @@ def generate_annual_cycles_for_references(
 
             print(f"Completed reference processing for {var}")
 
+            # Report processing results
+            if var in anncyc_ref_dict and anncyc_ref_dict[var]:
+                successful_refs = list(anncyc_ref_dict[var].keys())
+                print(f"  Successfully processed: {len(successful_refs)}/{len(refs)} references")
+                if len(successful_refs) < len(refs):
+                    failed_refs = set(refs) - set(successful_refs)
+                    print(f"  Failed references: {', '.join(failed_refs)}")
+            else:
+                print(f"  WARNING: All {len(refs)} references failed for {var}")
+
         except Exception as e:
             print(f"Error processing variable {var}: {e}")
             logging.error(f"Error processing variable {var}: {str(e)}")
@@ -281,7 +291,19 @@ def calculate_metrics_for_models(
                 print(f"No references selected for {var}")
                 continue
 
-            print(f"Processing {len(models)} models against {len(refs)} references")
+            # Check if we have any successfully processed references
+            if var not in anncyc_ref_dict or not anncyc_ref_dict[var]:
+                print(f"WARNING: No successfully processed references for {var}")
+                print(f"  All {len(refs)} reference(s) failed during processing")
+                print(f"  Cannot calculate metrics without valid reference data")
+                print(f"  Skipping model processing for {var}")
+                continue
+
+            successful_refs = list(anncyc_ref_dict[var].keys())
+            print(f"Processing {len(models)} models against {len(successful_refs)} successfully processed references")
+            if len(successful_refs) < len(refs):
+                failed_count = len(refs) - len(successful_refs)
+                print(f"  Note: {failed_count} reference(s) failed during processing")
 
             process_models(
                 var,

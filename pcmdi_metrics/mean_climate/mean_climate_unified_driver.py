@@ -383,16 +383,38 @@ def main():
 
     # Final summary
     print("\n" + "=" * 80)
-    print("EXECUTION COMPLETED SUCCESSFULLY")
+    print("EXECUTION COMPLETED")
     print("=" * 80)
     print(f"Mode: {args.mode}")
     print(f"Variables processed: {len(variables)}")
     print(f"Models processed: {len(models)}")
     print(f"Output location: {args.output_path}")
+
     if args.mode in ["unified", "metrics"]:
-        print(f"Metrics JSON files: {args.output_path}/*.json")
+        # Count JSON files and check if they're empty
+        import glob
+        json_files = glob.glob(os.path.join(args.output_path, "*.json"))
+        if json_files:
+            print(f"\nMetrics output:")
+            for jf in json_files:
+                size = os.path.getsize(jf)
+                status = "✓ Contains data" if size > 10 else "⚠ Empty (no successful metrics)"
+                print(f"  {os.path.basename(jf)}: {size} bytes - {status}")
+        else:
+            print(f"\n⚠ No metrics JSON files created")
+
     if args.mode in ["unified", "annual_cycle"]:
-        print(f"Annual cycles: {args.working_dir}/clim_*_{syear}-{eyear}/")
+        print(f"\nAnnual cycles: {args.working_dir}/clim_*_{syear}-{eyear}/")
+
+    # Check error log
+    error_log = os.path.join(args.working_dir, "error_log.txt")
+    if os.path.exists(error_log) and os.path.getsize(error_log) > 0:
+        print(f"\n⚠ Errors occurred during processing. Check: {error_log}")
+        print("  Common issues:")
+        print("    - Reference data calendar conflicts")
+        print("    - Missing or incompatible data files")
+        print("    - Grid interpolation failures")
+
     print("=" * 80 + "\n")
 
 
