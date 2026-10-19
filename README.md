@@ -43,7 +43,7 @@ Documentation
 ### Getting Started
 
 
-* Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
+* Installation requirements and instructions, including Docker-based installation, are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
 * Users will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
 

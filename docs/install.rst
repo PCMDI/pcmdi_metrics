@@ -68,6 +68,62 @@ Installation in Existing Environments
 To learn more about conda environments see: http://conda.pydata.org/docs/using/envs.html
 
 
+Docker Installation
+===================
+
+Docker packages PMP together with its runtime environment in a container image. This is useful when you want a reproducible installation without managing the Python and system dependencies directly on your host machine.
+
+Why use Docker?
+---------------
+
+* Reproducible PMP environment across different systems
+* Reduced dependency conflicts on the host machine
+* Easier deployment on Linux servers, cloud systems, and shared platforms
+
+Build the PMP Docker image locally from the repository root:
+
+.. code-block:: bash
+
+   docker build -t pmp:latest .
+
+Run the default container command to confirm PMP is installed:
+
+.. code-block:: bash
+
+   docker run --rm pmp:latest
+
+Start an interactive shell in the container:
+
+.. code-block:: bash
+
+   docker run --rm -it pmp:latest bash
+
+Mount a host directory so the container can access your input data or write output files:
+
+.. code-block:: bash
+
+   docker run --rm -it -v /path/to/local/data:/data pmp:latest bash
+
+Inside the container, PMP is installed in the preconfigured conda environment and the command-line tools are available on ``PATH``.
+
+Prebuilt Docker Image
+---------------------
+
+If PMP is published on Docker Hub, users will be able to pull a prebuilt image instead of building locally.
+
+Planned Docker Hub image location:
+
+.. code-block:: text
+
+   docker.io/pcmdi/pcmdi_metrics
+
+Example pull command after publication:
+
+.. code-block:: bash
+
+   docker pull pcmdi/pcmdi_metrics:latest
+
+
 Advanced & Legacy Installation
 ==============================
 
