@@ -12,10 +12,13 @@ You can find the package details on `conda-forge <https://anaconda.org/conda-for
 
 PMP can be installed either with a conda-based package manager such as ``mamba`` or ``conda``, or by using Docker.
 
-System Requirements
-===================
+Conda or Mamba Installation
+===========================
 
-For conda-based installation, you must have a conda distribution installed. We recommend one of the following:
+Prerequisites
+-------------
+
+For a native PMP installation, you must have a conda distribution installed. We recommend one of the following:
 
 * Install the `Anaconda`_ package (we recommend installing this for each user)
 * Alternatives include `Miniconda`_ or `Miniforge/Mambaforge`_
@@ -32,7 +35,7 @@ Ensure your conda distribution is in your ``PATH``. For example, if Anaconda is 
    setenv PATH "${HOME}/anaconda/bin:${PATH}"
 
 Standard Installation
-=====================
+---------------------
 
 We recommend creating a fresh virtual environment for PMP to avoid dependency conflicts.
 
@@ -73,6 +76,11 @@ Docker Installation
 
 Docker packages PMP together with its runtime environment in a container image. This is useful when you want a reproducible installation without managing the Python and system dependencies directly on your host machine.
 
+Prerequisites
+-------------
+
+Docker installation requires Docker Desktop or another Docker-compatible runtime.
+
 Why use Docker?
 ---------------
 
@@ -80,9 +88,12 @@ Why use Docker?
 * Reduced dependency conflicts on the host machine
 * Easier deployment on Linux servers, cloud systems, and shared platforms
 
-Build the PMP Docker image locally from the repository root:
-
 In the examples below, ``pmp:latest`` is just a local image tag name.
+
+Build Locally
+-------------
+
+Build the PMP Docker image locally from the repository root:
 
 .. code-block:: bash
 
@@ -108,7 +119,7 @@ Mount a host directory so the container can access your input data or write outp
 
 Inside the container, PMP is installed in the preconfigured conda environment and the command-line tools are available on ``PATH``.
 
-Prebuilt Docker Image
+Use a Published Image
 ---------------------
 
 If PMP is published on Docker Hub, users will be able to pull a prebuilt image instead of building locally.
