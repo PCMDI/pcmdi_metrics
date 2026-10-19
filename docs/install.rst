@@ -6,20 +6,22 @@
 Installation
 ************
 
-The PCMDI Metrics Package (PMP) is available for **Linux-64** and **macOS-64** (including Intel and Apple Silicon via Rosetta 2). Support for Windows is currently unavailable.
+The PCMDI Metrics Package (PMP) is available for **Linux-64** and **macOS-64**. Modern PMP releases generally support both Intel and Apple Silicon systems natively. Support for Windows is currently unavailable.
 
 You can find the package details on `conda-forge <https://anaconda.org/conda-forge/pcmdi_metrics>`_.
+
+PMP can be installed either with a conda-based package manager such as ``mamba`` or ``conda``, or by using Docker.
 
 System Requirements
 ===================
 
-To use PMP, you must have a conda-based distribution installed. We recommend one of the following:
+For conda-based installation, you must have a conda distribution installed. We recommend one of the following:
 
 * Install the `Anaconda`_ package (we recommend installing this for each user)
 * Alternatives include `Miniconda`_ or `Miniforge/Mambaforge`_
 * If using Anaconda or Miniconda, we recommend also installing `mamba`_ for better performance
 
-Ensure anaconda is in your PATH (assuming anaconda is installed in ${HOME}/anaconda
+Ensure your conda distribution is in your ``PATH``. For example, if Anaconda is installed in ``${HOME}/anaconda``:
 
 .. code-block:: bash
 
@@ -28,8 +30,6 @@ Ensure anaconda is in your PATH (assuming anaconda is installed in ${HOME}/anaco
 
    # For tcsh
    setenv PATH "${HOME}/anaconda/bin:${PATH}"
-
-Ensure your conda distribution is in your ``PATH``. For example, if installed in your home directory:
 
 Standard Installation
 =====================
@@ -54,7 +54,7 @@ To speed up installation with conda, you can explicitly specify the Python and P
 
 .. code-block:: bash
 
-   conda create -n pmp_env -c conda-forge python=3.10 pcmdi_metrics=4.0.2
+   conda create -n pmp_env -c conda-forge python=3.10 pcmdi_metrics=4.2.1
    conda activate pmp_env
 
 Installation in Existing Environments
@@ -81,6 +81,8 @@ Why use Docker?
 * Easier deployment on Linux servers, cloud systems, and shared platforms
 
 Build the PMP Docker image locally from the repository root:
+
+In the examples below, ``pmp:latest`` is just a local image tag name.
 
 .. code-block:: bash
 
@@ -111,17 +113,21 @@ Prebuilt Docker Image
 
 If PMP is published on Docker Hub, users will be able to pull a prebuilt image instead of building locally.
 
-Planned Docker Hub image location:
+Current Docker Hub image location:
 
 .. code-block:: text
 
-   docker.io/pcmdi/pcmdi_metrics
+   docker.io/lee1043/pcmdi_metrics
 
-Example pull command after publication:
+Example pull command:
 
 .. code-block:: bash
 
-   docker pull pcmdi/pcmdi_metrics:latest
+   docker pull lee1043/pcmdi_metrics:latest
+
+.. note::
+
+   The preferred long-term image location would be ``docker.io/pcmdi/pcmdi_metrics``. For now, the published image is available from ``docker.io/lee1043/pcmdi_metrics``.
 
 
 Advanced & Legacy Installation
