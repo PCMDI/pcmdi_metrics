@@ -6,7 +6,7 @@
 Installation
 ************
 
-The PCMDI Metrics Package (PMP) is available for **Linux-64** and **macOS-64**. Modern PMP releases generally support both Intel and Apple Silicon systems natively. Support for Windows is currently unavailable.
+The PCMDI Metrics Package (PMP) is available for **Linux-64** and **macOS-64**. Modern PMP releases generally support both Intel and Apple Silicon systems natively. Windows support has not been thoroughly tested.
 
 You can find the package details on `conda-forge <https://anaconda.org/conda-forge/pcmdi_metrics>`_.
 
