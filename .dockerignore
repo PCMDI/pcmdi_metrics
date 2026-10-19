@@ -1,5 +1,7 @@
 .git/
 .github/
+.binder/
+.vscode/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -15,4 +17,9 @@ build/
 dist/
 *.egg-info/
 _build/
+docs/
 docs/_build/
+sample_setups/
+tests/
+doc/jupyter/
+doc/obs_info/

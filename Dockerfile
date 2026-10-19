@@ -6,15 +6,9 @@ WORKDIR /opt/pmp
 
 COPY conda-env/ci.yml /tmp/conda-env-ci.yml
 
-RUN python - <<'PY' && \
-from pathlib import Path
-
-src = Path('/tmp/conda-env-ci.yml')
-dst = Path('/tmp/conda-env-ci-docker.yml')
-lines = src.read_text().splitlines()
-dst.write_text('\n'.join(line for line in lines if not line.startswith('prefix:')) + '\n')
-PY
+RUN python -c "from pathlib import Path; src = Path('/tmp/conda-env-ci.yml'); dst = Path('/tmp/conda-env-ci-docker.yml'); lines = src.read_text().splitlines(); dst.write_text('\\n'.join(line for line in lines if not line.startswith('prefix:')) + '\\n')" && \
     conda env create -n pcmdi_metrics_ci -f /tmp/conda-env-ci-docker.yml && \
+    if [ ! -d /opt/conda/envs/pcmdi_metrics_ci/share/proj ] && [ -d /opt/conda/share/proj ]; then mkdir -p /opt/conda/envs/pcmdi_metrics_ci/share && ln -s /opt/conda/share/proj /opt/conda/envs/pcmdi_metrics_ci/share/proj; fi && \
     conda clean -afy
 
 COPY . /opt/pmp
@@ -24,5 +18,7 @@ RUN conda run -n pcmdi_metrics_ci python -m pip install --no-build-isolation --n
 
 ENV CONDA_DEFAULT_ENV=pcmdi_metrics_ci
 ENV PATH=/opt/conda/envs/pcmdi_metrics_ci/bin:/opt/conda/bin:${PATH}
+ENV PROJ_DATA=/opt/conda/envs/pcmdi_metrics_ci/share/proj
+ENV PROJ_LIB=/opt/conda/envs/pcmdi_metrics_ci/share/proj
 
 CMD ["python", "-c", "import pcmdi_metrics; print(f'PMP is ready: {pcmdi_metrics.__version__}')"]
