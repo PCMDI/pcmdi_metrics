@@ -595,6 +595,12 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
                         shp1 == shp2
                     ), "Model and Reference data dimensions 'lat' and 'lon' must match."
 
+                # Match observational coverage to valid model-region cells AFTER
+                # regridding; prevents reference cells outside the polygon from
+                # leaking into regional comparisons at the boundary.
+                target_valid = ds_m[season].notnull().any(dim="time")
+                obs_m[season] = obs_m[season].where(target_valid)
+
                 # Get xy stats for temporal average
                 a = ds_m.temporal.average(season)
                 b = obs_m.temporal.average(season)
@@ -678,6 +684,9 @@ def metrics_json_return_value(
                     shp1 == shp2
                 ), "Model and Reference data dimensions 'lat' and 'lon' must match."
 
+            # Reapply model's regional footprint after observation regridding.
+            obs_m[season] = obs_m[season].where(rv_tmp[season].notnull())
+
             # Get xy stats for temporal average
             weights = rv_tmp.spatial.get_weights(axis=["X", "Y"])
             rms_xy = compute_rms_xy(rv_tmp, obs_m, var=season, weights=weights)
@@ -685,7 +694,7 @@ def metrics_json_return_value(
             bias_xy = compute_bias_xy(rv_tmp, obs_m, var=season, weights=weights)
             cor_xy = compute_cor_xy(rv_tmp, obs_m, var=season, weights=weights)
             rmsc_xy = compute_rmsc_xy(rv_tmp, obs_m, var=season, weights=weights)
-            std_obs_xy = compute_std_xy(rv_tmp, season)
+            std_obs_xy = compute_std_xy(obs_m, season)
             pct_dif = percent_difference(obs_m, bias_xy, season, weights)
 
             met_dict[stat][region]["pct_dif"][season] = pct_dif

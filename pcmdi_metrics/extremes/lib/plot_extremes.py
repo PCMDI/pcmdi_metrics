@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import json
-import math
 import os
 
 import cartopy.crs as ccrs
@@ -11,26 +10,58 @@ from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 from pcmdi_metrics.graphics import TaylorDiagram
 
 
-def make_maps(data, model, run, region_name, index, yrs, plot_dir, desc, meta):
+def mask_return_values(ds, metric, run):
+    if "return_value" not in run:
+        return ds
+
+    if "Rx" in metric:
+        ds = ds.where(np.abs(ds) < 400)
+
+    elif "TX" in metric:
+        ds = ds.where((ds > -70) & (ds < 70))
+
+    elif "TN" in metric:
+        ds = ds.where((ds > -90) & (ds < 50))
+
+    return ds
+
+
+def make_maps(
+    data, model, run, region_name, index, yrs, plot_dir, desc, meta, ref_data=None
+):
     # Consolidating some plotting code here to streamline main function
     output_template = os.path.join(
         plot_dir, "_".join([model, run, region_name, index, "season"])
     )
-    plot_extremes(data, index, model, run, yrs, output_template)
+    plot_extremes(data, index, model, run, yrs, output_template, ref_data=ref_data)
     meta.update_plots(
         os.path.basename(output_template), output_template + ".png", index, desc
     )
     return meta
 
 
-def plot_extremes(data, metric, model, run, yrs, output_template):
+def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None):
+    vrange_dict = {
+        "Rx1day": {"raw": 69.48, "rv": 188.69},
+        "Rx5day": {"raw": 19.09, "rv": 76.57},
+        "TXx": {"raw": 18.09, "rv": 20.87},
+        "TNx": {"raw": 11.70, "rv": 13.21},
+        "TXn": {"raw": 14.78, "rv": 16.45},
+        "TNn": {"raw": 16.32, "rv": 19.81},
+    }
+
     if yrs == [None, None]:
-        start_year = int(data.time[0].dt.year)
-        end_year = int(data.time[-1].dt.year)
+        if "time" in data.coords and data.sizes.get("time", 0) > 0:
+            start_year = int(data.time[0].dt.year)
+            end_year = int(data.time[-1].dt.year)
+        else:
+            start_year = "unknown"
+            end_year = "unknown"
     else:
         start_year = yrs[0]
         end_year = yrs[1]
-    yrs_str = "({0}-{1})".format(start_year, end_year)
+
+    yrs_str = f"({start_year}-{end_year})"
 
     if metric in ["TXx", "TXn", "TNx", "TNn"]:
         colors = "YlOrRd"
@@ -38,12 +69,23 @@ def plot_extremes(data, metric, model, run, yrs, output_template):
         colors = "PuBu"
 
     for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-        ds = data[season].mean("time")
+        ds = mask_return_values(data[season], metric, run)
+
+        if "time" in ds.dims:
+            ds = ds.mean("time")
+
         outfile = output_template.replace("season", season)
-        title = " ".join([model, run, season, "mean", metric, yrs_str])
-        min_lev = math.floor(ds.min() / 10) * 10
-        max_lev = math.floor(ds.max() / 10) * 10
-        levels = np.arange(min_lev, max_lev + 10, 10)
+
+        if "return_value" in run:
+            title = f"{model} {run}\n{season} {metric} {yrs_str}"
+        else:
+            title = f"{model} {run}\n{season} mean {metric} {yrs_str}"
+
+        min_val = float(ds.min(skipna=True))
+        max_val = float(ds.max(skipna=True))
+
+        levels = np.linspace(min_val, max_val, 21)
+
         try:
             plot_map_cartopy(
                 ds, outfile, title=title, proj="Robinson", cmap=colors, levels=levels
@@ -51,7 +93,77 @@ def plot_extremes(data, metric, model, run, yrs, output_template):
         except Exception as e:
             print("Error. Could not create figure", outfile, ":")
             print("    ", e)
+
+        # Difference from reference
+        if ref_data is not None:
+            ref_ds = mask_return_values(ref_data[season], metric, run)
+
+            if "time" in ref_ds.dims:
+                ref_ds = ref_ds.mean(dim="time")
+
+            ref_ds = ref_ds.interp(
+                lat=ds.lat,
+                lon=ds.lon,
+            )
+
+            diff = ds - ref_ds
+
+            if "return_value" in run:
+                max_abs = vrange_dict[metric]["rv"]
+            else:
+                max_abs = vrange_dict[metric]["raw"]
+
+            levels_diff = np.linspace(-max_abs, max_abs, 21)
+
+            diff_outfile = f"{outfile}_diff"
+            diff_title = (
+                f"{model} {run} {season} {metric}\n"
+                f"Difference from reference {yrs_str}"
+            )
+
+            plot_map_cartopy(
+                diff,
+                diff_outfile,
+                title=diff_title,
+                proj="Robinson",
+                cmap="RdBu_r",
+                levels=levels_diff,
+            )
     return
+
+
+def get_data_extent(data, padding=0.05):
+    """Determine map extent from non-NaN cells on a rectilinear grid."""
+    valid = data.notnull()
+
+    # Identify latitude and longitude coordinates containing data
+    valid_lat = valid.any(dim="lon")
+    valid_lon = valid.any(dim="lat")
+
+    if not bool(valid.any()):
+        return None
+
+    lats = data.lat.values[valid_lat.values]
+    lons = data.lon.values[valid_lon.values]
+
+    # Convert longitudes to -180..180
+    lons = (lons + 180) % 360 - 180
+
+    lat_min = float(np.min(lats))
+    lat_max = float(np.max(lats))
+    lon_min = float(np.min(lons))
+    lon_max = float(np.max(lons))
+
+    # Add padding
+    lat_pad = max((lat_max - lat_min) * padding, 2)
+    lon_pad = max((lon_max - lon_min) * padding, 2)
+
+    return [
+        max(-180, lon_min - lon_pad),
+        min(180, lon_max + lon_pad),
+        max(-90, lat_min - lat_pad),
+        min(90, lat_max + lat_pad),
+    ]
 
 
 def plot_map_cartopy(
@@ -88,9 +200,31 @@ def plot_map_cartopy(
         projection = ccrs.Robinson(central_longitude=center_lon_global)
 
     # Generate plot
+
+    # Determine geographic coverage
+    extent = get_data_extent(data)
+
+    # Detect global or near-global longitude coverage
+    is_global = (
+        extent is not None
+        and extent[1] - extent[0] >= 350
+        and extent[3] - extent[2] >= 170
+    )
+
+    # Use PlateCarree for regional maps
+    if not is_global:
+        projection = ccrs.PlateCarree()
+    else:
+        projection = ccrs.Robinson(central_longitude=center_lon_global)
+
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=projection)
-    ax.set_global()
+
+    if is_global or extent is None:
+        ax.set_global()
+    else:
+        ax.set_extent(extent, crs=ccrs.PlateCarree())
+
     im = ax.contourf(
         lons,
         lats,
@@ -118,7 +252,11 @@ def plot_map_cartopy(
                 ax.gridlines(draw_labels=True, alpha=0.5, linestyle="--")
     elif proj == "Robinson":
         if gridline:
-            ax.gridlines(alpha=0.5, linestyle="--")
+            ax.gridlines(
+                draw_labels=not is_global,
+                alpha=0.5,
+                linestyle="--",
+            )
 
     # Add title
     plt.title(title, pad=15, fontsize=15)
@@ -179,9 +317,14 @@ def taylor_diag(fname, outfile_template):
                                 tmp.append(metrics["RESULTS"][m][r][idx][rg][stat][s])
                         stat_dict[stat] = np.array(tmp)
 
-                    stddev = stat_dict["std_xy"]
-                    corrcoeff = stat_dict["cor_xy"]
-                    refstd = stat_dict["std-obs_xy"]
+                    # stddev = stat_dict["std_xy"]
+                    # corrcoeff = stat_dict["cor_xy"]
+                    # refstd = stat_dict["std-obs_xy"]
+
+                    obs_std = stat_dict["std-obs_xy"].astype(float)
+                    stddev = stat_dict["std_xy"].astype(float) / obs_std
+                    corrcoeff = stat_dict["cor_xy"].astype(float)
+                    refstd = 1.0
 
                     plottitle = " ".join([r, s, idx, rg])
                     outfile = (
@@ -199,6 +342,7 @@ def taylor_diag(fname, outfile_template):
                         fig=fig,
                         labels=models_label,
                         ref_label="Reference",
+                        normalize=True,
                     )
 
                     ax.legend(bbox_to_anchor=(1.05, 0), loc="lower left", ncol=nc)

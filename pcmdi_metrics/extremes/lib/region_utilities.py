@@ -63,50 +63,63 @@ def check_region_params(shp_path, coords, region_name, col, default):
 
 
 def mask_region(data, name, coords=None, shp_path=None, column=None):
-    # Return data masked from coordinate list or shapefile.
-    # Masks a single region
+    """Mask spatial variables without modifying coordinate bounds."""
 
-    lon = data["lon"].data
-    lat = data["lat"].data
+    lon = data["lon"]
+    lat = data["lat"]
 
-    # Option 1: Region is defined by coord pairs
+    # Option 1: Region defined by coordinate pairs
     if coords is not None:
         try:
-            names = [name]
-            regions = regionmask.Regions([np.array(coords)], names=names)
-            mask = regions.mask(lon, lat)
-            val = 0
-        except Exception as e:
-            print("Error in creating mask from provided coordinates:")
-            print("  ", e)
-            sys.exit()
+            regions = regionmask.Regions(
+                [np.array(coords)],
+                names=[name],
+            )
 
-    # Option 2: region is defined by shapefile
+            mask = regions.mask_3D(lon, lat)
+            mask = mask.isel(region=0, drop=True)
+
+        except Exception as e:
+            print("Error creating mask from coordinates:")
+            print(e)
+            raise
+
+    # Option 2: Region defined by shapefile
     elif shp_path is not None:
         try:
             regions_file = gpd.read_file(shp_path)
-            if column is not None:
-                regions = regionmask.from_geopandas(regions_file, names=column)
-            else:
-                print("Column name not provided.")
-                regions = regionmask.from_geopandas(regions_file)
-            mask = regions.mask(lon, lat)
-            # Can't match mask by name, rather index of name
-            val = list(regions_file[column]).index(name)
+
+            # Select the requested region
+            selected = regions_file.loc[regions_file[column] == name].reset_index(
+                drop=True
+            )
+
+            if selected.empty:
+                raise ValueError(f"Region '{name}' not found.")
+
+            regions = regionmask.from_geopandas(
+                selected,
+                names=column,
+                overlap=True,
+            )
+
+            mask = regions.mask_3D(lon, lat)
+            mask = mask.isel(region=0, drop=True)
+
         except Exception as e:
-            print("Error in creating mask from shapefile:")
-            print("  ", e)
-            sys.exit()
+            print("Error creating mask from shapefile:")
+            print(e)
+            raise
 
     else:
-        print("Error in masking: Region coordinates or shapefile must be provided.")
-        sys.exit()
+        raise ValueError("Region coordinates or shapefile must be provided.")
 
-    try:
-        masked_data = data.where(mask == val)
-    except Exception as e:
-        print("Error: Masking failed.")
-        print("  ", e)
-        sys.exit()
+    # Only mask variables containing spatial dimensions.
+    # Preserve time_bnds, lat_bnds, lon_bnds, etc.
+    masked_data = data.copy()
+
+    for var in data.data_vars:
+        if "lat" in data[var].dims and "lon" in data[var].dims:
+            masked_data[var] = data[var].where(mask)
 
     return masked_data
