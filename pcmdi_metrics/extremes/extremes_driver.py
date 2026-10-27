@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 import glob
+import hashlib
 import json
 import os
+from copy import deepcopy
 
+import geopandas as gpd
+import numpy as np
+import regionmask
 import xcdat
 
 from pcmdi_metrics.extremes.lib import (
@@ -14,6 +19,34 @@ from pcmdi_metrics.extremes.lib import (
     return_value,
     utilities,
 )
+
+
+def latest_version_files(pattern):
+    matches = glob.glob(pattern)
+    if not matches:
+        return []
+
+    # The files are directly inside their vYYYYMMDD directory.
+    version_dirs = {os.path.dirname(path) for path in matches}
+    versions = {
+        directory: int(os.path.basename(directory)[1:])
+        for directory in version_dirs
+        if os.path.basename(directory).startswith("v")
+        and os.path.basename(directory)[1:].isdigit()
+    }
+    if len(versions) != len(version_dirs):
+        raise ValueError(f"Expected vYYYYMMDD directories for {pattern}")
+
+    newest = max(versions.values())
+    newest_dirs = [
+        directory for directory, version in versions.items() if version == newest
+    ]
+    if len(newest_dirs) != 1:
+        raise ValueError(f"Multiple directories have version v{newest}: {newest_dirs}")
+
+    chosen = newest_dirs[0]
+    return sorted(path for path in matches if os.path.dirname(path) == chosen)
+
 
 ##########
 # Set up
@@ -63,10 +96,137 @@ col = parameter.attribute
 region_name = parameter.region_name
 coords = parameter.coords
 
-# Check the region masking parameters, if provided
-use_region_mask, region_name, coords = region_utilities.check_region_params(
-    shp_path, coords, region_name, col, "land"
-)
+# Multiple-region configuration. For shapefiles, use region_name="all" to
+# analyze every distinct value in the `attribute` column, or supply comma-
+# separated names. Single coordinate-defined regions remain supported.
+regions = {}
+if shp_path is not None:
+    frame = gpd.read_file(shp_path)
+    if col is None or col not in frame.columns:
+        raise ValueError(f"Shapefile requires a valid attribute column: {col}")
+    available = [str(v) for v in frame[col].dropna().unique()]
+    if region_name is None or str(region_name).lower() == "all":
+        requested = available
+    elif isinstance(region_name, (list, tuple)):
+        requested = [str(v) for v in region_name]
+    else:
+        requested = [v.strip() for v in str(region_name).split(",")]
+    for name in requested:
+        if name not in available:
+            raise ValueError(
+                f"Region {name!r} missing from {col}. Available: {available}"
+            )
+        if "_" in name:
+            raise ValueError(f"Region {name!r} contains '_', unsupported in filenames")
+        regions[name] = dict(shp_path=shp_path, column=col)
+elif coords is not None:
+    _, name, coords = region_utilities.check_region_params(
+        None, coords, region_name, None, "land"
+    )
+    regions[name] = dict(coords=coords)
+else:
+    regions["land"] = {}
+
+region_names = list(regions)
+print("Regions:", region_names)
+
+
+# Each shape is read once. Region masks are cached per *grid*, not per dataset.
+# Use a 3D mask because named regions overlap (e.g., CONUS and NorthAmerica).
+region_frame = None
+regionmask_geometry = None
+if shp_path is not None:
+    region_frame = frame.dropna(subset=[col, "geometry"]).copy()
+    region_frame[col] = region_frame[col].astype(str)
+    region_frame = region_frame.dissolve(by=col, as_index=False)
+    region_frame = region_frame.set_index(col).loc[region_names].reset_index()
+    if region_frame.crs is not None and region_frame.crs.to_epsg() != 4326:
+        region_frame = region_frame.to_crs(epsg=4326)
+    regionmask_geometry = regionmask.from_geopandas(
+        region_frame, names=col, overlap=True
+    )
+
+mask_cache = {}
+
+
+def _grid_key(data):
+    """Separate grids using coordinates, not only their shapes."""
+    h = hashlib.sha256()
+    for axis in ("lat", "lon"):
+        values = np.ascontiguousarray(data[axis].values)
+        h.update(str(values.shape).encode())
+        h.update(str(values.dtype).encode())
+        h.update(values.tobytes())
+    return h.hexdigest()
+
+
+def _all_grid_masks(data):
+    key = _grid_key(data)
+    if key not in mask_cache:
+        if regionmask_geometry is not None:
+            # drop=False retains regions with no grid cells on a coarse grid.
+            masks = regionmask_geometry.mask_3D(data.lon, data.lat, drop=False)
+            mask_cache[key] = {
+                name: masks.isel(region=i, drop=True)
+                for i, name in enumerate(region_names)
+            }
+        elif coords is not None:
+            polygon = regionmask.Regions([np.asarray(coords, dtype=float)])
+            m = polygon.mask_3D(data.lon, data.lat, drop=False)
+            mask_cache[key] = {region_names[0]: m.isel(region=0, drop=True)}
+        else:
+            mask_cache[key] = {"land": None}
+        print(f"Cached {len(mask_cache[key])} region masks for grid {key[:10]}")
+    return mask_cache[key]
+
+
+def mask_field(data, region):
+    """Mask spatial fields, never cftime/time or lat/lon bounds."""
+    mask = _all_grid_masks(data)[region]
+    if mask is None:
+        return data
+    output = data.copy(deep=False)
+    for var in data.data_vars:
+        if "lat" in data[var].dims and "lon" in data[var].dims:
+            output[var] = data[var].where(mask)
+    return output
+
+
+def mask_blocks(blocks, region):
+    return {index: mask_field(block, region) for index, block in blocks.items()}
+
+
+def materialize_extremes(ds):
+    """Resolve mixed Dask/NumPy outputs before repeatedly writing/masking."""
+    if any(hasattr(ds[var].data, "__dask_graph__") for var in ds.data_vars):
+        print("Computing lazy block-extrema fields once")
+        return ds.compute()
+    return ds
+
+
+def merge_region_results(destination, new_result):
+    for index, regional in new_result.items():
+        destination.setdefault(index, {}).update(regional)
+
+
+def write_checked(ds, model, run, region, index, years, directory, description):
+    """Use PMP writer, but fail immediately if a write silently fails."""
+    global meta
+    path = os.path.join(
+        directory, f"{model}_{run}_{region}_{index}_{'-'.join(map(str, years))}.nc"
+    )
+    if os.path.exists(path):
+        os.remove(path)  # prevents failed writes from reopening stale files
+    meta = utilities.write_to_nc(
+        ds, model, run, region, index, years, directory, description, meta
+    )
+    if not os.path.isfile(path):
+        raise RuntimeError(f"Failed to write NetCDF: {path}")
+    with xcdat.open_dataset(path) as checked:
+        if "ANN" not in checked:
+            raise RuntimeError(f"NetCDF missing ANN after write: {path}")
+    return path
+
 
 # Verifying output directory
 metrics_output_path = utilities.verify_output_path(metrics_output_path, case_id)
@@ -93,6 +253,11 @@ meta = metadata.MetadataFile(metrics_output_path)
 # Initialize other directories
 nc_dir = os.path.join(metrics_output_path, "netcdf")
 os.makedirs(nc_dir, exist_ok=True)
+# Intermediate full-grid files remain separate from user-facing regional files.
+full_nc_dir = os.path.join(metrics_output_path, "netcdf_full_grid")
+os.makedirs(full_nc_dir, exist_ok=True)
+full_block_files = {}  # (model, index) -> paths for all realizations
+full_block_by_run = {}  # (model, run, index) -> path
 if plots:
     plot_dir_maps = os.path.join(metrics_output_path, "plots", "maps")
     os.makedirs(plot_dir_maps, exist_ok=True)
@@ -117,8 +282,11 @@ metrics_dict = compute_metrics.init_metrics_dict(
     dec_mode,
     drop_incomplete_djf,
     annual_strict,
-    region_name,
+    region_names[0],
 )
+metrics_dict["DIMENSIONS"]["region"] = {
+    name: "Land grid cells (sftlf >= 50) within region" for name in region_names
+}
 
 obs = {}
 
@@ -186,11 +354,6 @@ for model in model_loop_list:
             # Stats calculation is expecting sfltf scaled from 0-100
             if sftlf["sftlf"].max() <= 20:
                 sftlf["sftlf"] = sftlf["sftlf"] * 100.0
-            if use_region_mask:
-                print("\nCreating sftlf region mask.")
-                sftlf = region_utilities.mask_region(
-                    sftlf, region_name, coords=coords, shp_path=shp_path, column=col
-                )
 
         if run == reference_data_set:
             units_adjust = ObsUnitsAdjust
@@ -218,8 +381,27 @@ for model in model_loop_list:
                 start_year = msyear
                 end_year = meyear
             yrs = [str(start_year), str(end_year)]  # for output file names
-            test_data_full_path = glob.glob(test_data_full_path)
-            test_data_full_path.sort()
+            # test_data_full_path = glob.glob(test_data_full_path)
+            # test_data_full_path.sort()
+            print(test_data_full_path)
+
+            if run == reference_data_set:
+                test_data_full_path = sorted(glob.glob(test_data_full_path))
+            else:
+                test_grids = ["gn", "gr", "gr1", "gr2", "g110", "g150"]
+                file_template = test_data_full_path
+
+                for grid in test_grids:
+                    test_data_full_path = latest_version_files(
+                        file_template.replace("/gn/", f"/{grid}/").replace(
+                            "_gn_", f"_{grid}_"
+                        )
+                    )
+
+                    if len(test_data_full_path) > 0:
+                        print(f"Using grid {grid}")
+                        break
+
             if len(test_data_full_path) == 0:
                 print("")
                 print("-----------------------")
@@ -236,23 +418,23 @@ for model in model_loop_list:
             # Load and prep data
             ds = utilities.load_dataset(test_data_full_path)
 
+            if run == reference_data_set:
+                rename = {
+                    old: new
+                    for old, new in {
+                        "latitude": "lat",
+                        "longitude": "lon",
+                    }.items()
+                    if old in ds.dims or old in ds.coords or old in ds.data_vars
+                }
+                ds = ds.rename(rename)
+
             if not sftlf_exists and generate_sftlf:
                 print("Generating land sea mask.")
                 sftlf = utilities.generate_land_sea_mask(ds, debug=debug)
-                if use_region_mask:
-                    print("\nCreating sftlf region mask.")
-                    sftlf = region_utilities.mask_region(
-                        sftlf, region_name, coords=coords, shp_path=shp_path, column=col
-                    )
 
             # Mask out Antarctica
             sftlf["sftlf"] = sftlf["sftlf"].where(sftlf.lat > -60)
-
-            if use_region_mask:
-                print("Creating dataset mask.")
-                ds = region_utilities.mask_region(
-                    ds, region_name, coords=coords, shp_path=shp_path, column=col
-                )
 
             # Get time slice if year parameters exist
             if start_year is not None:
@@ -267,8 +449,8 @@ for model in model_loop_list:
             # This dict is going to hold results for just this run
             stats_dict = {}
 
-            # Here's where the extremes calculations are happening
-            if varname == "tasmax":
+            # Generate all gridded temporal indices ONCE, then subset by region.
+            if varname in ("tasmax", "tas"):
                 TXx, TXn = compute_metrics.temperature_indices(
                     ds,
                     varname,
@@ -278,53 +460,8 @@ for model in model_loop_list:
                     drop_incomplete_djf,
                     annual_strict,
                 )
-                stats_dict["TXx"] = TXx
-                stats_dict["TXn"] = TXn
-
-                if run == reference_data_set:
-                    obs["TXx"] = TXx
-                    obs["TXn"] = TXn
-
-                if nc_out:
-                    print("Writing results to netCDF.")
-                    desc = "Seasonal maximum of maximum temperature."
-                    meta = utilities.write_to_nc(
-                        TXx, model, run, region_name, "TXx", yrs, nc_dir, desc, meta
-                    )
-                    desc = "Seasonal minimum of maximum temperature."
-                    meta = utilities.write_to_nc(
-                        TXn, model, run, region_name, "TXn", yrs, nc_dir, desc, meta
-                    )
-
-                if plots:
-                    print("Creating maps")
-                    yrs = [start_year, end_year]
-                    desc = "Seasonal maximum of maximum temperature."
-                    meta = plot_extremes.make_maps(
-                        TXx,
-                        model,
-                        run,
-                        region_name,
-                        "TXx",
-                        yrs,
-                        plot_dir_maps,
-                        desc,
-                        meta,
-                    )
-                    desc = "Seasonal minimum of maximum temperature."
-                    meta = plot_extremes.make_maps(
-                        TXn,
-                        model,
-                        run,
-                        region_name,
-                        "TXn",
-                        yrs,
-                        plot_dir_maps,
-                        desc,
-                        meta,
-                    )
-
-            if varname == "tasmin":
+                stats_dict = {"TXx": TXx, "TXn": TXn}
+            elif varname == "tasmin":
                 TNx, TNn = compute_metrics.temperature_indices(
                     ds,
                     varname,
@@ -334,55 +471,9 @@ for model in model_loop_list:
                     drop_incomplete_djf,
                     annual_strict,
                 )
-                stats_dict["TNx"] = TNx
-                stats_dict["TNn"] = TNn
-
-                if run == reference_data_set:
-                    obs["TNx"] = TNx
-                    obs["TNn"] = TNn
-
-                if nc_out:
-                    print("Writing results to netCDF.")
-                    desc = "Seasonal maximum of minimum temperature."
-                    meta = utilities.write_to_nc(
-                        TNx, model, run, region_name, "TNx", yrs, nc_dir, desc, meta
-                    )
-                    desc = "Seasonal minimum of minimum temperature."
-                    meta = utilities.write_to_nc(
-                        TNn, model, run, region_name, "TNn", yrs, nc_dir, desc, meta
-                    )
-
-                if plots:
-                    print("Creating maps")
-                    yrs = [start_year, end_year]
-                    desc = "Seasonal maximum of minimum temperature."
-                    meta = plot_extremes.make_maps(
-                        TNx,
-                        model,
-                        run,
-                        region_name,
-                        "TNx",
-                        yrs,
-                        plot_dir_maps,
-                        desc,
-                        meta,
-                    )
-                    desc = "Seasonal minimum of minimum temperature."
-                    meta = plot_extremes.make_maps(
-                        TNn,
-                        model,
-                        run,
-                        region_name,
-                        "TNn",
-                        yrs,
-                        plot_dir_maps,
-                        desc,
-                        meta,
-                    )
-
-            if varname in ["pr", "PRECT", "precip"]:
-                # Rename possible precipitation variable names for consistency
-                if varname in ["precip", "PRECT"]:
+                stats_dict = {"TNx": TNx, "TNn": TNn}
+            elif varname in ("pr", "PRECT", "precip"):
+                if varname != "pr":
                     ds = ds.rename({varname: "pr"})
                 Rx1day, Rx5day = compute_metrics.precipitation_indices(
                     ds,
@@ -392,81 +483,92 @@ for model in model_loop_list:
                     drop_incomplete_djf,
                     annual_strict,
                 )
-                stats_dict["Rx1day"] = Rx1day
-                stats_dict["Rx5day"] = Rx5day
+                stats_dict = {"Rx1day": Rx1day, "Rx5day": Rx5day}
+            else:
+                continue
 
-                if run == reference_data_set:
-                    obs["Rx1day"] = Rx1day
-                    obs["Rx5day"] = Rx5day
+            # Time reductions can be lazy. Compute exactly once even when
+            # subsequent regional NetCDF writes are eager.
+            stats_dict = {
+                index: materialize_extremes(block)
+                for index, block in stats_dict.items()
+            }
 
-                if nc_out:
-                    print("Writing results to netCDF.")
-                    desc = "Seasonal maximum value of daily precipitation."
-                    meta = utilities.write_to_nc(
-                        Rx1day,
-                        model,
-                        run,
-                        region_name,
-                        "Rx1day",
-                        yrs,
-                        nc_dir,
-                        desc,
-                        meta,
-                    )
-                    desc = "Seasonal maximum value of 5-day mean precipitation."
-                    meta = utilities.write_to_nc(
-                        Rx5day,
-                        model,
-                        run,
-                        region_name,
-                        "Rx5day",
-                        yrs,
-                        nc_dir,
-                        desc,
-                        meta,
-                    )
-
-                if plots:
-                    print("Creating maps")
-                    desc = "Seasonal maximum value of 5-day mean precipitation."
-                    meta = plot_extremes.make_maps(
-                        Rx5day,
-                        model,
-                        run,
-                        region_name,
-                        "Rx5day",
-                        yrs,
-                        plot_dir_maps,
-                        desc,
-                        meta,
-                    )
-                    desc = "Seasonal maximum value of daily precipitation."
-                    meta = plot_extremes.make_maps(
-                        Rx1day,
-                        model,
-                        run,
-                        region_name,
-                        "Rx1day",
-                        yrs,
-                        plot_dir_maps,
-                        desc,
-                        meta,
-                    )
-
-            if model != "Reference":
-                # Get stats and update metrics dictionary
-                print("Generating metrics.")
-                result_dict = compute_metrics.metrics_json(
-                    stats_dict, obs_dict=obs, region=region_name, regrid=regrid
+            # Store one unmasked (apart from the pre-existing sftlf land mask)
+            # block file for each realization/index, for *one* GEV fit later.
+            for index, block in stats_dict.items():
+                full_path = write_checked(
+                    block,
+                    model,
+                    run,
+                    "fullGrid",
+                    index,
+                    yrs,
+                    full_nc_dir,
+                    f"Full-grid seasonal block extrema for {index}",
                 )
-                metrics_dict["RESULTS"][model][run].update(result_dict)
-                if run not in metrics_dict["DIMENSIONS"]["realization"]:
-                    metrics_dict["DIMENSIONS"]["realization"].append(run)
+                full_block_files.setdefault((model, index), []).append(full_path)
+                full_block_by_run[(model, run, index)] = full_path
+
+            for region in region_names:
+                region_stats = mask_blocks(stats_dict, region)
+                # Only retain the reference corresponding to this region.
+                if model == "Reference":
+                    obs.setdefault(region, {}).update(region_stats)
+
+                for index, block in region_stats.items():
+                    if nc_out:
+                        description = f"Seasonal block extrema: {index} ({region})"
+                        path = write_checked(
+                            block,
+                            model,
+                            run,
+                            region,
+                            index,
+                            yrs,
+                            nc_dir,
+                            description,
+                        )
+                        block = xcdat.open_dataset(path)
+                        region_stats[index] = block
+                        if model == "Reference":
+                            obs[region][index] = block
+
+                    if plots:
+                        ref = (
+                            obs.get(region, {}).get(index)
+                            if model != "Reference"
+                            else None
+                        )
+                        meta = plot_extremes.make_maps(
+                            block,
+                            model,
+                            run,
+                            region,
+                            index,
+                            [start_year, end_year],
+                            plot_dir_maps,
+                            f"Seasonal block extrema: {index}",
+                            meta,
+                            ref_data=ref,
+                        )
+
+                if model != "Reference":
+                    print("Generating metrics for", region)
+                    result = compute_metrics.metrics_json(
+                        region_stats,
+                        obs_dict=obs.get(region, {}),
+                        region=region,
+                        regrid=regrid,
+                    )
+                    merge_region_results(metrics_dict["RESULTS"][model][run], result)
+                    if run not in metrics_dict["DIMENSIONS"]["realization"]:
+                        metrics_dict["DIMENSIONS"]["realization"].append(run)
 
     if model != "Reference":
         # Pull out metrics for just this model
         # and write to JSON
-        metrics_tmp = metrics_dict.copy()
+        metrics_tmp = deepcopy(metrics_dict)
         metrics_tmp["DIMENSIONS"]["model"] = model
         metrics_tmp["DIMENSIONS"]["realization"] = list_of_runs
         metrics_tmp["RESULTS"] = {model: metrics_dict["RESULTS"][model]}
@@ -496,7 +598,7 @@ meta.update_metrics(
 # Taylor Diagram
 if plots and (reference_data_path is not None):
     print("Making Taylor Diagrams")
-    years = "-".join(yrs)
+    years = "-".join(str(year) for year in yrs)
     outfile_template = os.path.join(
         plot_dir_taylor,
         "_".join(["taylor", "realization", "region", "index", "season", years]),
@@ -513,53 +615,66 @@ if plots and (reference_data_path is not None):
         print("Error. Could not create Taylor Diagram for ", outfile_template, ":")
         print(e)
 
-# Calculate Return Values
-# If more metrics are added to this analysis,
-# Update the stat list in the inner loop and in the
-# max/min check.
-print("Generating return values.")
-for model in model_loop_list:
-    # Skip obs if nonstationary
+# Fit GEV exactly ONCE per model/index (across all its realizations).
+# Input files are full-grid block extrema, never region-specific NetCDFs.
+print("Generating full-grid return values (one fit per model/index).")
+rv_full_files = {}  # (model, index) -> (rv output path, realization key)
+for (model, stat), block_files in sorted(full_block_files.items()):
     if model == "Reference" and cov_file is not None:
         continue
-    for stat in ["TXx", "TXn", "TNx", "TNn", "Rx5day", "Rx1day"]:
-        if stat in ["TXx", "TNx", "Rx5day", "Rx1day"]:
-            maxes = True
-        else:
-            # TXn and TNn
-            maxes = False
-        filelist = glob.glob(nc_dir + "/*{0}*{1}*".format(model, stat))
-        # Skip over results that might be left from old run
-        filelist = [
-            f
-            for f in filelist
-            if ("return_value" not in f) and ("standard_error" not in f)
-        ]
-        if len(filelist) > 1:
-            # Use all realizations
-            print(model)
+    block_files = sorted(block_files)
+    maxes = stat in ("TXx", "TNx", "Rx5day", "Rx1day")
+
+    # compute_rv_for_model names output Model_fullGrid_STAT_YEARS_return_value.nc
+    # compute_rv_from_file names Model_RUN_fullGrid_STAT_YEARS_return_value.nc
+    if len(block_files) > 1:
+        block_base = os.path.basename(block_files[0])
+        model_prefix, rest = block_base.split("_", 1)
+        # Remove only the realization; avoid fragile global str.replace().
+        candidate = os.path.join(
+            full_nc_dir,
+            f"{model_prefix}_{rest.split('_', 1)[1].removesuffix('.nc')}_return_value.nc",
+        )
+        rv_run = "all"
+    else:
+        candidate = block_files[0].removesuffix(".nc") + "_return_value.nc"
+        rv_run = os.path.basename(block_files[0]).split("_")[1]
+
+    # A stale fit from an earlier execution must not be reused after an
+    # input block file has been regenerated.
+    needs_fit = not os.path.exists(candidate) or any(
+        os.path.getmtime(p) > os.path.getmtime(candidate) for p in block_files
+    )
+    if needs_fit:
+        if len(block_files) > 1:
             meta = return_value.compute_rv_for_model(
-                filelist,
+                block_files,
                 cov_file,
                 cov_name,
-                nc_dir,
+                full_nc_dir,
                 return_period,
                 meta,
                 maxes=maxes,
                 norm=norm,
             )
-        elif len(filelist) == 1:
-            # Return value from single realization
+        else:
             meta = return_value.compute_rv_from_file(
-                filelist,
+                block_files,
                 cov_file,
                 cov_name,
-                nc_dir,
+                full_nc_dir,
                 return_period,
                 meta,
                 maxes=maxes,
                 norm=norm,
             )
+    else:
+        print("Reusing existing full-grid GEV fit:", candidate)
+
+    if os.path.exists(candidate):
+        rv_full_files[(model, stat)] = (candidate, rv_run)
+    else:
+        print("WARNING: no return-value file generated for", model, stat)
 
 rv_metrics_dict = compute_metrics.init_metrics_dict(
     model_loop_list,
@@ -567,83 +682,115 @@ rv_metrics_dict = compute_metrics.init_metrics_dict(
     dec_mode,
     drop_incomplete_djf,
     annual_strict,
-    region_name,
+    region_names[0],
 )
+rv_metrics_dict["DIMENSIONS"]["region"] = dict(metrics_dict["DIMENSIONS"]["region"])
 
-# Write metrics file for return values
-# Can only do this for stationary case
+# Cache masked observations by region and index.
+regional_reference_rvs = {}
+regional_reference_blocks = {}
 if cov_file is None:
-    filelist = glob.glob(nc_dir + "/*return_value.nc")
-    for file in filelist:
-        # Use the file name to get variables
-        if len(os.path.basename(file).split("_")) > 6:
-            rz = os.path.basename(file).split("_")[1]
-        else:
-            rz = "all"
-        model = os.path.basename(file).split("_")[0]
-        stat = os.path.basename(file).split("_")[-4]
-        region = os.path.basename(file).split("_")[-5]
-
-        if rz == "all":
-            # Use the realization file name that comes first, sorted
-            bmfilelist = glob.glob(
-                nc_dir + "/{0}_*_{1}_{2}_*.nc".format(model, region, stat)
-            )
-            bmfilelist.sort()
-            bm = xcdat.open_dataset(bmfilelist[0])
-        else:
-            block_file = file.replace("_return_value", "")
-            bm = xcdat.open_dataset(block_file)
-
-        # Get reference data if present
-        refds = None
-        bm_ref = None
-        if "Reference" in model_loop_list:
-            ref_file = nc_dir + "/Reference_{0}_{1}_{2}_*_return_value.nc".format(
-                reference_data_set, region, stat
-            )
-            ref_file = glob.glob(ref_file)[0]
-            refds = xcdat.open_dataset(ref_file)
-            refds = refds.drop_vars("lat_bnds")
-            refds = refds.drop_vars("lon_bnds")
-            refds.lat["bounds"] = ""
-            refds.lon["bounds"] = ""
-            refds = refds.bounds.add_missing_bounds()
-
-            bm_ref_file = ref_file.replace("_return_value", "")
-            bm_ref = xcdat.open_dataset(bm_ref_file)
-
-        rv = xcdat.open_dataset(file)
-        rv = rv.drop_vars("lat_bnds")
-        rv = rv.drop_vars("lon_bnds")
-        rv.lat["bounds"] = ""
-        rv.lon["bounds"] = ""
-        rv = rv.bounds.add_missing_bounds()
-        tmp = compute_metrics.metrics_json_return_value(
-            rv, bm, refds, bm_ref, stat, region=region, regrid=regrid
+    for (model, stat), (full_rv_path, rv_run) in sorted(
+        rv_full_files.items(), key=lambda item: (item[0][0] != "Reference", item[0])
+    ):
+        print("Regionalizing return values:", model, stat)
+        full_rv = xcdat.open_dataset(full_rv_path)
+        # RVs for ensembles reference the first block realization, as before.
+        first_block_file = sorted(full_block_files[(model, stat)])[0]
+        full_bm = xcdat.open_dataset(first_block_file)
+        full_se_path = full_rv_path.replace("_return_value.nc", "_standard_error.nc")
+        full_se = (
+            xcdat.open_dataset(full_se_path) if os.path.exists(full_se_path) else None
         )
-        # store the stats correctly in the metrics dictionary
-        if model != "Reference":
-            if model in rv_metrics_dict["RESULTS"]:
-                if rz in rv_metrics_dict["RESULTS"][model]:
-                    rv_metrics_dict["RESULTS"][model][rz].update(tmp)
-                else:
-                    rv_metrics_dict["RESULTS"][model].update({rz: tmp})
-            else:
-                rv_metrics_dict["RESULTS"][model] = {rz: tmp}
+        for region in region_names:
+            rv = mask_field(full_rv, region)
+            bm = mask_field(full_bm, region)
+            # NetCDF bounds/coords remain intact.
+            yrange = [
+                str(osyear if model == "Reference" else msyear),
+                str(oeyear if model == "Reference" else meyear),
+            ]
+            # Save regional gridded fitted RV and SE without refitting.
+            # Preserve input full-grid base name, replacing only fullGrid.
+            regional_rv_name = os.path.basename(full_rv_path).replace(
+                "_fullGrid_", f"_{region}_", 1
+            )
+            regional_rv_path = os.path.join(nc_dir, regional_rv_name)
+            utilities.write_netcdf_file(regional_rv_path, rv)
+            meta.update_data(
+                os.path.basename(regional_rv_path),
+                regional_rv_path,
+                "return_value",
+                f"{return_period}-year regional return value",
+            )
+            if full_se is not None:
+                regional_se = mask_field(full_se, region)
+                regional_se_path = regional_rv_path.replace(
+                    "_return_value.nc", "_standard_error.nc"
+                )
+                utilities.write_netcdf_file(regional_se_path, regional_se)
+                meta.update_data(
+                    os.path.basename(regional_se_path),
+                    regional_se_path,
+                    "standard_error",
+                    "Regional GEV return value standard error",
+                )
 
-    if "Reference" in model_loop_list:
-        model_loop_list.remove("Reference")
-    rv_metrics_dict["DIMENSIONS"]["model"] = model_loop_list
+            if model == "Reference":
+                regional_reference_rvs[(region, stat)] = rv
+                regional_reference_blocks[(region, stat)] = bm
+                continue
+
+            refds = regional_reference_rvs.get((region, stat))
+            bm_ref = regional_reference_blocks.get((region, stat))
+            if plots:
+                try:
+                    meta = plot_extremes.make_maps(
+                        rv,
+                        model,
+                        f"{rv_run}_return_value",
+                        region,
+                        stat,
+                        yrange,
+                        plot_dir_maps,
+                        f"{return_period}-year return value for {stat}",
+                        meta,
+                        ref_data=refds,
+                    )
+                except Exception as exc:
+                    print("Could not plot RV", model, region, stat, exc)
+
+            tmp = compute_metrics.metrics_json_return_value(
+                rv.copy(deep=True),
+                bm,
+                refds.copy(deep=True) if refds is not None else None,
+                bm_ref,
+                stat,
+                region=region,
+                regrid=regrid,
+            )
+            slot = (
+                rv_metrics_dict["RESULTS"].setdefault(model, {}).setdefault(rv_run, {})
+            )
+            merge_region_results(slot, tmp)
+
+        full_rv.close()
+        full_bm.close()
+        if full_se is not None:
+            full_se.close()
+
+    rv_metrics_dict["DIMENSIONS"]["model"] = [
+        m for m in model_loop_list if m != "Reference"
+    ]
     utilities.write_to_json(
         metrics_output_path, "return_value_metrics.json", rv_metrics_dict
     )
-    fname = os.path.join(metrics_output_path, "return_value_metrics.json")
+    rv_fname = os.path.join(metrics_output_path, "return_value_metrics.json")
     meta.update_metrics(
         "All",
-        fname,
+        rv_fname,
         "All results",
-        "Seasonal metrics for return value for all datasets",
+        "Seasonal regional metrics for fitted return values",
     )
 
 # Update and write metadata file

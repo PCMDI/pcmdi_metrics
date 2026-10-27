@@ -76,7 +76,7 @@ def compute_rv_for_model(
     return_period,
     meta,
     maxes=True,
-    n_jobs=8,  # Conservative number of cores
+    n_jobs=32,  # Conservative number of cores
     norm=0,
 ):
     # Similar to compute_rv_from_dataset, but to work on multiple realizations
