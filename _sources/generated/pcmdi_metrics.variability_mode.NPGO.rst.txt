@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.variability\_mode.NPGO
+=====================================
+
+.. currentmodule:: pcmdi_metrics.variability_mode
+
+.. autofunction:: NPGO
