@@ -1,146 +1,329 @@
-import datetime
+import copy
 import os
+from datetime import datetime, timezone
+from typing import Union
 
-import dask
+import xarray as xr
 
-from pcmdi_metrics.io import xcdat_open
+from pcmdi_metrics.io import get_calendar, get_time, select_subset, xcdat_open
+from pcmdi_metrics.utils import (
+    check_monthly_time_axis,
+    check_time_bounds_exist,
+    extract_date_components,
+    find_overlapping_dates,
+    last_day_of_month,
+    regenerate_time_axis,
+)
 
 from .plot_clim_maps import plot_climatology
 
 
 def calculate_climatology(
-    var,
-    infile,
-    outfile=None,
-    outpath=None,
-    outfilename=None,
-    start=None,
-    end=None,
-    ver=None,
-    periodinname=None,
-    climlist=None,
+    var: str,
+    infile: Union[str, list[str]],
+    ds: xr.Dataset = None,
+    outfile: str = None,
+    outpath: str = None,
+    outfilename: str = None,
+    outfilename_default_template: bool = True,
+    start: str = None,
+    end: str = None,
+    ver: str = None,
+    periodinname: bool = None,
+    climlist: list = None,
+    repair_time_axis: bool = False,
+    overwrite_output: bool = True,
+    save_ac_netcdf: bool = True,
     plot=True,
 ):
-    if ver is None:
-        ver = datetime.datetime.now().strftime("v%Y%m%d")
+    """
+    Calculate climatology from a dataset over a specified period.
 
+    This function computes seasonal and monthly climatologies for a given variable
+    in a dataset. The output can be saved to NetCDF files, with customizable options
+    for file naming and output directories.
+
+    Parameters
+    ----------
+    var : str
+        The variable name for which the climatology is to be calculated.
+    infile : str
+        The path to the input dataset file(s).
+    ds : xr.Dataset, optional
+        The xarray dataset to use (default is None, in which case ds is opened from infile).
+    outfile : str, optional
+        The base output file path (default is None).
+    outpath : str, optional
+        The directory to save output files (default is None, uses the directory of outfile).
+    outfilename : str, optional
+        The specific output filename (default is None, uses infile name).
+    outfilename_default_template: bool ,optional
+        Use default template to rename output file name to add information (default is True).
+    start : str, optional
+        The start date for the climatology period in 'YYYY-MM' format (default is None).
+    end : str, optional
+        The end date for the climatology period in 'YYYY-MM' format (default is None).
+    ver : str, optional
+        Version string for the output files (default is current date in 'vYYYYMMDD' format).
+    periodinname : bool, optional
+        Flag to include the time period in the output filename (default is None).
+    climlist : list of str, optional
+        List of climatologies to calculate and save (e.g., ["AC", "DJF", "MAM", "JJA", "SON"], default is all).
+    repair_time_axis : bool, optional
+        If True, regenerate time axis if data has incorrect time axis, default is False
+    overwrite_output: bool, optional
+        If True, output file will be overwritten regardless of its existance
+    save_ac_netcdf: bool, optional
+        If True, output will be saved as netcdf file(s), default is True
+
+    Returns
+    -------
+    dict of xarray.Dataset
+        A dictionary containing the calculated climatology datasets, with keys corresponding
+        to the seasons ('DJF', 'MAM', 'JJA', 'SON') and the annual cycle ('AC').
+
+    Notes
+    -----
+    - The function handles seasonal climatology for DJF (December-January-February)
+      considering incomplete DJF periods.
+    - The output files are saved in NetCDF format, and global attributes are preserved.
+
+    Example
+    -------
+    >>> calculate_climatology(
+            var='tas',
+            infile='data.nc',
+            outfile='climatology.nc',
+            start='1980-01',
+            end='1990-12',
+            ver='v1',
+            periodinname=True
+        )
+    """
+    # Set version identifier using the current date if not provided
+    ver = ver or datetime.now().strftime("v%Y%m%d")
     print("ver:", ver)
 
-    infilename = infile.split("/")[-1]
+    # Extract the input filename from the full file path
+    if isinstance(infile, list):
+        infilename = ",".join([os.path.basename(f) for f in infile])
+    else:
+        infilename = os.path.basename(infile)
     print("infilename:", infilename)
 
-    # open file
-    d = xcdat_open(infile, data_var=var)
-    atts = d.attrs
+    # Open the dataset using xcdat's open_mfdataset function
+    if ds is None:
+        ds = xcdat_open(infile, data_var=var)
 
-    print("type(d):", type(d))
-    print("atts:", atts)
+    if not isinstance(ds, xr.Dataset):
+        raise ValueError(f"Expected xarray.Dataset, got {type(ds)}")
 
-    # CONTROL OF OUTPUT DIRECTORY AND FILE
-    out = outfile
-    if outpath is None:
-        outdir = os.path.dirname(outfile)
+    atts = ds.attrs
+    print("atts:", atts)  # Print dataset attributes
+
+    # ---------------
+    # Start Quick QCs
+
+    # Check if dataset time axis is okay
+    try:
+        check_monthly_time_axis(ds)
+    except ValueError:
+        print(f"Error: time axis error from {infilename}")
+        if repair_time_axis:
+            ds = regenerate_time_axis(ds)
+
+    # check if time bounds data exists
+    try:
+        check_time_bounds_exist(ds)
+    except ValueError:
+        print(f"Error: time bounds missing from {infilename}")
+        if repair_time_axis:
+            ds = ds.bounds.add_missing_bounds(axes=["T"])
+            print("Generated time bounds")
+
+    # Replace negative values to zero in pr field
+    if var == "pr":
+        # change negative values to zero
+        ds[var] = ds[var].where(ds[var] >= 0, 0)
+
+    # Quick QCs Done
+    # --------------
+
+    # check if the given data is already an annual cycle
+    if len(get_time(ds)) == 12:
+        input_is_annual_cycle = True
+        dec_mode = "JFD"
     else:
-        outdir = outpath
-    os.makedirs(outdir, exist_ok=True)
+        input_is_annual_cycle = False
+        dec_mode = "DJF"
 
+    # Determine the output directory, using outpath if provided, else use the directory of outfile
+    outdir = outpath or os.path.dirname(outfile)
+    os.makedirs(outdir, exist_ok=True)  # Create the directory if it doesn't exist
     print("outdir:", outdir)
 
-    # CLIM PERIOD
-    if (start is None) and (end is None):
-        # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
-        start_yr = int(d.time["time.year"][0])
-        start_mo = int(d.time["time.month"][0])
-        start_da = int(d.time["time.day"][0])
-        end_yr = int(d.time["time.year"][-1])
-        end_mo = int(d.time["time.month"][-1])
-        end_da = int(d.time["time.day"][-1])
-    else:
-        # USER DEFINED PERIOD
-        start_yr = int(start.split("-")[0])
-        start_mo = int(start.split("-")[1])
-        start_da = 1
-        end_yr = int(end.split("-")[0])
-        end_mo = int(end.split("-")[1])
-        end_da = int(
-            d.time.dt.days_in_month.sel(time=(d.time.dt.year == end_yr))[end_mo - 1]
-        )
+    # Get the calendar type from the dataset
+    calendar = get_calendar(ds)
+    print("calendar:", calendar)
 
-    start_yr_str = str(start_yr).zfill(4)
-    start_mo_str = str(start_mo).zfill(2)
-    start_da_str = str(start_da).zfill(2)
-    end_yr_str = str(end_yr).zfill(4)
-    end_mo_str = str(end_mo).zfill(2)
-    end_da_str = str(end_da).zfill(2)
+    # Define the climatology period based on the provided start and end dates, or use the entire time series
+    if start is not None and end is not None and not input_is_annual_cycle:
+        # If a period is specified by the user, parse the start and end dates
+        start_yr, start_mo = map(int, start.split("-")[:2])
+        start_da = 1  # Default to the first day of the start month
+        end_yr, end_mo = map(int, end.split("-")[:2])
+        # Determine the last day of the end month
+        end_da = last_day_of_month(end_yr, end_mo, calendar)
 
-    # Subset given time period
-    d = d.sel(
-        time=slice(
-            f"{start_yr_str}-{start_mo_str}-{start_da_str}",
-            f"{end_yr_str}-{end_mo_str}-{end_da_str}",
-        )
-    )
+        # Format the start and end dates as strings (YYYY-MM-DD)
+        start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
+        end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
 
-    print("start_yr_str is ", start_yr_str)
-    print("start_mo_str is ", start_mo_str)
-    print("end_yr_str is ", end_yr_str)
-    print("end_mo_str is ", end_mo_str)
+        # Update start and end dates strings to those overlaps with the actual dataset
+        start_str, end_str = find_overlapping_dates(ds, start_str, end_str)
 
-    # Calculate climatology
-    dask.config.set(**{"array.slicing.split_large_chunks": True})
-    d_clim = d.temporal.climatology(
-        var,
-        freq="season",
-        weighted=True,
-        season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},
-    )
-    d_ac = d.temporal.climatology(var, freq="month", weighted=True)
+        # Adjust start_str and end_str to fit calendar year if needed
+        start_yr, start_mo = map(int, start_str.split("-")[:2])
+        end_yr, end_mo = map(int, end_str.split("-")[:2])
 
-    d_clim_dict = dict()
+        if start_mo != 1:
+            start_yr += 1
+            start_mo = 1
+            start_da = 1
+            start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
 
-    d_clim_dict["DJF"] = d_clim.isel(time=0)
-    d_clim_dict["MAM"] = d_clim.isel(time=1)
-    d_clim_dict["JJA"] = d_clim.isel(time=2)
-    d_clim_dict["SON"] = d_clim.isel(time=3)
-    d_clim_dict["AC"] = d_ac
+        if end_mo != 12:
+            end_yr -= 1
+            end_mo = 12
+            end_da = 31
+            end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
 
-    if climlist is None:
-        clims = ["AC", "DJF", "MAM", "JJA", "SON"]
-    else:
-        clims = climlist
+        # Subset the dataset to the selected time period
+        ds = select_subset(ds, time=(start_str, end_str))
 
-    for s in clims:
-        # Save to netcdf file
-        if periodinname is None:
+    # Extract the start and end year, month, and day from the dataset time coordinate
+    start_yr, start_mo, start_da = extract_date_components(ds, index=0)
+    end_yr, end_mo, end_da = extract_date_components(ds, index=-1)
+
+    print(f"start: {start_yr:04d}-{start_mo:02d}-{start_da:02d}")
+    print(f"end: {end_yr:04d}-{end_mo:02d}-{end_da:02d}")
+
+    # Determine which climatologies to process, defaulting to all if none are specified
+    seasons = climlist or ["AC", "DJF", "MAM", "JJA", "SON"]
+
+    # Find the first element except "AC"
+    first_season = next(item for item in seasons if item != "AC")
+
+    # Create a dictionary as pointer to climatology fields
+    ds_clim_dict = dict()
+
+    season_index_dict = {"DJF": 0, "MAM": 1, "JJA": 2, "SON": 3}
+
+    print("outdir, outfilename, outfile:", outdir, outfilename, outfile)
+
+    # Iterate over the selected climatologies and save each to a NetCDF file
+    for s in seasons:
+        print(f"Processing climatology for season: {s}")
+        if outfilename_default_template:
+            # Define the output filename suffix based on the climatology and period (if specified)
             addf = (
-                f".{start_yr_str}{start_mo_str}-{end_yr_str}{end_mo_str}.{s}.{ver}.nc"
+                f".{start_yr:04d}{start_mo:02d}-{end_yr:04d}{end_mo:02d}.{s}.{ver}.nc"
+                if periodinname
+                else f".{s}.{ver}.nc"
             )
-        if periodinname is not None:
-            addf = "." + s + "." + ver + ".nc"
+            # Replace the .nc extension in the base output file with the defined suffix
+            if outfilename is not None:
+                outpath_season = os.path.join(outdir, outfilename.replace(".nc", addf))
+            elif outfile is not None:
+                outpath_season = os.path.join(
+                    outdir, str(os.path.basename(outfile)).replace(".nc", addf)
+                )
+            else:
+                outpath_season = os.path.join(
+                    outdir, str(os.path.basename(infile)).replace(".nc", addf)
+                )
+        else:
+            outpath_season = os.path.join(
+                outdir,
+                outfilename.replace(
+                    "%(start-yyyymm)-%(end-yyyymm)",
+                    f"{start_yr:04d}{start_mo:02d}-{end_yr:04d}{end_mo:02d}",
+                ).replace("%(season)", s),
+            )
 
-        if outfilename is not None:
-            out = os.path.join(outdir, outfilename)
+        if not os.path.isfile(outpath_season) or overwrite_output:
+            # Handle the "AC" (Annual Cycle) case
+            if s == "AC":
+                print("Calculating Annual Cycle climatology")
+                ds_ac = (
+                    copy.deepcopy(ds)
+                    if input_is_annual_cycle
+                    else ds.temporal.climatology(var, freq="month", weighted=True)
+                )
+                ds_clim_s = ds_ac
+                print("Done AC climatology")
 
-        out_season = out.replace(".nc", addf)
+            # Handle the first season and subsequent seasons
+            else:
+                # (Optional) Configure Dask for large chunk processing if necessary
+                # dask.config.set(**{"array.slicing.split_large_chunks": True})  # Uncomment if needed
 
-        d_clim_dict[s].to_netcdf(
-            out_season
-        )  # global attributes are automatically saved as well
+                # Compute seasonal climatology (weighted) with specific settings for DJF
+                if s == first_season:
+                    ds_clim = ds.temporal.climatology(
+                        var,
+                        freq="season",
+                        weighted=True,
+                        season_config={
+                            "dec_mode": dec_mode,
+                            "drop_incomplete_djf": True,
+                        },
+                    )
 
-        print("output file:", out_season)
+                ds_clim_s = ds_clim.isel(time=season_index_dict[s])
+
+            print("season:", s)
+            print("ds_clim_s[var].shape:", ds_clim_s[var].shape)
+
+            # Prepare annual or seasonal climatology for the next step
+
+            # Get the current time with UTC timezone
+            current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            # Add global attributes
+            ds_clim_s = ds_clim_s.assign_attrs(
+                current_date=f"{current_time_utc}",
+                history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology using {infilename}",
+                filename=os.path.basename(outpath_season),
+                obs4mips_version=infile,
+                period=f"{start_yr:04d}{start_mo:02d}-{end_yr:04d}{end_mo:02d}",
+            )
+
+            # Save the climatology file unless it's an annual cycle input and "AC"
+            if save_ac_netcdf:
+                if s != "AC" or not input_is_annual_cycle:
+                    # Save climatology to the output NetCDF file, including global attributes
+                    ds_clim_s.to_netcdf(outpath_season)
+                    print(
+                        f"Successfully saved climatology for season '{s}' to {outpath_season}"
+                    )
+                else:
+                    print("Skipping 'AC' as input is already an annual cycle.")
+
+            # Add annual or seasonal climatology to the dictionary
+            ds_clim_dict[s] = ds_clim_s
 
         # Plot climatology
         if plot and s == "AC":
+            levels_to_plot = [None]
             # Check if variable is 4D
-            if is_4d_variable(d_ac, var):
+            if is_4d_variable(ds_clim_s, var):
                 # Plot 3 levels (hPa) for 4D variables for quick check
                 levels_to_plot = [200, 500, 850]
-            else:
-                levels_to_plot = [None]
 
             # Plot climatology for each level
             for level in levels_to_plot:
-                output_fig_path = out_season.replace(".nc", ".png")
+                output_fig_path = outpath_season.replace(".nc", ".png")
                 if level is not None:
                     if var in output_fig_path:
                         output_fig_path = os.path.join(
@@ -156,15 +339,18 @@ def calculate_climatology(
 
                 # plot climatology for each level
                 plot_climatology(
-                    d_ac,
+                    ds_clim_s,
                     var,
                     level=level,
                     season_to_plot="all",
                     output_filename=output_fig_path,
-                    period=f"{start_yr_str}-{end_yr_str}",
+                    period=f"{start_yr:04d}-{end_yr:04d}",
                 )
 
                 print("output figure:", output_fig_path)
+
+    ds.close()
+    return ds_clim_dict  # Return the dictionary of all climatology datasets
 
 
 def is_4d_variable(ds, data_var):
