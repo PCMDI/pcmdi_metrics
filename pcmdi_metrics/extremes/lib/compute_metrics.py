@@ -299,6 +299,30 @@ class SeasonalAverager:
             ds_stat = self.fix_time_coord(ds_stat)
         return self.masked_ds(ds_stat)
 
+    def monthly_stats(self, stat, pentad=False):
+        # Acquire monthly statistics
+        # Arguments:
+        #     stat: Can be "max", "min"
+        #     pentad: True to run on 5-day mean
+        # Returns:
+        #     ds_stat: Dataset containing monthly max or min grid
+
+        if pentad:
+            if self.pentad is None:
+                self.calc_5day_mean()
+            ds = self.pentad
+        else:
+            ds = self.TSD.return_data_array()
+
+        if stat == "max":
+            ds_month = ds.resample(time="MS").max(dim="time")
+        elif stat == "min":
+            ds_month = ds.resample(time="MS").min(dim="time")
+        else:
+            raise ValueError(f"Unsupported statistic: {stat}")
+
+        return self.masked_ds(ds_month)
+
 
 def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     # Add bounds and record user settings in attributes
@@ -391,7 +415,17 @@ def temperature_indices(
     Tmax = update_nc_attrs(Tmax, dec_mode, drop_incomplete_djf, annual_strict)
     Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
 
-    return Tmax, Tmin
+    # Monthly temperature extremes
+    Tmonthly = xr.Dataset()
+
+    if varname == "tasmax":
+        Tmonthly["TXx"] = S.monthly_stats("max")
+        Tmonthly["TXn"] = S.monthly_stats("min")
+    elif varname == "tasmin":
+        Tmonthly["TNx"] = S.monthly_stats("max")
+        Tmonthly["TNn"] = S.monthly_stats("min")
+
+    return Tmax, Tmin, Tmonthly
 
 
 def precipitation_indices(
@@ -432,6 +466,14 @@ def precipitation_indices(
         )
     P1day = update_nc_attrs(P1day, dec_mode, drop_incomplete_djf, annual_strict)
 
+    # Monthly Rx1day
+    P1day_monthly = xr.Dataset()
+
+    P1day_monthly["Rx1day"] = S.monthly_stats("max", pentad=False)
+
+    # Remove negative precipitation artifacts while preserving NaNs
+    P1day_monthly["Rx1day"] = P1day_monthly["Rx1day"].clip(min=0)
+
     # Rx5day
     P5day = xr.Dataset()
     P5day["ANN"] = S.annual_stats("max", pentad=True)
@@ -447,7 +489,7 @@ def precipitation_indices(
         )
     P5day = update_nc_attrs(P5day, dec_mode, drop_incomplete_djf, annual_strict)
 
-    return P1day, P5day
+    return P1day, P5day, P1day_monthly
 
 
 # A couple of statistics that aren't being loaded from mean_climate
