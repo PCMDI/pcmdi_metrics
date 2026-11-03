@@ -223,8 +223,17 @@ def write_checked(ds, model, run, region, index, years, directory, description):
     if not os.path.isfile(path):
         raise RuntimeError(f"Failed to write NetCDF: {path}")
     with xcdat.open_dataset(path) as checked:
-        if "ANN" not in checked:
-            raise RuntimeError(f"NetCDF missing ANN after write: {path}")
+        expected_vars = {
+            "TX_monthly": {"TXx", "TXn"},
+            "TN_monthly": {"TNx", "TNn"},
+            "Rx1day_monthly": {"Rx1day"},
+        }
+
+        required = expected_vars.get(index, {"ANN"})
+        if not required.issubset(checked.data_vars):
+            raise RuntimeError(
+                f"NetCDF missing {required - set(checked.data_vars)}: {path}"
+            )
     return path
 
 
@@ -450,8 +459,8 @@ for model in model_loop_list:
             stats_dict = {}
 
             # Generate all gridded temporal indices ONCE, then subset by region.
-            if varname in ("tasmax", "tas"):
-                TXx, TXn = compute_metrics.temperature_indices(
+            if varname == "tasmax":  # in ("tasmax", "tas"):
+                TXx, TXn, TX_monthly = compute_metrics.temperature_indices(
                     ds,
                     varname,
                     sftlf,
@@ -460,9 +469,9 @@ for model in model_loop_list:
                     drop_incomplete_djf,
                     annual_strict,
                 )
-                stats_dict = {"TXx": TXx, "TXn": TXn}
+                stats_dict = {"TXx": TXx, "TXn": TXn, "TX_monthly": TX_monthly}
             elif varname == "tasmin":
-                TNx, TNn = compute_metrics.temperature_indices(
+                TNx, TNn, TN_monthly = compute_metrics.temperature_indices(
                     ds,
                     varname,
                     sftlf,
@@ -471,11 +480,11 @@ for model in model_loop_list:
                     drop_incomplete_djf,
                     annual_strict,
                 )
-                stats_dict = {"TNx": TNx, "TNn": TNn}
+                stats_dict = {"TNx": TNx, "TNn": TNn, "TN_monthly": TN_monthly}
             elif varname in ("pr", "PRECT", "precip"):
                 if varname != "pr":
                     ds = ds.rename({varname: "pr"})
-                Rx1day, Rx5day = compute_metrics.precipitation_indices(
+                Rx1day, Rx5day, Rx1day_monthly = compute_metrics.precipitation_indices(
                     ds,
                     sftlf,
                     units_adjust,
@@ -483,7 +492,11 @@ for model in model_loop_list:
                     drop_incomplete_djf,
                     annual_strict,
                 )
-                stats_dict = {"Rx1day": Rx1day, "Rx5day": Rx5day}
+                stats_dict = {
+                    "Rx1day": Rx1day,
+                    "Rx5day": Rx5day,
+                    "Rx1day_monthly": Rx1day_monthly,
+                }
             else:
                 continue
 
@@ -507,14 +520,21 @@ for model in model_loop_list:
                     full_nc_dir,
                     f"Full-grid seasonal block extrema for {index}",
                 )
-                full_block_files.setdefault((model, index), []).append(full_path)
-                full_block_by_run[(model, run, index)] = full_path
+                if "monthly" not in index:
+                    full_block_files.setdefault((model, index), []).append(full_path)
+                    full_block_by_run[(model, run, index)] = full_path
 
             for region in region_names:
                 region_stats = mask_blocks(stats_dict, region)
                 # Only retain the reference corresponding to this region.
                 if model == "Reference":
-                    obs.setdefault(region, {}).update(region_stats)
+                    obs.setdefault(region, {}).update(
+                        {
+                            index: block
+                            for index, block in region_stats.items()
+                            if "monthly" not in index
+                        }
+                    )
 
                 for index, block in region_stats.items():
                     if nc_out:
@@ -532,9 +552,10 @@ for model in model_loop_list:
                         block = xcdat.open_dataset(path)
                         region_stats[index] = block
                         if model == "Reference":
-                            obs[region][index] = block
+                            if "monthly" not in index:
+                                obs[region][index] = block
 
-                    if plots:
+                    if plots and "monthly" not in index:
                         ref = (
                             obs.get(region, {}).get(index)
                             if model != "Reference"
@@ -556,7 +577,11 @@ for model in model_loop_list:
                 if model != "Reference":
                     print("Generating metrics for", region)
                     result = compute_metrics.metrics_json(
-                        region_stats,
+                        {
+                            index: block
+                            for index, block in region_stats.items()
+                            if "monthly" not in index
+                        },
                         obs_dict=obs.get(region, {}),
                         region=region,
                         regrid=regrid,
@@ -621,6 +646,8 @@ print("Generating full-grid return values (one fit per model/index).")
 rv_full_files = {}  # (model, index) -> (rv output path, realization key)
 for (model, stat), block_files in sorted(full_block_files.items()):
     if model == "Reference" and cov_file is not None:
+        continue
+    if "monthly" in stat:
         continue
     block_files = sorted(block_files)
     maxes = stat in ("TXx", "TNx", "Rx5day", "Rx1day")
