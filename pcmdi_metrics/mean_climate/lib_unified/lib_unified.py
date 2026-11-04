@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import warnings
 from datetime import datetime, timezone
 from typing import Dict
 
@@ -696,7 +697,11 @@ def calculate_and_save_metrics(
 
     for ref in refs:
         if ref not in ac_ref_dict[var].keys():
-            raise KeyError(f"Reference data {ref} is not available for {var}.")
+            warnings.warn(
+                f"Reference data {ref} is not available for {var}.",
+                UserWarning
+            )
+            continue
 
         # Extract level for ref
         if level is None:
