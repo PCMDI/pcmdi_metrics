@@ -180,20 +180,41 @@ def _all_grid_masks(data):
     return mask_cache[key]
 
 
-def mask_field(data, region):
-    """Mask spatial fields, never cftime/time or lat/lon bounds."""
-    mask = _all_grid_masks(data)[region]
-    if mask is None:
+def mask_field(data, region, sftlf=None):
+    """
+    Apply regional geographic and land masks.
+
+    fullGrid: No masking.
+    Other regions: Geographic mask AND land fraction >= 50%.
+    """
+    if region == "fullGrid":
         return data
+
+    region_mask = _all_grid_masks(data)[region]
+
+    if sftlf is not None:
+        land_fraction = sftlf["sftlf"].reindex_like(data, method="nearest")
+        land_mask = (land_fraction >= 50) & (land_fraction <= 100)
+    else:
+        # The input block-extrema/RV fields are already land-masked.
+        land_mask = True
+
+    mask = land_mask
+
+    if region_mask is not None:
+        mask = mask & region_mask
+
     output = data.copy(deep=False)
+
     for var in data.data_vars:
         if "lat" in data[var].dims and "lon" in data[var].dims:
             output[var] = data[var].where(mask)
+
     return output
 
 
-def mask_blocks(blocks, region):
-    return {index: mask_field(block, region) for index, block in blocks.items()}
+def mask_blocks(blocks, region, sftlf=None):
+    return {index: mask_field(block, region, sftlf) for index, block in blocks.items()}
 
 
 def materialize_extremes(ds):
@@ -525,7 +546,7 @@ for model in model_loop_list:
                     full_block_by_run[(model, run, index)] = full_path
 
             for region in region_names:
-                region_stats = mask_blocks(stats_dict, region)
+                region_stats = mask_blocks(stats_dict, region, sftlf)
                 # Only retain the reference corresponding to this region.
                 if model == "Reference":
                     obs.setdefault(region, {}).update(
@@ -644,7 +665,10 @@ if plots and (reference_data_path is not None):
 # Input files are full-grid block extrema, never region-specific NetCDFs.
 print("Generating full-grid return values (one fit per model/index).")
 rv_full_files = {}  # (model, index) -> (rv output path, realization key)
-for (model, stat), block_files in sorted(full_block_files.items()):
+for (model, stat), block_files in sorted(
+    full_block_files.items(),
+    key=lambda item: (item[0][0] != "Reference", item[0]),
+):
     if model == "Reference" and cov_file is not None:
         continue
     if "monthly" in stat:
@@ -718,7 +742,8 @@ regional_reference_rvs = {}
 regional_reference_blocks = {}
 if cov_file is None:
     for (model, stat), (full_rv_path, rv_run) in sorted(
-        rv_full_files.items(), key=lambda item: (item[0][0] != "Reference", item[0])
+        rv_full_files.items(),
+        key=lambda item: (item[0][0] != "Reference", item[0]),
     ):
         print("Regionalizing return values:", model, stat)
         full_rv = xcdat.open_dataset(full_rv_path)

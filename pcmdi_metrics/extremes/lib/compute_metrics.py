@@ -18,7 +18,6 @@ from pcmdi_metrics.stats import std_xy as compute_std_xy
 
 class TimeSeriesData:
     # Track years and calendar for time series grids
-    # Store methods to act on time series grids
     def __init__(self, ds, ds_var):
         self.ds = ds
         self.ds_var = ds_var
@@ -70,7 +69,8 @@ class SeasonalAverager:
 
     def masked_ds(self, ds):
         # Mask land where 50<=sftlf<=100
-        return ds.where(self.sftlf >= 50).where(self.sftlf <= 100)
+        # Removing for now
+        return ds  # .where(self.sftlf >= 50).where(self.sftlf <= 100)
 
     def calc_5day_mean(self):
         # Get the 5-day mean dataset
