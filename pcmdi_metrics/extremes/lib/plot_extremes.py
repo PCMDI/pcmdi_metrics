@@ -87,9 +87,7 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
         levels = np.linspace(min_val, max_val, 21)
 
         try:
-            plot_map_cartopy(
-                ds, outfile, title=title, proj="Robinson", cmap=colors, levels=levels
-            )
+            plot_map_cartopy(ds, outfile, title=title, cmap=colors, levels=levels)
         except Exception as e:
             print("Error. Could not create figure", outfile, ":")
             print("    ", e)
@@ -125,9 +123,21 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
                 diff,
                 diff_outfile,
                 title=diff_title,
-                proj="Robinson",
                 cmap="RdBu_r",
                 levels=levels_diff,
+            )
+
+            three_panel_outfile = f"{outfile}_3panel.png"
+
+            plot_three_panel(
+                model_data=ds,
+                obs_data=ref_ds,
+                diff=diff,
+                filename=three_panel_outfile,
+                title=f"{model} {run} {season} {metric} {yrs_str}",
+                cmap=colors,
+                diff_max=max_abs,
+                extent=get_data_extent(ds),
             )
     return
 
@@ -172,8 +182,6 @@ def plot_map_cartopy(
     title=None,
     gridline=True,
     levels=None,
-    proj="PlateCarree",
-    data_area="global",
     cmap="RdBu_r",
     center_lon_global=180,
     maskout=None,
@@ -194,28 +202,21 @@ def plot_map_cartopy(
     """ map types:
     https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
     """
-    if proj == "PlateCarree":
-        projection = ccrs.PlateCarree(central_longitude=center_lon_global)
-    elif proj == "Robinson":
-        projection = ccrs.Robinson(central_longitude=center_lon_global)
 
     # Generate plot
-
-    # Determine geographic coverage
     extent = get_data_extent(data)
-
-    # Detect global or near-global longitude coverage
     is_global = (
         extent is not None
         and extent[1] - extent[0] >= 350
         and extent[3] - extent[2] >= 170
     )
 
-    # Use PlateCarree for regional maps
-    if not is_global:
-        projection = ccrs.PlateCarree()
-    else:
+    if is_global or extent is None:
         projection = ccrs.Robinson(central_longitude=center_lon_global)
+        projection_name = "PlateCarree"
+    else:
+        projection = ccrs.PlateCarree()
+        projection_name = "PlateCarree"
 
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=projection)
@@ -237,8 +238,8 @@ def plot_map_cartopy(
     ax.coastlines()
 
     # Grid Lines and tick labels
-    if proj == "PlateCarree":
-        if data_area == "global":
+    if projection_name == "PlateCarree":
+        if is_global:
             if gridline:
                 ax.gridlines(alpha=0.5, linestyle="--")
             ax.set_xticks([0, 60, 120, 180, 240, 300, 360], crs=ccrs.PlateCarree())
@@ -249,14 +250,31 @@ def plot_map_cartopy(
             ax.yaxis.set_major_formatter(lat_formatter)
         else:
             if gridline:
-                ax.gridlines(draw_labels=True, alpha=0.5, linestyle="--")
-    elif proj == "Robinson":
+                gl = ax.gridlines(
+                    draw_labels=True,
+                    alpha=0.5,
+                    linestyle="--",
+                )
+
+                gl.top_labels = False
+                gl.right_labels = False
+                gl.bottom_labels = True
+                gl.left_labels = True
+    elif projection_name == "Robinson":
         if gridline:
-            ax.gridlines(
-                draw_labels=not is_global,
+            gl = ax.gridlines(
+                draw_labels=True,
                 alpha=0.5,
                 linestyle="--",
             )
+
+            gl.top_labels = False
+            gl.right_labels = False
+            gl.bottom_labels = True
+            gl.left_labels = True
+
+            gl.x_inline = False
+            gl.y_inline = False
 
     # Add title
     plt.title(title, pad=15, fontsize=15)
@@ -268,7 +286,7 @@ def plot_map_cartopy(
     cbar = plt.colorbar(im, cax=cbar_ax)
     cbar.ax.tick_params(labelsize=10)
 
-    if proj == "PlateCarree":
+    if projection_name == "PlateCarree":
         ax.set_aspect("auto", adjustable=None)
 
     # Done, save figure
@@ -276,6 +294,91 @@ def plot_map_cartopy(
     plt.close("all")
 
     return
+
+
+def plot_three_panel(
+    model_data,
+    obs_data,
+    diff,
+    filename,
+    title,
+    cmap="PuBu",
+    diff_cmap="RdBu_r",
+    diff_max=None,
+    extent=None,
+):
+    """Plot model, observations, and model-minus-observation."""
+
+    projection = ccrs.PlateCarree()
+
+    fig, axes = plt.subplots(
+        3,
+        1,
+        figsize=(10, 13),
+        subplot_kw={"projection": projection},
+        constrained_layout=True,
+    )
+
+    # Shared color scale for model and observations
+    vmin = float(min(model_data.min(skipna=True), obs_data.min(skipna=True)))
+    vmax = float(max(model_data.max(skipna=True), obs_data.max(skipna=True)))
+
+    if np.isclose(vmin, vmax):
+        vmax = vmin + 1e-6
+
+    levels = np.linspace(vmin, vmax, 21)
+
+    if diff_max is None:
+        diff_max = float(np.abs(diff).max(skipna=True))
+
+    diff_max = max(diff_max, 1e-6)
+    diff_levels = np.linspace(-diff_max, diff_max, 21)
+
+    fields = [model_data, obs_data, diff]
+    labels = ["Model", "Observations", "Model - Observations"]
+
+    for i, (ax, field, label) in enumerate(zip(axes, fields, labels)):
+        if extent is not None:
+            ax.set_extent(extent, crs=ccrs.PlateCarree())
+        else:
+            ax.set_global()
+
+        ax.coastlines(linewidth=0.7)
+        ax.gridlines(alpha=0.3, linestyle="--")
+
+        if i < 2:
+            im = ax.contourf(
+                field.lon,
+                field.lat,
+                field,
+                transform=ccrs.PlateCarree(),
+                cmap=cmap,
+                levels=levels,
+                extend="both",
+            )
+        else:
+            im = ax.contourf(
+                field.lon,
+                field.lat,
+                field,
+                transform=ccrs.PlateCarree(),
+                cmap=diff_cmap,
+                levels=diff_levels,
+                extend="both",
+            )
+
+        ax.set_title(label, fontsize=13)
+        fig.colorbar(
+            im,
+            ax=ax,
+            orientation="vertical",
+            shrink=0.85,
+            pad=0.02,
+        )
+
+    fig.suptitle(title, fontsize=16)
+    fig.savefig(filename, dpi=150, bbox_inches="tight")
+    plt.close(fig)
 
 
 def taylor_diag(fname, outfile_template):
