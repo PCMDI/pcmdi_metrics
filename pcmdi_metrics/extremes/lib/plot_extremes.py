@@ -385,70 +385,98 @@ def taylor_diag(fname, outfile_template):
     with open(fname, "r") as metrics_file:
         metrics = json.load(metrics_file)
 
-    models = metrics["DIMENSIONS"]["model"]
-    realizations = metrics["DIMENSIONS"]["realization"]
-    region = metrics["DIMENSIONS"]["region"]
-    indices = metrics["DIMENSIONS"]["index"]
+    dimensions = metrics["DIMENSIONS"]
+    results = metrics["RESULTS"]
 
-    # For legend
-    models_label = models.copy()
-    if "Reference" in models_label:
-        models_label.remove("Reference")
+    models = [m for m in dimensions["model"] if m != "Reference"]
+    realizations = dimensions["realization"]
+    regions = dimensions["region"]
+    indices = dimensions["index"]
 
-    nc = 1
-    fsize = (8, 5)
-    if len(models_label) > 10:
-        nc = 2
-        fsize = (12, 5)
+    seasons = ["ANN", "DJF", "MAM", "JJA", "SON"]
 
-    for s in ["ANN", "DJF", "MAM", "SON", "JJA"]:
-        for r in realizations:
-            # Possible for a realization to be not found for every model
-            if r not in metrics["RESULTS"][models[1]]:
-                continue
-            for idx in indices:
-                if idx not in metrics["RESULTS"][models[1]][r]:
-                    continue
-                for rg in region:
-                    stat_dict = {}
-                    for stat in ["std_xy", "std-obs_xy", "cor_xy"]:
-                        tmp = []
-                        for m in models:
-                            if m == "Reference":
-                                continue
-                            else:
-                                tmp.append(metrics["RESULTS"][m][r][idx][rg][stat][s])
-                        stat_dict[stat] = np.array(tmp)
+    for run in realizations:
+        for index in indices:
+            for region in regions:
+                for season in seasons:
 
-                    # stddev = stat_dict["std_xy"]
-                    # corrcoeff = stat_dict["cor_xy"]
-                    # refstd = stat_dict["std-obs_xy"]
+                    valid_models = []
+                    stddev = []
+                    corrcoeff = []
 
-                    obs_std = stat_dict["std-obs_xy"].astype(float)
-                    stddev = stat_dict["std_xy"].astype(float) / obs_std
-                    corrcoeff = stat_dict["cor_xy"].astype(float)
-                    refstd = 1.0
+                    for model in models:
+                        try:
+                            stats = results[model][run][index][region]
 
-                    plottitle = " ".join([r, s, idx, rg])
+                            model_std = float(stats["std_xy"][season])
+                            obs_std = float(stats["std-obs_xy"][season])
+                            corr = float(stats["cor_xy"][season])
+
+                        except (KeyError, TypeError, ValueError):
+                            continue
+
+                        if (
+                            not np.isfinite(model_std)
+                            or not np.isfinite(obs_std)
+                            or not np.isfinite(corr)
+                            or obs_std <= 0
+                        ):
+                            continue
+
+                        valid_models.append(model)
+                        stddev.append(model_std / obs_std)
+                        corrcoeff.append(np.clip(corr, -1.0, 1.0))
+
+                    if not valid_models:
+                        print(
+                            f"Skipping Taylor diagram: "
+                            f"{run}, {index}, {region}, {season}"
+                        )
+                        continue
+
                     outfile = (
-                        outfile_template.replace("realization", r)
-                        .replace("region", rg)
-                        .replace("index", idx)
-                        .replace("season", s)
+                        outfile_template.replace("realization", run)
+                        .replace("region", region)
+                        .replace("index", index)
+                        .replace("season", season)
                     )
 
-                    fig = plt.figure(figsize=fsize)
-                    fig, ax = TaylorDiagram(
-                        stddev,
-                        corrcoeff,
-                        refstd,
-                        fig=fig,
-                        labels=models_label,
-                        ref_label="Reference",
-                        normalize=True,
+                    os.makedirs(
+                        os.path.dirname(outfile) or ".",
+                        exist_ok=True,
                     )
 
-                    ax.legend(bbox_to_anchor=(1.05, 0), loc="lower left", ncol=nc)
-                    fig.suptitle(plottitle, fontsize=20)
-                    plt.savefig(outfile)
-    return
+                    fig = plt.figure(
+                        figsize=(12, 5) if len(valid_models) > 10 else (8, 5)
+                    )
+
+                    try:
+                        fig, ax = TaylorDiagram(
+                            np.asarray(stddev),
+                            np.asarray(corrcoeff),
+                            1.0,
+                            fig=fig,
+                            labels=valid_models,
+                            ref_label="Reference",
+                            normalize=True,
+                        )
+
+                        ax.legend(
+                            bbox_to_anchor=(1.05, 0),
+                            loc="lower left",
+                            ncol=2 if len(valid_models) > 10 else 1,
+                        )
+
+                        fig.suptitle(
+                            f"{run} {season} {index} {region}",
+                            fontsize=16,
+                        )
+
+                        fig.savefig(
+                            outfile + ".png",
+                            dpi=150,
+                            bbox_inches="tight",
+                        )
+
+                    finally:
+                        plt.close(fig)
