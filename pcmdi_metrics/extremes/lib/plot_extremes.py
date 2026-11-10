@@ -434,12 +434,20 @@ def taylor_diag(fname, outfile_template):
                         )
                         continue
 
-                    outfile = (
-                        outfile_template.replace("realization", run)
+                    # Only replace placeholders in the filename,
+                    # not in the parent directory.
+
+                    outdir = os.path.dirname(outfile_template)
+                    basename = os.path.basename(outfile_template)
+
+                    basename = (
+                        basename.replace("realization", run)
                         .replace("region", region)
                         .replace("index", index)
                         .replace("season", season)
                     )
+
+                    outfile = os.path.join(outdir, basename)
 
                     os.makedirs(
                         os.path.dirname(outfile) or ".",
