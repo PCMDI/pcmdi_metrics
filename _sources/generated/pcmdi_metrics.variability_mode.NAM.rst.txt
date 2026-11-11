@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.variability\_mode.NAM
+====================================
+
+.. currentmodule:: pcmdi_metrics.variability_mode
+
+.. autofunction:: NAM

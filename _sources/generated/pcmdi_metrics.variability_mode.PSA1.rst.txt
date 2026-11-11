@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.variability\_mode.PSA1
+=====================================
+
+.. currentmodule:: pcmdi_metrics.variability_mode
+
+.. autofunction:: PSA1

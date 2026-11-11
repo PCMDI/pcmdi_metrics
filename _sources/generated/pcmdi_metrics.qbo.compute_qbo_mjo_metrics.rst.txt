@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.qbo.compute\_qbo\_mjo\_metrics
+=============================================
+
+.. currentmodule:: pcmdi_metrics.qbo
+
+.. autofunction:: compute_qbo_mjo_metrics

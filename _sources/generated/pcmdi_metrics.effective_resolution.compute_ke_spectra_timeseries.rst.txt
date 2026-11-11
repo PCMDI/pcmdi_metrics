@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.effective\_resolution.compute\_ke\_spectra\_timeseries
+=====================================================================
+
+.. currentmodule:: pcmdi_metrics.effective_resolution
+
+.. autofunction:: compute_ke_spectra_timeseries

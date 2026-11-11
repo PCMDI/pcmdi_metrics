@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.effective\_resolution.compute\_power\_spectrum
+=============================================================
+
+.. currentmodule:: pcmdi_metrics.effective_resolution
+
+.. autofunction:: compute_power_spectrum

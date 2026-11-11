@@ -1,0 +1,2061 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Effective Resolution Demo (Scalar Field)" href="Demo_12b_scalar_effective_resolution.html"><link rel="prev" title="Hadley Cell Metrics" href="Demo_11_hadley_cell_metrics.html">
+        <link rel="prefetch" href="../_static/PMPLogo_500x421px_72dpi.png" as="image">
+
+    <!-- Generated with Sphinx 9.2.0 and Furo 2025.12.19 -->
+        <title>Effective Resolution Diagnostic Demo (ua, va) - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../start.html">Getting Started</a><input aria-label="Toggle navigation of Getting Started" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../metrics.html">PMP Metrics</a><input aria-label="Toggle navigation of PMP Metrics" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../metrics_cloud-feedback.html">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../demo-notebooks.html">Demo notebooks</a><input aria-label="Toggle navigation of Demo notebooks" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_4b_modes_of_variability_API.html">4B. Modes of Variability API Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sea_ice_iiee_metrics.html">Sea-ice Integrated Ice-Edge Error (IIEE)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_10_qbo_mjo.html">10. QBO-MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_11_hadley_cell_metrics.html">Hadley Cell Metrics</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Effective Resolution Diagnostic Demo (ua, va)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Demo_12b_scalar_effective_resolution.html">Effective Resolution Demo (Scalar Field)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmp_metrics_database.html">Access to online PMP output database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eof_classification.html">Empirical Orthogonal Functions (EOF) Classification Algorithm for Arctic Atmospheric Variability Modes</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.effective_resolution.compute_effective_resolution.html">pcmdi_metrics.effective_resolution.compute_effective_resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.effective_resolution.compute_effective_resolution_scalar.html">pcmdi_metrics.effective_resolution.compute_effective_resolution_scalar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.effective_resolution.process_effective_resolution.html">pcmdi_metrics.effective_resolution.process_effective_resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.effective_resolution.compute_ke_spectra.html">pcmdi_metrics.effective_resolution.compute_ke_spectra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.effective_resolution.compute_ke_spectra_timeseries.html">pcmdi_metrics.effective_resolution.compute_ke_spectra_timeseries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.effective_resolution.compute_power_spectrum.html">pcmdi_metrics.effective_resolution.compute_power_spectrum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.hadley_cell.hadley_cell_metrics.html">pcmdi_metrics.hadley_cell.hadley_cell_metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.qbo.compute_qbo_mjo_metrics.html">pcmdi_metrics.qbo.compute_qbo_mjo_metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset.html">pcmdi_metrics.mjo.compute_mjo_ewr_from_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NAO.html">pcmdi_metrics.variability_mode.NAO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NAM.html">pcmdi_metrics.variability_mode.NAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.SAM.html">pcmdi_metrics.variability_mode.SAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PNA.html">pcmdi_metrics.variability_mode.PNA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NPO.html">pcmdi_metrics.variability_mode.NPO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PSA1.html">pcmdi_metrics.variability_mode.PSA1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PSA2.html">pcmdi_metrics.variability_mode.PSA2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.PDO.html">pcmdi_metrics.variability_mode.PDO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.NPGO.html">pcmdi_metrics.variability_mode.NPGO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.AMO.html">pcmdi_metrics.variability_mode.AMO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.variability_mode.eof_classification.html">pcmdi_metrics.variability_mode.eof_classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.sea_ice.calc_iiee_annual_cycle.html">pcmdi_metrics.sea_ice.calc_iiee_annual_cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../resources.html">Resources</a><input aria-label="Toggle navigation of Resources" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../resources_legacy.html">Legacy archive</a><input aria-label="Toggle navigation of Legacy archive" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results (CMIP)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate/aimip/pages/v20260603/AIMIP_home.html">PMP Results (AI-MIP)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/examples/Demo_12_effective_resolution.ipynb?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/examples/Demo_12_effective_resolution.ipynb" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Effective-Resolution-Diagnostic-Demo-(ua,-va)">
+<h1>Effective Resolution Diagnostic Demo (ua, va)<a class="headerlink" href="#Effective-Resolution-Diagnostic-Demo-(ua,-va)" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates the <strong>effective resolution metric</strong> from Klaver et al. (2020), which objectively estimates the smallest spatial scale a climate model can plausibly represent.</p>
+<section id="Why-This-Matters">
+<h2>Why This Matters<a class="headerlink" href="#Why-This-Matters" title="Link to this heading"></a></h2>
+<p>Climate models have a <strong>nominal resolution</strong> (grid spacing) and an <strong>effective resolution</strong> (actual smallest resolved scale). The difference arises because:</p>
+<ul class="simple">
+<li><p><strong>Numerical diffusion</strong> drains energy from small scales</p></li>
+<li><p><strong>Parameterizations</strong> represent sub-grid processes</p></li>
+<li><p><strong>Anti-aliasing filters</strong> prevent spectral artifacts</p></li>
+<li><p><strong>Interpolation</strong> between grid points smooths fields</p></li>
+</ul>
+<p>The effective resolution is typically <strong>2.7-4.8× coarser</strong> than the nominal grid spacing. This metric identifies where spectral energy begins to be artificially dissipated rather than representing atmospheric dynamics.</p>
+</section>
+<section id="Key-Concepts">
+<h2>Key Concepts<a class="headerlink" href="#Key-Concepts" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Nominal Resolution</strong>: Grid spacing (e.g., 100 km)</p></li>
+<li><p><strong>Effective Resolution (L_eff)</strong>: Actual smallest resolved scale (typically 2.7-4.8× coarser)</p></li>
+<li><p><strong>Detection Method</strong>: Find where KE spectrum steepens beyond reference power law</p></li>
+<li><p><strong>2-of-3 Confirmation</strong>: Requires at least 2 of 3 spectra (div_250, rot_250, rot_500) to steepen</p></li>
+</ul>
+</section>
+<section id="Method-Overview">
+<h2>Method Overview<a class="headerlink" href="#Method-Overview" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Compute kinetic energy spectra</strong> from spherical harmonic transforms of winds</p></li>
+<li><p><strong>Fit spectral slopes</strong> in sliding 20-wavenumber windows</p></li>
+<li><p><strong>Detect steepening</strong> where slope increases by ≥25% over a wavenumber doubling</p></li>
+<li><p><strong>Apply 2-of-3 rule</strong>: Require at least 2 of 3 spectra (divergent 250hPa, rotational 250hPa, rotational 500hPa) to steepen</p></li>
+</ol>
+</section>
+<section id="Reference">
+<h2>Reference<a class="headerlink" href="#Reference" title="Link to this heading"></a></h2>
+<p>Klaver, R., Haarsma, R., Vidale, P. L., &amp; Hazeleger, W. (2020). Effective resolution in high resolution global atmospheric models for climate studies. <em>Atmospheric Science Letters</em>, 21, e952. <a class="reference external" href="https://doi.org/10.1002/asl.952">https://doi.org/10.1002/asl.952</a></p>
+</section>
+<section id="1.-Setup-and-Imports">
+<h2>1. Setup and Imports<a class="headerlink" href="#1.-Setup-and-Imports" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.effective_resolution</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">compute_effective_resolution</span><span class="p">,</span>
+    <span class="n">process_effective_resolution</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.effective_resolution.lib</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">EARTH_RADIUS</span><span class="p">,</span>
+    <span class="n">detect_steepening</span><span class="p">,</span>
+    <span class="n">plot_resolution_scatter</span><span class="p">,</span>
+    <span class="n">plot_spectra_and_slope</span><span class="p">,</span>
+    <span class="n">representative_grid_box_distance</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.dpi"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">110</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Generate-Synthetic-Data">
+<h2>2. Generate Synthetic Data<a class="headerlink" href="#2.-Generate-Synthetic-Data" title="Link to this heading"></a></h2>
+<p>To demonstrate the diagnostic, we’ll create synthetic wind data with <strong>prescribed kinetic energy spectra</strong> that roll off at specific wavenumbers.</p>
+<section id="How-the-Synthetic-Data-Works">
+<h3>How the Synthetic Data Works<a class="headerlink" href="#How-the-Synthetic-Data-Works" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Define target spectra</strong> with exponential roll-off at chosen wavenumbers (l=50, 70, 62 for div, <a class="reference external" href="mailto:rot&#37;&#52;&#48;250">rot<span>&#64;</span>250</a>, <a class="reference external" href="mailto:rot&#37;&#52;&#48;500">rot<span>&#64;</span>500</a>)</p></li>
+<li><p><strong>Generate random spherical harmonic coefficients</strong> with power matching the target spectrum</p></li>
+<li><p><strong>Inverse transform</strong> to create realistic wind fields (u, v) on a regular lat-lon grid</p></li>
+<li><p><strong>Normalize</strong> to have realistic wind speeds (~25 m/s RMS)</p></li>
+</ol>
+<p>This allows us to test the diagnostic with <strong>known</strong> effective resolutions and verify it correctly identifies the spectral steepening.</p>
+</section>
+<section id="Key-Parameters">
+<h3>Key Parameters<a class="headerlink" href="#Key-Parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rolloff=(50,</span> <span class="pre">70,</span> <span class="pre">62)</span></code>: Wavenumbers where each spectrum steepens (div_250, rot_250, rot_500)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decay=40</span></code>: Controls how sharply the spectrum drops beyond rolloff</p></li>
+<li><p>Grid: 192×384 (roughly 1° resolution), 8 timesteps, 2 pressure levels (250, 500 hPa)</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.effective_resolution.lib.ke_spectra</span><span class="w"> </span><span class="kn">import</span> <span class="n">_legendre</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">random_coefficients</span><span class="p">(</span><span class="n">target_spectrum</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">rsphere</span><span class="o">=</span><span class="n">EARTH_RADIUS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Random vorticity/divergence coefficients whose power follows `target_spectrum`."""</span>
+    <span class="n">ell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">target_spectrum</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">ntrunc</span> <span class="o">=</span> <span class="n">ell</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">target_spectrum</span> <span class="o">*</span> <span class="n">ell</span> <span class="o">*</span> <span class="p">(</span><span class="n">ell</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">rsphere</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ell</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="n">variance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ntrunc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ntrunc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+    <span class="n">coeffs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">ntrunc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># m = 0 must be real</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ntrunc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">[</span><span class="n">m</span><span class="p">:]</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">ntrunc</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">m</span>
+        <span class="n">coeffs</span><span class="p">[</span><span class="n">m</span><span class="p">:,</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">coeffs</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">synthesize_wind</span><span class="p">(</span><span class="n">ke_rot</span><span class="p">,</span> <span class="n">ke_div</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">nlon</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">rsphere</span><span class="o">=</span><span class="n">EARTH_RADIUS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Inverse spherical-harmonic transform: (u, v) with the requested KE spectra."""</span>
+    <span class="n">ell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ke_rot</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">ntrunc</span> <span class="o">=</span> <span class="n">ell</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">to_potential</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ell</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">rsphere</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ell</span> <span class="o">*</span> <span class="p">(</span><span class="n">ell</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)),</span> <span class="mf">0.0</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">psi</span> <span class="o">=</span> <span class="n">to_potential</span> <span class="o">*</span> <span class="n">random_coefficients</span><span class="p">(</span><span class="n">ke_rot</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>   <span class="c1"># streamfunction</span>
+    <span class="n">chi</span> <span class="o">=</span> <span class="n">to_potential</span> <span class="o">*</span> <span class="n">random_coefficients</span><span class="p">(</span><span class="n">ke_div</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>   <span class="c1"># velocity potential</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span>
+    <span class="n">cosphi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span>
+    <span class="n">u_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">lat</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">nlon</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+    <span class="n">v_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">u_f</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntrunc</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">_legendre</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">ntrunc</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span>
+        <span class="n">u_f</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="p">(</span><span class="n">chi</span><span class="p">[</span><span class="n">m</span><span class="p">:,</span> <span class="n">m</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                     <span class="o">-</span> <span class="p">(</span><span class="n">psi</span><span class="p">[</span><span class="n">m</span><span class="p">:,</span> <span class="n">m</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">rsphere</span>
+        <span class="n">v_f</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="p">(</span><span class="n">psi</span><span class="p">[</span><span class="n">m</span><span class="p">:,</span> <span class="n">m</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                     <span class="o">+</span> <span class="p">(</span><span class="n">chi</span><span class="p">[</span><span class="n">m</span><span class="p">:,</span> <span class="n">m</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="n">rsphere</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">u_f</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nlon</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nlon</span> <span class="o">/</span> <span class="n">cosphi</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">v_f</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nlon</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nlon</span> <span class="o">/</span> <span class="n">cosphi</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-Dummy-Dataset">
+<h3>Create Dummy Dataset<a class="headerlink" href="#Create-Dummy-Dataset" title="Link to this heading"></a></h3>
+<p>This synthetic model has a 192×384 grid (roughly 1° resolution) with spectra that steepen around l~50-60.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_dummy_dataset</span><span class="p">(</span><span class="n">nlat</span><span class="o">=</span><span class="mi">192</span><span class="p">,</span> <span class="n">nlon</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span> <span class="n">ntime</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                       <span class="n">rolloff</span><span class="o">=</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">70.0</span><span class="p">,</span> <span class="mf">62.0</span><span class="p">),</span> <span class="n">rms_wind</span><span class="o">=</span><span class="mf">25.0</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="mf">40.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A CMIP-like (time, plev, lat, lon) wind Dataset with a prescribed KE spectrum.</span>
+
+<span class="sd">    `rolloff` gives the cut-off wavenumber of the divergent spectrum, the rotational</span>
+<span class="sd">    spectrum at 250 hPa, and the rotational spectrum at 500 hPa.</span>
+<span class="sd">    """</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">90.0</span> <span class="o">/</span> <span class="n">nlat</span><span class="p">,</span> <span class="mf">90.0</span> <span class="o">-</span> <span class="mf">90.0</span> <span class="o">/</span> <span class="n">nlat</span><span class="p">,</span> <span class="n">nlat</span><span class="p">)</span>
+    <span class="n">lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">360.0</span><span class="p">,</span> <span class="mf">360.0</span> <span class="o">/</span> <span class="n">nlon</span><span class="p">)</span>
+
+    <span class="n">ell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nlat</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">power_law</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ell</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ell</span><span class="o">**-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shaped</span><span class="p">(</span><span class="n">cut</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">power_law</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">ell</span> <span class="o">-</span> <span class="n">cut</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">decay</span><span class="p">)</span>
+
+    <span class="n">div_cut</span><span class="p">,</span> <span class="n">rot250_cut</span><span class="p">,</span> <span class="n">rot500_cut</span> <span class="o">=</span> <span class="n">rolloff</span>
+    <span class="n">per_level</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mf">250.0</span><span class="p">:</span> <span class="p">(</span><span class="n">shaped</span><span class="p">(</span><span class="n">rot250_cut</span><span class="p">),</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">shaped</span><span class="p">(</span><span class="n">div_cut</span><span class="p">)),</span>
+        <span class="mf">500.0</span><span class="p">:</span> <span class="p">(</span><span class="n">shaped</span><span class="p">(</span><span class="n">rot500_cut</span><span class="p">),</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">shaped</span><span class="p">(</span><span class="n">div_cut</span><span class="p">)),</span>
+    <span class="p">}</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">ntime</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span> <span class="n">nlon</span><span class="p">))</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ntime</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ip</span><span class="p">,</span> <span class="n">level</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="mf">250.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">)):</span>
+            <span class="n">ke_rot</span><span class="p">,</span> <span class="n">ke_div</span> <span class="o">=</span> <span class="n">per_level</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
+            <span class="n">u_t</span><span class="p">,</span> <span class="n">v_t</span> <span class="o">=</span> <span class="n">synthesize_wind</span><span class="p">(</span><span class="n">ke_rot</span><span class="p">,</span> <span class="n">ke_div</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">nlon</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">rms_wind</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">u_t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">v_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">u</span><span class="p">[</span><span class="n">it</span><span class="p">,</span> <span class="n">ip</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="n">it</span><span class="p">,</span> <span class="n">ip</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_t</span> <span class="o">*</span> <span class="n">norm</span><span class="p">,</span> <span class="n">v_t</span> <span class="o">*</span> <span class="n">norm</span>
+
+    <span class="c1"># Use proper datetime coordinates (required for temporal_averaging='slopes')</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+    <span class="n">time_coords</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">'2014-03-01'</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">ntime</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">'6h'</span><span class="p">)</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">"ua"</span><span class="p">:</span> <span class="p">((</span><span class="s2">"time"</span><span class="p">,</span> <span class="s2">"plev"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">),</span> <span class="n">u</span><span class="p">),</span>
+         <span class="s2">"va"</span><span class="p">:</span> <span class="p">((</span><span class="s2">"time"</span><span class="p">,</span> <span class="s2">"plev"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">),</span> <span class="n">v</span><span class="p">)},</span>
+        <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">"time"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"time"</span><span class="p">,</span> <span class="n">time_coords</span><span class="p">),</span>
+                <span class="s2">"plev"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"plev"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">25000.0</span><span class="p">,</span> <span class="mf">50000.0</span><span class="p">])),</span>
+                <span class="s2">"lat"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"lat"</span><span class="p">,</span> <span class="n">lat</span><span class="p">),</span>
+                <span class="s2">"lon"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"lon"</span><span class="p">,</span> <span class="n">lon</span><span class="p">)},</span>
+    <span class="p">)</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s2">"plev"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">"Pa"</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">"Z"</span><span class="p">,</span> <span class="n">standard_name</span><span class="o">=</span><span class="s2">"air_pressure"</span><span class="p">)</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">"degrees_north"</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">"Y"</span><span class="p">,</span> <span class="n">standard_name</span><span class="o">=</span><span class="s2">"latitude"</span><span class="p">)</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s2">"lon"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">"degrees_east"</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">"X"</span><span class="p">,</span> <span class="n">standard_name</span><span class="o">=</span><span class="s2">"longitude"</span><span class="p">)</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"T"</span><span class="p">,</span> <span class="n">standard_name</span><span class="o">=</span><span class="s2">"time"</span><span class="p">)</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s2">"ua"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">"m s-1"</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="s2">"Eastward wind"</span><span class="p">)</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s2">"va"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">"m s-1"</span><span class="p">,</span> <span class="n">long_name</span><span class="o">=</span><span class="s2">"Northward wind"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ds</span>
+
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">make_dummy_dataset</span><span class="p">()</span>
+<span class="n">ds</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
+
+:root {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base rgba(0, 0, 0, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, white)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))
+  );
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base, rgba(255, 255, 255, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, #111111)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))
+  );
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.xr-header {
+  border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-obj-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type,
+.xr-group-box-contents > label {
+  color: var(--xr-font-color2);
+  display: block;
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+.xr-section-item > input + label,
+.xr-var-item > input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
+}
+
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details,
+.xr-group-box-contents > label {
+  padding-top: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  border-color: var(--xr-background-color-row-odd);
+  margin-bottom: 0;
+  padding-top: 2px;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+  border-color: var(--xr-background-color-row-even);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  border-top: 2px dotted var(--xr-background-color);
+  padding-bottom: 20px !important;
+  padding-top: 10px !important;
+}
+
+.xr-var-attrs-in + label,
+.xr-var-data-in + label,
+.xr-index-data-in + label {
+  padding: 0 1px;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-data > pre,
+.xr-index-data > pre,
+.xr-var-data > table > tbody > tr {
+  background-color: transparent !important;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.xr-var-attrs-in:checked + label > .xr-icon-file-text2,
+.xr-var-data-in:checked + label > .xr-icon-database,
+.xr-index-data-in:checked + label > .xr-icon-database {
+  color: var(--xr-font-color0);
+  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));
+  stroke-width: 0.8px;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 19MB
+Dimensions:  (time: 8, plev: 2, lat: 192, lon: 384)
+Coordinates:
+  * time     (time) datetime64[us] 64B 2014-03-01 ... 2014-03-02T18:00:00
+  * plev     (plev) float64 16B 2.5e+04 5e+04
+  * lat      (lat) float64 2kB -89.53 -88.59 -87.66 -86.72 ... 87.66 88.59 89.53
+  * lon      (lon) float64 3kB 0.0 0.9375 1.875 2.812 ... 357.2 358.1 359.1
+Data variables:
+    ua       (time, plev, lat, lon) float64 9MB 8.062 7.951 ... -0.8033 -1.038
+    va       (time, plev, lat, lon) float64 9MB 6.775 6.901 ... -14.28 -14.27</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-83e4e5d9-73d5-4b84-9d64-07f7ffa043d5' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-83e4e5d9-73d5-4b84-9d64-07f7ffa043d5' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 8</li><li><span class='xr-has-index'>plev</span>: 2</li><li><span class='xr-has-index'>lat</span>: 192</li><li><span class='xr-has-index'>lon</span>: 384</li></ul></div></li><li class='xr-section-item'><input id='section-570e2fe8-d1ae-4965-90e5-39ba167d4dcf' class='xr-section-summary-in' type='checkbox' checked /><label for='section-570e2fe8-d1ae-4965-90e5-39ba167d4dcf' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(4)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[us]</div><div class='xr-var-preview xr-preview'>2014-03-01 ... 2014-03-02T18:00:00</div><input id='attrs-7640c449-139e-464e-bc96-3a6db4aa1eab' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-7640c449-139e-464e-bc96-3a6db4aa1eab' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-878031f4-9661-4f47-a22d-9407a6a4583c' class='xr-var-data-in' type='checkbox'><label for='data-878031f4-9661-4f47-a22d-9407a6a4583c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>T</dd><dt><span>standard_name :</span></dt><dd>time</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2014-03-01T00:00:00.000000&#x27;, &#x27;2014-03-01T06:00:00.000000&#x27;,
+       &#x27;2014-03-01T12:00:00.000000&#x27;, &#x27;2014-03-01T18:00:00.000000&#x27;,
+       &#x27;2014-03-02T00:00:00.000000&#x27;, &#x27;2014-03-02T06:00:00.000000&#x27;,
+       &#x27;2014-03-02T12:00:00.000000&#x27;, &#x27;2014-03-02T18:00:00.000000&#x27;],
+      dtype=&#x27;datetime64[us]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>plev</span></div><div class='xr-var-dims'>(plev)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>2.5e+04 5e+04</div><input id='attrs-912634b0-88b0-4bd5-881c-38eb54dcfc47' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-912634b0-88b0-4bd5-881c-38eb54dcfc47' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-10f3f093-641b-4879-ad15-51cf319d327d' class='xr-var-data-in' type='checkbox'><label for='data-10f3f093-641b-4879-ad15-51cf319d327d' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>Pa</dd><dt><span>axis :</span></dt><dd>Z</dd><dt><span>standard_name :</span></dt><dd>air_pressure</dd></dl></div><div class='xr-var-data'><pre>array([25000., 50000.])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>-89.53 -88.59 ... 88.59 89.53</div><input id='attrs-1f50f1ea-0e58-4400-a003-5d3ce3630ed8' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1f50f1ea-0e58-4400-a003-5d3ce3630ed8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-831cd50d-8daf-4bb2-8fc1-1f875ea91285' class='xr-var-data-in' type='checkbox'><label for='data-831cd50d-8daf-4bb2-8fc1-1f875ea91285' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd><dt><span>standard_name :</span></dt><dd>latitude</dd></dl></div><div class='xr-var-data'><pre>array([-89.53125, -88.59375, -87.65625, -86.71875, -85.78125, -84.84375,
+       -83.90625, -82.96875, -82.03125, -81.09375, -80.15625, -79.21875,
+       -78.28125, -77.34375, -76.40625, -75.46875, -74.53125, -73.59375,
+       -72.65625, -71.71875, -70.78125, -69.84375, -68.90625, -67.96875,
+       -67.03125, -66.09375, -65.15625, -64.21875, -63.28125, -62.34375,
+       -61.40625, -60.46875, -59.53125, -58.59375, -57.65625, -56.71875,
+       -55.78125, -54.84375, -53.90625, -52.96875, -52.03125, -51.09375,
+       -50.15625, -49.21875, -48.28125, -47.34375, -46.40625, -45.46875,
+       -44.53125, -43.59375, -42.65625, -41.71875, -40.78125, -39.84375,
+       -38.90625, -37.96875, -37.03125, -36.09375, -35.15625, -34.21875,
+       -33.28125, -32.34375, -31.40625, -30.46875, -29.53125, -28.59375,
+       -27.65625, -26.71875, -25.78125, -24.84375, -23.90625, -22.96875,
+       -22.03125, -21.09375, -20.15625, -19.21875, -18.28125, -17.34375,
+       -16.40625, -15.46875, -14.53125, -13.59375, -12.65625, -11.71875,
+       -10.78125,  -9.84375,  -8.90625,  -7.96875,  -7.03125,  -6.09375,
+        -5.15625,  -4.21875,  -3.28125,  -2.34375,  -1.40625,  -0.46875,
+         0.46875,   1.40625,   2.34375,   3.28125,   4.21875,   5.15625,
+         6.09375,   7.03125,   7.96875,   8.90625,   9.84375,  10.78125,
+        11.71875,  12.65625,  13.59375,  14.53125,  15.46875,  16.40625,
+        17.34375,  18.28125,  19.21875,  20.15625,  21.09375,  22.03125,
+        22.96875,  23.90625,  24.84375,  25.78125,  26.71875,  27.65625,
+        28.59375,  29.53125,  30.46875,  31.40625,  32.34375,  33.28125,
+        34.21875,  35.15625,  36.09375,  37.03125,  37.96875,  38.90625,
+        39.84375,  40.78125,  41.71875,  42.65625,  43.59375,  44.53125,
+        45.46875,  46.40625,  47.34375,  48.28125,  49.21875,  50.15625,
+        51.09375,  52.03125,  52.96875,  53.90625,  54.84375,  55.78125,
+        56.71875,  57.65625,  58.59375,  59.53125,  60.46875,  61.40625,
+        62.34375,  63.28125,  64.21875,  65.15625,  66.09375,  67.03125,
+        67.96875,  68.90625,  69.84375,  70.78125,  71.71875,  72.65625,
+        73.59375,  74.53125,  75.46875,  76.40625,  77.34375,  78.28125,
+        79.21875,  80.15625,  81.09375,  82.03125,  82.96875,  83.90625,
+        84.84375,  85.78125,  86.71875,  87.65625,  88.59375,  89.53125])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.0 0.9375 1.875 ... 358.1 359.1</div><input id='attrs-c99c5100-b54f-432d-abe5-5490cc277255' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c99c5100-b54f-432d-abe5-5490cc277255' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f5e765e5-13aa-435f-8e34-6ea894c0a614' class='xr-var-data-in' type='checkbox'><label for='data-f5e765e5-13aa-435f-8e34-6ea894c0a614' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd><dt><span>standard_name :</span></dt><dd>longitude</dd></dl></div><div class='xr-var-data'><pre>array([  0.    ,   0.9375,   1.875 , ..., 357.1875, 358.125 , 359.0625],
+      shape=(384,))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-2af99e4a-7773-40da-9dab-e5245dc7a145' class='xr-section-summary-in' type='checkbox' checked /><label for='section-2af99e4a-7773-40da-9dab-e5245dc7a145' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>ua</span></div><div class='xr-var-dims'>(time, plev, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>8.062 7.951 ... -0.8033 -1.038</div><input id='attrs-42f20f0a-0c7e-4c89-901e-486645c462ec' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-42f20f0a-0c7e-4c89-901e-486645c462ec' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0a8b1b8d-3257-43df-b085-74da88de90f6' class='xr-var-data-in' type='checkbox'><label for='data-0a8b1b8d-3257-43df-b085-74da88de90f6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>long_name :</span></dt><dd>Eastward wind</dd></dl></div><div class='xr-var-data'><pre>array([[[[  8.06201213,   7.95091465,   7.83783025, ...,   8.38310798,
+            8.27813586,   8.17109496],
+         [  8.45436532,   8.35333765,   8.25053301, ...,   8.74649226,
+            8.65097162,   8.55358639],
+         [  8.88750852,   8.79730786,   8.70545384, ...,   9.14776924,
+            9.06277732,   8.97601174],
+         ...,
+         [-27.97947039, -28.14857994, -28.31095649, ..., -27.43218397,
+          -27.62122568, -27.80367051],
+         [-28.1315748 , -28.29921972, -28.45980358, ..., -27.58675929,
+          -27.7752945 , -27.95691662],
+         [-28.43238915, -28.59741657, -28.75493634, ..., -27.89271661,
+          -28.0799918 , -28.25989873]],
+
+        [[  5.87700057,   5.27528913,   4.67263815, ...,   7.67492109,
+            7.07697431,   6.47761487],
+         [  5.5185845 ,   4.91639192,   4.31415329, ...,   7.32321818,
+            6.72216558,   6.12056486],
+         [  5.03971938,   4.41331297,   3.78790334, ...,   6.92245344,
+            6.29453832,   5.6668771 ],
+...
+         [  4.95813079,   5.24390429,   5.5286257 , ...,   4.0954967 ,
+            4.38382798,   4.67140554],
+         [  4.88316459,   5.14640965,   5.40830412, ...,   4.08623343,
+            4.35298558,   4.61865962],
+         [  5.04917622,   5.28946516,   5.52832089, ...,   4.32043054,
+            4.56458656,   4.80752595]],
+
+        [[-23.82851738, -23.65367928, -23.47245639, ..., -24.31430571,
+          -24.15887041, -23.99692802],
+         [-24.4329926 , -24.26776986, -24.09566144, ..., -24.8871902 ,
+          -24.7427152 , -24.59131238],
+         [-24.87476599, -24.71882508, -24.55597305, ..., -25.3013272 ,
+          -25.16599591, -25.02381596],
+         ...,
+         [ -1.87647408,  -2.11793987,  -2.35964125, ...,  -1.15408221,
+           -1.39448448,  -1.6353023 ],
+         [ -1.4311772 ,  -1.6684311 ,  -1.90597041, ...,  -0.72183265,
+           -0.95780809,  -1.19427946],
+         [ -1.27334527,  -1.50832517,  -1.74318406, ...,  -0.56831462,
+           -0.80327675,  -1.038308  ]]]], shape=(8, 2, 192, 384))</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>va</span></div><div class='xr-var-dims'>(time, plev, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>6.775 6.901 7.024 ... -14.28 -14.27</div><input id='attrs-c7693fe4-4b00-4db1-893f-8f89e0c8cebf' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c7693fe4-4b00-4db1-893f-8f89e0c8cebf' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e96921f0-c7f4-4fdd-8463-467cf4575fcc' class='xr-var-data-in' type='checkbox'><label for='data-e96921f0-c7f4-4fdd-8463-467cf4575fcc' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>long_name :</span></dt><dd>Northward wind</dd></dl></div><div class='xr-var-data'><pre>array([[[[ 6.77515469e+00,  6.90067194e+00,  7.02438776e+00, ...,
+           6.38810308e+00,  6.51883900e+00,  6.64786669e+00],
+         [ 6.41187636e+00,  6.53091810e+00,  6.64825056e+00, ...,
+           6.04473589e+00,  6.16876005e+00,  6.29114880e+00],
+         [ 6.03300502e+00,  6.14523621e+00,  6.25537659e+00, ...,
+           5.68432361e+00,  5.80248726e+00,  5.91873579e+00],
+         ...,
+         [-1.06004844e+01, -1.01659973e+01, -9.72850543e+00, ...,
+          -1.18849172e+01, -1.14600423e+01, -1.10318657e+01],
+         [-1.04054799e+01, -9.95672395e+00, -9.50513578e+00, ...,
+          -1.17337392e+01, -1.12940877e+01, -1.08513014e+01],
+         [-1.02797366e+01, -9.81581896e+00, -9.34925019e+00, ...,
+          -1.16544037e+01, -1.11991461e+01, -1.07408848e+01]],
+
+        [[ 3.68132797e+01,  3.68901166e+01,  3.69571713e+01, ...,
+           3.65241718e+01,  3.66302951e+01,  3.67266689e+01],
+         [ 3.66195979e+01,  3.66672212e+01,  3.67051429e+01, ...,
+           3.64182637e+01,  3.64951417e+01,  3.65622461e+01],
+         [ 3.69700538e+01,  3.69878786e+01,  3.69948234e+01, ...,
+           3.68506330e+01,  3.69014879e+01,  3.69412775e+01],
+...
+           1.61404086e+01,  1.60761500e+01,  1.60065487e+01],
+         [ 1.51492467e+01,  1.50646394e+01,  1.49753408e+01, ...,
+           1.53747486e+01,  1.53043165e+01,  1.52291445e+01],
+         [ 1.43992465e+01,  1.43129072e+01,  1.42224924e+01, ...,
+           1.46335967e+01,  1.45596114e+01,  1.44814881e+01]],
+
+        [[-1.05688474e+01, -1.09556911e+01, -1.13396919e+01, ...,
+          -9.39234323e+00, -9.78706460e+00, -1.01792691e+01],
+         [-1.02627042e+01, -1.06625913e+01, -1.10601461e+01, ...,
+          -9.05043087e+00, -9.45648699e+00, -9.86062354e+00],
+         [-9.98001965e+00, -1.03898388e+01, -1.07982191e+01, ...,
+          -8.74333205e+00, -9.15663159e+00, -9.56890477e+00],
+         ...,
+         [-1.40766684e+01, -1.40869405e+01, -1.40930948e+01, ...,
+          -1.40212331e+01, -1.40438023e+01, -1.40622854e+01],
+         [-1.41447143e+01, -1.41471341e+01, -1.41455356e+01, ...,
+          -1.41135742e+01, -1.41279093e+01, -1.41382980e+01],
+         [-1.42625024e+01, -1.42475495e+01, -1.42287366e+01, ...,
+          -1.42842519e+01, -1.42808475e+01, -1.42735998e+01]]]],
+      shape=(8, 2, 192, 384))</pre></div></li></ul></div></li></ul></div></div></div>
+</div>
+</section>
+<section id="Inspect-the-Data">
+<h3>Inspect the Data<a class="headerlink" href="#Inspect-the-Data" title="Link to this heading"></a></h3>
+<p>Before computing effective resolution, let’s examine:</p>
+<ol class="arabic simple">
+<li><p>**Grid box distance (L̃_box)**: The area-weighted mean diagonal distance between grid points</p>
+<ul class="simple">
+<li><p>This represents the model’s <strong>nominal resolution</strong></p></li>
+<li><p>For this 192×384 grid, L̃_box ≈ 134 km</p></li>
+</ul>
+</li>
+<li><p><strong>Wind field visualization</strong>: Shows the synthetic atmospheric flow pattern</p>
+<ul class="simple">
+<li><p>Notice the realistic spatial structure from inverse spherical harmonic transform</p></li>
+<li><p>Contains scales from planetary waves down to grid scale</p></li>
+</ul>
+</li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lbox</span> <span class="o">=</span> <span class="n">representative_grid_box_distance</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">"lat"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s2">"lon"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"representative grid box distance L_box = </span><span class="si">{</span><span class="n">lbox</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> km"</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s2">"ua"</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">plev</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"RdBu_r"</span><span class="p">,</span> <span class="n">add_colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"dummy zonal wind, 250 hPa, first time step"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+representative grid box distance L_box = 134.0 km
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_12_effective_resolution_8_1.png" src="../_images/examples_Demo_12_effective_resolution_8_1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="3.-Compute-Effective-Resolution">
+<h2>3. Compute Effective Resolution<a class="headerlink" href="#3.-Compute-Effective-Resolution" title="Link to this heading"></a></h2>
+<p>The main API function <code class="docutils literal notranslate"><span class="pre">compute_effective_resolution()</span></code> performs the complete diagnostic:</p>
+<section id="Processing-Steps">
+<h3>Processing Steps<a class="headerlink" href="#Processing-Steps" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Spherical harmonic transform</strong> → vorticity and divergence coefficients (exact, no finite differences)</p></li>
+<li><p><strong>Kinetic energy spectra</strong> → E(l) for rotational and divergent components at each pressure level</p></li>
+<li><p><strong>Temporal averaging</strong> → combine spectra across timesteps (by default: compute monthly slopes → average)</p></li>
+<li><p><strong>Spectral slope fitting</strong> → fit E ∝ l^(-n) in sliding 20-wavenumber windows to get n(l)</p></li>
+<li><p><strong>Steepening detection</strong> → find smallest l where n increases by ≥25% over wavenumber doubling</p></li>
+<li><p><strong>2-of-3 confirmation</strong> → require at least 2 of 3 spectra (div_250, rot_250, rot_500) to steepen</p></li>
+<li><p><strong>Effective resolution</strong> → median of detected wavenumbers → convert to length scale</p></li>
+</ol>
+</section>
+<section id="Why-This-Approach-Works">
+<h3>Why This Approach Works<a class="headerlink" href="#Why-This-Approach-Works" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Spherical harmonics</strong> preserve high-wavenumber information (unlike finite differences)</p></li>
+<li><p><strong>Slope fitting</strong> smooths out noise while capturing spectral behavior</p></li>
+<li><p><strong>Steepening criterion</strong> identifies transition from resolved to numerically dissipated scales</p></li>
+<li><p><strong>2-of-3 rule</strong> provides robustness against spurious detections in individual spectra</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metrics</span><span class="p">,</span> <span class="n">diagnostics</span> <span class="o">=</span> <span class="n">compute_effective_resolution</span><span class="p">(</span>
+    <span class="n">ds</span><span class="p">,</span>
+    <span class="n">uvar</span><span class="o">=</span><span class="s2">"ua"</span><span class="p">,</span>
+    <span class="n">vvar</span><span class="o">=</span><span class="s2">"va"</span><span class="p">,</span>
+    <span class="n">levels</span><span class="o">=</span><span class="p">(</span><span class="mf">250.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">),</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">"DUMMY-HR"</span><span class="p">,</span>
+    <span class="n">member</span><span class="o">=</span><span class="s2">"r1i1p1f1"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">"DUMMY-HR"</span><span class="p">][</span><span class="s2">"r1i1p1f1"</span><span class="p">]</span>
+<span class="n">result</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;effective_wavenumber&#39;: 63.0,
+ &#39;effective_resolution_km&#39;: 315.2079888788274,
+ &#39;grid_box_distance_km&#39;: 133.99631291692674,
+ &#39;resolution_ratio&#39;: 2.352363151023759,
+ &#39;resolution_ratio_dx_convention&#39;: 6.653487743609018,
+ &#39;is_upper_limit&#39;: False,
+ &#39;criterion&#39;: {&#39;fit_window&#39;: 20,
+  &#39;fit_anchor&#39;: &#39;right&#39;,
+  &#39;steepening_factor&#39;: 0.25,
+  &#39;wavenumber_ratio&#39;: 2.0,
+  &#39;min_wavenumber&#39;: 32,
+  &#39;n_confirm&#39;: 2},
+ &#39;reference&#39;: &#39;Klaver et al. (2020), doi:10.1002/asl.952&#39;,
+ &#39;n_spectra_steepening&#39;: 3,
+ &#39;steepening_wavenumber&#39;: {&#39;div_250&#39;: 51.0, &#39;rot_250&#39;: 70.0, &#39;rot_500&#39;: 63.0},
+ &#39;steepening_eddy_scale_km&#39;: {&#39;div_250&#39;: 388.6607799933854,
+  &#39;rot_250&#39;: 283.9090806701491,
+  &#39;rot_500&#39;: 315.2079888788274},
+ &#39;steepening_wavenumber_range&#39;: [51.0, 70.0]}
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">"effective wavenumber l_eff"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"effective_wavenumber"</span><span class="p">],</span>
+        <span class="s2">"effective resolution L_eff (km)"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"effective_resolution_km"</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">"grid box distance L_box (km)"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"grid_box_distance_km"</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">"ratio L_eff / L_box"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"resolution_ratio"</span><span class="p">],</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="s2">"ratio in the dx convention"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"resolution_ratio_dx_convention"</span><span class="p">],</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="s2">"spectra showing steepening"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">'n_spectra_steepening'</span><span class="p">]</span><span class="si">}</span><span class="s2"> of 3"</span><span class="p">,</span>
+        <span class="s2">"upper limit only"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"is_upper_limit"</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"value"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"per-spectrum detections (wavenumber -&gt; eddy scale):"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">wavenumber</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s2">"steepening_wavenumber"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">"steepening_eddy_scale_km"</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">key</span><span class="si">:</span><span class="s2">8s</span><span class="si">}</span><span class="s2">  l = </span><span class="si">{</span><span class="n">wavenumber</span><span class="si">}</span><span class="s2">   ΔS = </span><span class="si">{</span><span class="n">scale</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> km"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+effective wavenumber l_eff           63.0
+effective resolution L_eff (km)     315.2
+grid box distance L_box (km)        134.0
+ratio L_eff / L_box                  2.35
+ratio in the dx convention           6.65
+spectra showing steepening         3 of 3
+upper limit only                    False
+
+per-spectrum detections (wavenumber -&gt; eddy scale):
+  div_250   l = 51.0   ΔS = 389 km
+  rot_250   l = 70.0   ΔS = 284 km
+  rot_500   l = 63.0   ΔS = 315 km
+</pre></div></div>
+</div>
+</section>
+<section id="Results-Summary">
+<h3>Results Summary<a class="headerlink" href="#Results-Summary" title="Link to this heading"></a></h3>
+<p>The diagnostic returns comprehensive metrics:</p>
+<section id="Core-Metrics">
+<h4>Core Metrics<a class="headerlink" href="#Core-Metrics" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong>l_eff = 63</strong>: Effective wavenumber where spectrum steepens (median of 51, 70, 63)</p></li>
+<li><p><strong>L_eff = 315 km</strong>: Effective resolution = smallest plausibly resolved eddy scale</p></li>
+<li><p>**L̃_box = 134 km**: Nominal grid box distance</p></li>
+</ul>
+</section>
+<section id="Resolution-Ratio">
+<h4>Resolution Ratio<a class="headerlink" href="#Resolution-Ratio" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>**L_eff / L̃_box = 2.35<strong>: The model resolves scales</strong> 2.35× larger** than its grid spacing</p>
+<ul>
+<li><p>For real climate models, this ratio ranges from <strong>2.7 to 4.8</strong></p></li>
+<li><p>Lower ratio = model resolves closer to grid scale (more effective)</p></li>
+<li><p>Higher ratio = more energy lost to numerical dissipation</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="Per-Spectrum-Detections">
+<h4>Per-Spectrum Detections<a class="headerlink" href="#Per-Spectrum-Detections" title="Link to this heading"></a></h4>
+<p>Shows where each component steepens:</p>
+<ul class="simple">
+<li><p><strong>div_250</strong>: l=51 → 389 km (divergent flow at 250 hPa steepens earliest)</p></li>
+<li><p><strong>rot_250</strong>: l=70 → 284 km (rotational flow at 250 hPa)</p></li>
+<li><p><strong>rot_500</strong>: l=63 → 315 km (rotational flow at 500 hPa)</p></li>
+</ul>
+<p>The <strong>median (l=63)</strong> becomes the effective resolution since 3 of 3 spectra steepen (exceeds 2-of-3 threshold).</p>
+</section>
+<section id="Physical-Interpretation">
+<h4>Physical Interpretation<a class="headerlink" href="#Physical-Interpretation" title="Link to this heading"></a></h4>
+<p>Atmospheric features <strong>smaller than L_eff = 315 km</strong> in this model are dominated by numerical effects rather than resolved dynamics. Metrics computed at finer scales measure the numerical scheme, not the climate.</p>
+</section>
+</section>
+</section>
+<section id="4.-Visualize-Spectra-and-Slope-Detection">
+<h2>4. Visualize Spectra and Slope Detection<a class="headerlink" href="#4.-Visualize-Spectra-and-Slope-Detection" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plot_spectra_and_slope</span><span class="p">(</span>
+    <span class="n">diagnostics</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+    <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">120</span><span class="p">),</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">"DUMMY-HR Effective Resolution"</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_12_effective_resolution_14_0.png" src="../_images/examples_Demo_12_effective_resolution_14_0.png" />
+</div>
+</div>
+<section id="Understanding-the-Visualization">
+<h3>Understanding the Visualization<a class="headerlink" href="#Understanding-the-Visualization" title="Link to this heading"></a></h3>
+<p>This reproduces <strong>Figure 1</strong> from Klaver et al. (2020) with two key panels:</p>
+<section id="Top-Panel:-Compensated-Kinetic-Energy-Spectra-(l³E_l)">
+<h4>Top Panel: Compensated Kinetic Energy Spectra (l³E_l)<a class="headerlink" href="#Top-Panel:-Compensated-Kinetic-Energy-Spectra-(l³E_l)" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Shows deviation from the <strong>theoretical k⁻³ power law</strong> for atmospheric turbulence</p></li>
+<li><p><strong>Flat plateau</strong> = spectrum follows k⁻³ (resolved scales)</p></li>
+<li><p><strong>Downward curve</strong> = spectrum steepens beyond k⁻³ (numerical dissipation)</p></li>
+<li><p>Three lines for <a class="reference external" href="mailto:divergent&#37;&#52;&#48;250">divergent<span>&#64;</span>250</a>, <a class="reference external" href="mailto:rotational&#37;&#52;&#48;250">rotational<span>&#64;</span>250</a>, <a class="reference external" href="mailto:rotational&#37;&#52;&#48;500">rotational<span>&#64;</span>500</a></p></li>
+<li><p><strong>Compensating by l³</strong> makes deviations from power law visually obvious</p></li>
+</ul>
+</section>
+<section id="Bottom-Panel:-Spectral-Slope-Exponent-n(l)">
+<h4>Bottom Panel: Spectral Slope Exponent n(l)<a class="headerlink" href="#Bottom-Panel:-Spectral-Slope-Exponent-n(l)" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Shows fitted exponent where E ∝ l^(-n) locally</p></li>
+<li><p><strong>Horizontal at n≈3</strong> = following k⁻³ power law (resolved)</p></li>
+<li><p><strong>Increasing n</strong> = spectrum steepening (transition to unresolved)</p></li>
+<li><p><strong>Critical curve (blue)</strong> = 25% steepening criterion</p></li>
+<li><p><strong>Vertical dashed lines</strong> = detected steepening wavenumbers (where slope crosses threshold)</p></li>
+</ul>
+</section>
+<section id="What-to-Look-For">
+<h4>What to Look For<a class="headerlink" href="#What-to-Look-For" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Divergent spectrum (div_250) steepens <strong>earliest</strong> (l=51) → most sensitive indicator</p></li>
+<li><p>Rotational spectra steepen later → represent large-scale balanced flow better</p></li>
+<li><p>Effective resolution = <strong>median</strong> of the three detections → robust against outliers</p></li>
+<li><p>Steepening = transition from atmospheric dynamics to numerical artifact</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="5.-Advanced-Usage">
+<h2>5. Advanced Usage<a class="headerlink" href="#5.-Advanced-Usage" title="Link to this heading"></a></h2>
+<section id="Temporal-Averaging-Strategies">
+<h3>Temporal Averaging Strategies<a class="headerlink" href="#Temporal-Averaging-Strategies" title="Link to this heading"></a></h3>
+<p>The implementation offers two approaches for combining spectra across time, following different interpretations of Klaver et al. (2020):</p>
+<section id="Method-1:-temporal_averaging='slopes'-(Default)">
+<h4>Method 1: <code class="docutils literal notranslate"><span class="pre">temporal_averaging='slopes'</span></code> (Default)<a class="headerlink" href="#Method-1:-temporal_averaging='slopes'-(Default)" title="Link to this heading"></a></h4>
+<p>Matches <strong>Appendix S3</strong> of the reference paper:</p>
+<ol class="arabic simple">
+<li><p>Compute KE spectrum for each month separately</p></li>
+<li><p>Fit spectral slopes to each monthly spectrum → n_month(l)</p></li>
+<li><p>Average slope curves across months → n̄(l)</p></li>
+<li><p>Detect steepening from averaged slopes</p></li>
+</ol>
+<p><strong>Advantage</strong>: Preserves information about temporal variability in spectral shape before averaging</p>
+</section>
+<section id="Method-2:-temporal_averaging='spectra'-(Alternative)">
+<h4>Method 2: <code class="docutils literal notranslate"><span class="pre">temporal_averaging='spectra'</span></code> (Alternative)<a class="headerlink" href="#Method-2:-temporal_averaging='spectra'-(Alternative)" title="Link to this heading"></a></h4>
+<p>Original implementation approach:</p>
+<ol class="arabic simple">
+<li><p>Average KE spectra first across all timesteps → Ē(l)</p></li>
+<li><p>Fit slopes to the time-averaged spectrum → n(l)</p></li>
+<li><p>Detect steepening from this single slope curve</p></li>
+</ol>
+<p><strong>Advantage</strong>: Simpler, reduces to one spectrum per component</p>
+</section>
+<section id="When-They-Differ">
+<h4>When They Differ<a class="headerlink" href="#When-They-Differ" title="Link to this heading"></a></h4>
+<p>For <strong>temporally stable</strong> spectra (like this synthetic example), both methods give identical results. Differences emerge when:</p>
+<ul class="simple">
+<li><p>Seasonal cycles affect spectral shape</p></li>
+<li><p>Different atmospheric regimes are present</p></li>
+<li><p>Limited temporal sampling creates noise</p></li>
+</ul>
+<p>For real climate data with seasonal variations, <code class="docutils literal notranslate"><span class="pre">temporal_averaging='slopes'</span></code> is recommended as it better represents the paper’s methodology.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Method 1: Average slopes (default, matches Klaver et al. Appendix S3)</span>
+<span class="n">metrics_slopes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_effective_resolution</span><span class="p">(</span>
+    <span class="n">ds</span><span class="p">,</span>
+    <span class="n">temporal_averaging</span><span class="o">=</span><span class="s1">'slopes'</span><span class="p">,</span>  <span class="c1"># Compute monthly spectra → fit monthly slopes → average slopes</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">"DUMMY-HR"</span><span class="p">,</span>
+    <span class="n">member</span><span class="o">=</span><span class="s2">"r1i1p1f1"</span>
+<span class="p">)</span>
+
+<span class="c1"># Method 2: Average spectra (original implementation)</span>
+<span class="n">metrics_spectra</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_effective_resolution</span><span class="p">(</span>
+    <span class="n">ds</span><span class="p">,</span>
+    <span class="n">temporal_averaging</span><span class="o">=</span><span class="s1">'spectra'</span><span class="p">,</span>  <span class="c1"># Average spectra first → fit single slope curve</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">"DUMMY-HR"</span><span class="p">,</span>
+    <span class="n">member</span><span class="o">=</span><span class="s2">"r1i1p1f1"</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Temporal averaging comparison:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  slopes method:  l=</span><span class="si">{</span><span class="n">metrics_slopes</span><span class="p">[</span><span class="s1">'DUMMY-HR'</span><span class="p">][</span><span class="s1">'r1i1p1f1'</span><span class="p">][</span><span class="s1">'effective_wavenumber'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  spectra method: l=</span><span class="si">{</span><span class="n">metrics_spectra</span><span class="p">[</span><span class="s1">'DUMMY-HR'</span><span class="p">][</span><span class="s1">'r1i1p1f1'</span><span class="p">][</span><span class="s1">'effective_wavenumber'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Note: Results are often identical for temporally stable spectra"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Temporal averaging comparison:
+  slopes method:  l=63.0
+  spectra method: l=63.0
+
+Note: Results are often identical for temporally stable spectra
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Parameter-Sensitivity">
+<h3>Parameter Sensitivity<a class="headerlink" href="#Parameter-Sensitivity" title="Link to this heading"></a></h3>
+<p>Several parameters control the detection behavior. Understanding their effects helps tune the diagnostic for specific applications:</p>
+<section id="steepening_factor-(default:-0.25)">
+<h4><code class="docutils literal notranslate"><span class="pre">steepening_factor</span></code> (default: 0.25)<a class="headerlink" href="#steepening_factor-(default:-0.25)" title="Link to this heading"></a></h4>
+<p><strong>Controls stringency of steepening detection</strong></p>
+<ul class="simple">
+<li><p>Criterion: slope must increase by this fraction over wavenumber doubling</p></li>
+<li><p><strong>Higher values</strong> (e.g., 0.30) → more stringent → detects later → <strong>coarser</strong> effective resolution</p></li>
+<li><p><strong>Lower values</strong> (e.g., 0.20) → less stringent → detects earlier → <strong>finer</strong> effective resolution</p></li>
+<li><p>Paper uses 0.25 (25% increase) but notes it’s “somewhat arbitrary”</p></li>
+<li><p><strong>When to adjust</strong>: If detection seems too sensitive/insensitive to spectral features</p></li>
+</ul>
+</section>
+<section id="min_wavenumber-(default:-32)">
+<h4><code class="docutils literal notranslate"><span class="pre">min_wavenumber</span></code> (default: 32)<a class="headerlink" href="#min_wavenumber-(default:-32)" title="Link to this heading"></a></h4>
+<p><strong>Excludes low wavenumbers from detection</strong></p>
+<ul class="simple">
+<li><p>Prevents detection in planetary-scale range where spectral behavior may be irregular</p></li>
+<li><p><strong>Higher values</strong> (e.g., 50) → start looking later → may miss early steepening</p></li>
+<li><p><strong>Lower values</strong> (e.g., 20) → include more planetary scales → risk false detections</p></li>
+<li><p><strong>When to adjust</strong>: For coarse-resolution models where steepening occurs at low wavenumbers</p></li>
+</ul>
+</section>
+<section id="Other-Useful-Parameters">
+<h4>Other Useful Parameters<a class="headerlink" href="#Other-Useful-Parameters" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fit_window</span></code> (default: 20): Window size for slope fitting</p>
+<ul>
+<li><p>Larger = smoother slopes, less sensitive to noise</p></li>
+<li><p>Smaller = captures finer spectral features, more noise-sensitive</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit_anchor</span></code> (default: ‘right’): Where to assign fitted slope within window</p>
+<ul>
+<li><p>‘right’ = assign to highest wavenumber (literal paper reading)</p></li>
+<li><p>‘center’ = assign to window midpoint (conventional)</p></li>
+<li><p>‘left’ = assign to lowest wavenumber</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ntrunc</span></code>: Triangular truncation limit (default: nlat-1)</p>
+<ul>
+<li><p>Useful for matching specific truncation used in spectral models</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Note</strong>: In this synthetic example, results are insensitive to these parameters because the prescribed rolloff creates very clear, stable steepening signals.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># steepening_factor: threshold for detecting steepening (default 0.25 = 25%)</span>
+<span class="c1"># Higher values → more stringent → later detection → coarser effective resolution</span>
+<span class="n">metrics_025</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_effective_resolution</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">steepening_factor</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">member</span><span class="o">=</span><span class="s2">"r1i1p1f1"</span><span class="p">)</span>
+<span class="n">metrics_030</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_effective_resolution</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">steepening_factor</span><span class="o">=</span><span class="mf">0.30</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">member</span><span class="o">=</span><span class="s2">"r1i1p1f1"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Steepening factor sensitivity:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  factor=0.25: L_eff=</span><span class="si">{</span><span class="n">metrics_025</span><span class="p">[</span><span class="s1">'test'</span><span class="p">][</span><span class="s1">'r1i1p1f1'</span><span class="p">][</span><span class="s1">'effective_resolution_km'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> km"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  factor=0.30: L_eff=</span><span class="si">{</span><span class="n">metrics_030</span><span class="p">[</span><span class="s1">'test'</span><span class="p">][</span><span class="s1">'r1i1p1f1'</span><span class="p">][</span><span class="s1">'effective_resolution_km'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> km"</span><span class="p">)</span>
+
+<span class="c1"># min_wavenumber: exclude low wavenumbers from detection (default 32)</span>
+<span class="c1"># Higher values → start detection later → may find coarser resolution</span>
+<span class="n">metrics_min32</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_effective_resolution</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">min_wavenumber</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">member</span><span class="o">=</span><span class="s2">"r1i1p1f1"</span><span class="p">)</span>
+<span class="n">metrics_min50</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_effective_resolution</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">min_wavenumber</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">"test"</span><span class="p">,</span> <span class="n">member</span><span class="o">=</span><span class="s2">"r1i1p1f1"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Minimum wavenumber restriction:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  min_l=32 (default): l_eff=</span><span class="si">{</span><span class="n">metrics_min32</span><span class="p">[</span><span class="s1">'test'</span><span class="p">][</span><span class="s1">'r1i1p1f1'</span><span class="p">][</span><span class="s1">'effective_wavenumber'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  min_l=50:           l_eff=</span><span class="si">{</span><span class="n">metrics_min50</span><span class="p">[</span><span class="s1">'test'</span><span class="p">][</span><span class="s1">'r1i1p1f1'</span><span class="p">][</span><span class="s1">'effective_wavenumber'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Steepening factor sensitivity:
+  factor=0.25: L_eff=315.2 km
+  factor=0.30: L_eff=315.2 km
+
+Minimum wavenumber restriction:
+  min_l=32 (default): l_eff=63.0
+  min_l=50:           l_eff=63.0
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+<section id="6.-Important-Notes-and-Caveats">
+<h2>6. Important Notes and Caveats<a class="headerlink" href="#6.-Important-Notes-and-Caveats" title="Link to this heading"></a></h2>
+<section id="Critical-Data-Requirements">
+<h3>Critical Data Requirements<a class="headerlink" href="#Critical-Data-Requirements" title="Link to this heading"></a></h3>
+<p><strong>It is recommended to use</strong> NATIVE GRID data** (<code class="docutils literal notranslate"><span class="pre">grid_label='gn'</span></code> in CMIP6) for this diagnostics:</p>
+<p>❌ <strong>Do NOT use</strong>:</p>
+<ul class="simple">
+<li><p>Regridded data (<code class="docutils literal notranslate"><span class="pre">grid_label='gr'</span></code>) → destroys high-wavenumber information</p></li>
+<li><p>Daily mean winds → temporal smoothing removes small-scale transients</p></li>
+<li><p>Coarse vertical resolution → limited to 250 and 500 hPa in standard implementation</p></li>
+<li><p>Data on interpolated grids → introduces artificial spectral characteristics</p></li>
+</ul>
+<p>✅ <strong>Required</strong>:</p>
+<ul class="simple">
+<li><p>6-hourly (or finer) instantaneous winds on model’s native horizontal grid</p></li>
+<li><p>Global coverage (method assumes spherical harmonic basis)</p></li>
+<li><p>Variables: <code class="docutils literal notranslate"><span class="pre">ua</span></code>, <code class="docutils literal notranslate"><span class="pre">va</span></code> at 250 and 500 hPa</p></li>
+<li><p>Pressure coordinates can be in Pa or hPa (auto-detected)</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Physical Interpretation<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p><strong>What L_eff tells you</strong>:</p>
+<ul class="simple">
+<li><p>Features <strong>smaller than L_eff</strong> are dominated by numerical dissipation, not resolved dynamics</p></li>
+<li><p>Metrics evaluated at scales &lt; L_eff measure the numerical scheme, not the climate</p></li>
+<li><p>L_eff sets a <strong>lower bound</strong> for meaningful process studies in the model</p></li>
+</ul>
+<p><strong>What L_eff does NOT tell you</strong>:</p>
+<ul class="simple">
+<li><p>Nothing about <strong>fidelity</strong> of scales larger than L_eff (a model can have good L_eff but poor large-scale spectrum)</p></li>
+<li><p>Nothing about <strong>vertical</strong> resolution (diagnostic is horizontal-only)</p></li>
+<li><p>Nothing about temporal resolution or transient representation</p></li>
+</ul>
+</section>
+<section id="Known-Limitations">
+<h3>Known Limitations<a class="headerlink" href="#Known-Limitations" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Global time-mean approach</strong>:</p>
+<ul class="simple">
+<li><p>May mask phenomenon-dependent resolution (tropical convection vs. extratropical storms)</p></li>
+<li><p>Single value doesn’t capture regional or seasonal variations</p></li>
+</ul>
+</li>
+<li><p><strong>Ad hoc threshold</strong>:</p>
+<ul class="simple">
+<li><p>25% steepening criterion is “somewhat arbitrary” (authors’ words)</p></li>
+<li><p>Different thresholds shift detected wavenumber by ~10-20%</p></li>
+</ul>
+</li>
+<li><p><strong>Vertical sparsity</strong>:</p>
+<ul class="simple">
+<li><p>Only 2 levels tested (250, 500 hPa)</p></li>
+<li><p>Focuses on troposphere; may not represent stratosphere or boundary layer</p></li>
+</ul>
+</li>
+<li><p><strong>Divergent spectrum exclusion at 500 hPa</strong>:</p>
+<ul class="simple">
+<li><p>Paper finds div_500 steepens at all scales → provides no useful signal</p></li>
+<li><p>Excluded from 2-of-3 confirmation rule</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="Comparison-with-Reference-Paper">
+<h3>Comparison with Reference Paper<a class="headerlink" href="#Comparison-with-Reference-Paper" title="Link to this heading"></a></h3>
+<p>This implementation uses <strong>strict algorithmic detection</strong> of the 25% criterion. The reference paper (Klaver et al. 2020 Table 1) used <strong>visual inspection with expert interpretation</strong> of “broader spectral behavior.”</p>
+<p><strong>Expected differences</strong>: Results may differ by <strong>10-30%</strong> from Table 1 values, which is acceptable given the methodological difference:</p>
+<ul class="simple">
+<li><p><strong>Reference approach</strong>: Visual assessment + physical interpretation → not reproducible</p></li>
+<li><p><strong>This implementation</strong>: Objective algorithm → reproducible for model intercomparison</p></li>
+</ul>
+<p><strong>Recommendation</strong>: Use results to <strong>compare models</strong> relative to each other, not to expect exact Table 1 reproduction.</p>
+</section>
+<section id="Further-Information">
+<h3>Further Information<a class="headerlink" href="#Further-Information" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Full methodology: See README.md and Klaver et al. (2020) paper</p></li>
+<li><p>Investigation of discrepancies: See <code class="docutils literal notranslate"><span class="pre">tests/DISCREPANCY_ANALYSIS.md</span></code></p></li>
+<li><p>Real model examples: See test notebooks in <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
+</ul>
+</section>
+</section>
+<section id="7.-Advanced:-Direct-KE-Spectra-Analysis">
+<h2>7. Advanced: Direct KE Spectra Analysis<a class="headerlink" href="#7.-Advanced:-Direct-KE-Spectra-Analysis" title="Link to this heading"></a></h2>
+<p>For advanced users who want just the kinetic energy spectra without running the full effective resolution diagnostic, you can use the standalone spectral functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_ke_spectra()</span></code>: Single snapshot (2D u/v fields)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compute_ke_spectra_timeseries()</span></code>: Time loop + averaging (3D/4D fields)</p></li>
+</ul>
+<p>These are the same functions used internally by <code class="docutils literal notranslate"><span class="pre">compute_effective_resolution()</span></code>, now available as public APIs.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.effective_resolution</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">compute_ke_spectra</span><span class="p">,</span>
+    <span class="n">compute_ke_spectra_timeseries</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Example 1: Single snapshot (time AND level already selected)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Example 1: Single Snapshot KE Spectrum"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+<span class="c1"># Must select BOTH time and pressure level for 2D field</span>
+<span class="n">ds_snapshot</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">plev</span><span class="o">=</span><span class="mi">25000</span><span class="p">)</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Select 250 hPa and one timestep</span>
+<span class="n">ke_single</span> <span class="o">=</span> <span class="n">compute_ke_spectra</span><span class="p">(</span><span class="n">ds_snapshot</span><span class="p">,</span> <span class="n">uvar</span><span class="o">=</span><span class="s1">'ua'</span><span class="p">,</span> <span class="n">vvar</span><span class="o">=</span><span class="s1">'va'</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output variables: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ke_single</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Wavenumber range: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">ke_single</span><span class="o">.</span><span class="n">wavenumber</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">ke_single</span><span class="o">.</span><span class="n">wavenumber</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Rotational KE range: </span><span class="si">{</span><span class="n">ke_single</span><span class="o">.</span><span class="n">ke_rot</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">ke_single</span><span class="o">.</span><span class="n">ke_rot</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> m²/s²"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Example 2: Time-averaged spectrum (RECOMMENDED for diagnostics)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Example 2: Time-Averaged KE Spectrum"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+<span class="c1"># compute_ke_spectra_timeseries handles level selection AND time loop automatically</span>
+<span class="n">ke_averaged</span> <span class="o">=</span> <span class="n">compute_ke_spectra_timeseries</span><span class="p">(</span>
+    <span class="n">ds</span><span class="p">,</span>
+    <span class="n">uvar</span><span class="o">=</span><span class="s1">'ua'</span><span class="p">,</span>
+    <span class="n">vvar</span><span class="o">=</span><span class="s1">'va'</span><span class="p">,</span>
+    <span class="n">level_hpa</span><span class="o">=</span><span class="mf">250.0</span><span class="p">,</span>  <span class="c1"># Specify level in hPa</span>
+    <span class="n">time_mean</span><span class="o">=</span><span class="kc">True</span>    <span class="c1"># Average spectra (not fields!) - scientifically correct</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Averaged over: </span><span class="si">{</span><span class="n">ke_averaged</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'n_times_averaged'</span><span class="p">,</span><span class="w"> </span><span class="s1">'N/A'</span><span class="p">)</span><span class="si">}</span><span class="s2"> timesteps"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Output variables: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ke_averaged</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✓ Used correct time averaging methodology"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Example 3: Keep time dimension for temporal analysis</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Example 3: KE Spectrum Time Evolution"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">ke_timeseries</span> <span class="o">=</span> <span class="n">compute_ke_spectra_timeseries</span><span class="p">(</span>
+    <span class="n">ds</span><span class="p">,</span>
+    <span class="n">uvar</span><span class="o">=</span><span class="s1">'ua'</span><span class="p">,</span>
+    <span class="n">vvar</span><span class="o">=</span><span class="s1">'va'</span><span class="p">,</span>
+    <span class="n">level_hpa</span><span class="o">=</span><span class="mf">250.0</span><span class="p">,</span>
+    <span class="n">time_mean</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># Keep time dimension</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Shape: (time=</span><span class="si">{</span><span class="n">ke_timeseries</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span><span class="si">}</span><span class="s2">, wavenumber=</span><span class="si">{</span><span class="n">ke_timeseries</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s1">'wavenumber'</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Can now analyze temporal variability of spectra!"</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Example 1: Single Snapshot KE Spectrum
+==================================================
+Output variables: [&#39;ke_rot&#39;, &#39;ke_div&#39;, &#39;ke_total&#39;]
+Wavenumber range: 1 to 191
+Rotational KE range: 3.20e-05 to 7.26e+02 m²/s²
+
+Example 2: Time-Averaged KE Spectrum
+==================================================
+Averaged over: 8 timesteps
+Output variables: [&#39;ke_rot&#39;, &#39;ke_div&#39;, &#39;ke_total&#39;]
+✓ Used correct time averaging methodology
+
+Example 3: KE Spectrum Time Evolution
+==================================================
+Shape: (time=8, wavenumber=191)
+Can now analyze temporal variability of spectra!
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Visualize the spectra</span>
+<span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># Left: Compare single snapshot vs time-averaged</span>
+<span class="n">ell</span> <span class="o">=</span> <span class="n">ke_single</span><span class="o">.</span><span class="n">wavenumber</span><span class="o">.</span><span class="n">values</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">ell</span><span class="p">,</span> <span class="n">ell</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">ke_single</span><span class="o">.</span><span class="n">ke_rot</span><span class="p">,</span> <span class="s1">'o-'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">'Single snapshot'</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">ell</span><span class="p">,</span> <span class="n">ell</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">ke_averaged</span><span class="o">.</span><span class="n">ke_rot</span><span class="p">,</span> <span class="s1">'s-'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">'Time-averaged'</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Total wavenumber $l$'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$l^3 E_l$ (m²/s²)'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Rotational KE Spectrum at 250 hPa'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">'both'</span><span class="p">)</span>
+
+<span class="c1"># Right: Rotational vs Divergent</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">ell</span><span class="p">,</span> <span class="n">ell</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">ke_averaged</span><span class="o">.</span><span class="n">ke_rot</span><span class="p">,</span> <span class="s1">'o-'</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">'Rotational'</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">ell</span><span class="p">,</span> <span class="n">ell</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">ke_averaged</span><span class="o">.</span><span class="n">ke_div</span><span class="p">,</span> <span class="s1">'s-'</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">'Divergent'</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">ell</span><span class="p">,</span> <span class="n">ell</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">ke_averaged</span><span class="o">.</span><span class="n">ke_total</span><span class="p">,</span> <span class="s1">'^-'</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">'Total'</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Total wavenumber $l$'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$l^3 E_l$ (m²/s²)'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'KE Spectrum Components (Time-Averaged)'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">'both'</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"="</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"✓ Direct KE spectral analysis complete!"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">When to use each function:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • compute_ke_spectra()           → Single snapshot already selected"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • compute_ke_spectra_timeseries() → Time-varying data (handles averaging)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • compute_effective_resolution()  → Full diagnostic with L_eff metric"</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_Demo_12_effective_resolution_23_0.png" src="../_images/examples_Demo_12_effective_resolution_23_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+======================================================================
+✓ Direct KE spectral analysis complete!
+======================================================================
+
+When to use each function:
+  • compute_ke_spectra()           → Single snapshot already selected
+  • compute_ke_spectra_timeseries() → Time-varying data (handles averaging)
+  • compute_effective_resolution()  → Full diagnostic with L_eff metric
+</pre></div></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Demo_12b_scalar_effective_resolution.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Effective Resolution Demo (Scalar Field)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Demo_11_hadley_cell_metrics.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Hadley Cell Metrics</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Effective Resolution Diagnostic Demo (ua, va)</a><ul>
+<li><a class="reference internal" href="#Why-This-Matters">Why This Matters</a></li>
+<li><a class="reference internal" href="#Key-Concepts">Key Concepts</a></li>
+<li><a class="reference internal" href="#Method-Overview">Method Overview</a></li>
+<li><a class="reference internal" href="#Reference">Reference</a></li>
+<li><a class="reference internal" href="#1.-Setup-and-Imports">1. Setup and Imports</a></li>
+<li><a class="reference internal" href="#2.-Generate-Synthetic-Data">2. Generate Synthetic Data</a><ul>
+<li><a class="reference internal" href="#How-the-Synthetic-Data-Works">How the Synthetic Data Works</a></li>
+<li><a class="reference internal" href="#Key-Parameters">Key Parameters</a></li>
+<li><a class="reference internal" href="#Create-Dummy-Dataset">Create Dummy Dataset</a></li>
+<li><a class="reference internal" href="#Inspect-the-Data">Inspect the Data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#3.-Compute-Effective-Resolution">3. Compute Effective Resolution</a><ul>
+<li><a class="reference internal" href="#Processing-Steps">Processing Steps</a></li>
+<li><a class="reference internal" href="#Why-This-Approach-Works">Why This Approach Works</a></li>
+<li><a class="reference internal" href="#Results-Summary">Results Summary</a><ul>
+<li><a class="reference internal" href="#Core-Metrics">Core Metrics</a></li>
+<li><a class="reference internal" href="#Resolution-Ratio">Resolution Ratio</a></li>
+<li><a class="reference internal" href="#Per-Spectrum-Detections">Per-Spectrum Detections</a></li>
+<li><a class="reference internal" href="#Physical-Interpretation">Physical Interpretation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#4.-Visualize-Spectra-and-Slope-Detection">4. Visualize Spectra and Slope Detection</a><ul>
+<li><a class="reference internal" href="#Understanding-the-Visualization">Understanding the Visualization</a><ul>
+<li><a class="reference internal" href="#Top-Panel:-Compensated-Kinetic-Energy-Spectra-(l³E_l)">Top Panel: Compensated Kinetic Energy Spectra (l³E_l)</a></li>
+<li><a class="reference internal" href="#Bottom-Panel:-Spectral-Slope-Exponent-n(l)">Bottom Panel: Spectral Slope Exponent n(l)</a></li>
+<li><a class="reference internal" href="#What-to-Look-For">What to Look For</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#5.-Advanced-Usage">5. Advanced Usage</a><ul>
+<li><a class="reference internal" href="#Temporal-Averaging-Strategies">Temporal Averaging Strategies</a><ul>
+<li><a class="reference internal" href="#Method-1:-temporal_averaging='slopes'-(Default)">Method 1: <code class="docutils literal notranslate"><span class="pre">temporal_averaging='slopes'</span></code> (Default)</a></li>
+<li><a class="reference internal" href="#Method-2:-temporal_averaging='spectra'-(Alternative)">Method 2: <code class="docutils literal notranslate"><span class="pre">temporal_averaging='spectra'</span></code> (Alternative)</a></li>
+<li><a class="reference internal" href="#When-They-Differ">When They Differ</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Parameter-Sensitivity">Parameter Sensitivity</a><ul>
+<li><a class="reference internal" href="#steepening_factor-(default:-0.25)"><code class="docutils literal notranslate"><span class="pre">steepening_factor</span></code> (default: 0.25)</a></li>
+<li><a class="reference internal" href="#min_wavenumber-(default:-32)"><code class="docutils literal notranslate"><span class="pre">min_wavenumber</span></code> (default: 32)</a></li>
+<li><a class="reference internal" href="#Other-Useful-Parameters">Other Useful Parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#6.-Important-Notes-and-Caveats">6. Important Notes and Caveats</a><ul>
+<li><a class="reference internal" href="#Critical-Data-Requirements">Critical Data Requirements</a></li>
+<li><a class="reference internal" href="#id1">Physical Interpretation</a></li>
+<li><a class="reference internal" href="#Known-Limitations">Known Limitations</a></li>
+<li><a class="reference internal" href="#Comparison-with-Reference-Paper">Comparison with Reference Paper</a></li>
+<li><a class="reference internal" href="#Further-Information">Further Information</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#7.-Advanced:-Direct-KE-Spectra-Analysis">7. Advanced: Direct KE Spectra Analysis</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=30646c52"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    </body>
+</html>
