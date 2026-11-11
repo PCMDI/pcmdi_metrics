@@ -297,10 +297,10 @@ def rms_xyt(dm, do, var="variable"):
 
     ds = dm.copy(deep=True)
     ds["diff_square"] = (dm[var] - do[var]) ** 2
-    ds["diff_square_sqrt"] = np.sqrt(
-        ds.spatial.average("diff_square", axis=["X", "Y"])["diff_square"]
-    )
-    stat = ds.temporal.average("diff_square_sqrt")["diff_square_sqrt"].values
+    ds["spatial_mse"] = ds.spatial.average("diff_square", axis=["X", "Y"])[
+        "diff_square"
+    ]
+    stat = np.sqrt(ds.temporal.average("spatial_mse")["spatial_mse"].values)
 
     del ds
     return float(stat)
