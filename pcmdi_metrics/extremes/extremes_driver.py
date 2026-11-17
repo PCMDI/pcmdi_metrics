@@ -400,8 +400,15 @@ for model in model_loop_list:
                 start_year = osyear
                 end_year = oeyear
             else:
+                # CMIP7 temperature files use "tas" for both tasmax and tasmin.
+                file_varname = (
+                    "tas"
+                    if "CMIP7" in test_data_path and varname in ("tasmax", "tasmin")
+                    else varname
+                )
+
                 tags = {
-                    "%(variable)": varname,
+                    "%(variable)": file_varname,
                     "%(model)": model,
                     "%(model_version)": model,
                     "%(realization)": run,
@@ -447,6 +454,15 @@ for model in model_loop_list:
 
             # Load and prep data
             ds = utilities.load_dataset(test_data_full_path)
+
+            # One-off CMIP7 compatibility fix
+            if (
+                model != "Reference"
+                and "CMIP7" in test_data_path
+                and varname in ("tasmax", "tasmin")
+                and "tas" in ds.data_vars
+            ):
+                ds = ds.rename({"tas": varname})
 
             if run == reference_data_set:
                 rename = {
@@ -593,6 +609,7 @@ for model in model_loop_list:
                             f"Seasonal block extrema: {index}",
                             meta,
                             ref_data=ref,
+                            obs_yrs=[osyear, oeyear],
                         )
 
                 if model != "Reference":
@@ -762,6 +779,8 @@ if cov_file is None:
                 str(osyear if model == "Reference" else msyear),
                 str(oeyear if model == "Reference" else meyear),
             ]
+            oyrange = [osyear, oeyear]
+
             # Save regional gridded fitted RV and SE without refitting.
             # Preserve input full-grid base name, replacing only fullGrid.
             regional_rv_name = os.path.basename(full_rv_path).replace(
@@ -808,6 +827,7 @@ if cov_file is None:
                         f"{return_period}-year return value for {stat}",
                         meta,
                         ref_data=refds,
+                        obs_yrs=oyrange,
                     )
                 except Exception as exc:
                     print("Could not plot RV", model, region, stat, exc)
