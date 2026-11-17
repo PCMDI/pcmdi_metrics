@@ -5,6 +5,7 @@ import os
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
+import xcdat as xc
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
 from pcmdi_metrics.graphics import TaylorDiagram
@@ -27,20 +28,41 @@ def mask_return_values(ds, metric, run):
 
 
 def make_maps(
-    data, model, run, region_name, index, yrs, plot_dir, desc, meta, ref_data=None
+    data,
+    model,
+    run,
+    region_name,
+    index,
+    yrs,
+    plot_dir,
+    desc,
+    meta,
+    ref_data=None,
+    obs_yrs=None,
 ):
     # Consolidating some plotting code here to streamline main function
     output_template = os.path.join(
         plot_dir, "_".join([model, run, region_name, index, "season"])
     )
-    plot_extremes(data, index, model, run, yrs, output_template, ref_data=ref_data)
+    plot_extremes(
+        data,
+        index,
+        model,
+        run,
+        yrs,
+        output_template,
+        ref_data=ref_data,
+        obs_yrs=obs_yrs,
+    )
     meta.update_plots(
         os.path.basename(output_template), output_template + ".png", index, desc
     )
     return meta
 
 
-def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None):
+def plot_extremes(
+    data, metric, model, run, yrs, output_template, ref_data=None, obs_yrs=None
+):
     vrange_dict = {
         "Rx1day": {"raw": 69.48, "rv": 188.69},
         "Rx5day": {"raw": 19.09, "rv": 76.57},
@@ -62,6 +84,21 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
         end_year = yrs[1]
 
     yrs_str = f"({start_year}-{end_year})"
+    obs_yrs_str = ""
+
+    if isinstance(obs_yrs, list):
+        if obs_yrs == [None, None]:
+            if "time" in ref_data.coords and ref_data.sizes.get("time", 0) > 0:
+                start_year = int(ref_data.time[0].dt.year)
+                end_year = int(ref_data.time[-1].dt.year)
+            else:
+                start_year = "unknown"
+                end_year = "unknown"
+        else:
+            start_year = obs_yrs[0]
+            end_year = obs_yrs[1]
+
+        obs_yrs_str = f"({start_year}-{end_year})"
 
     if metric in ["TXx", "TXn", "TNx", "TNn"]:
         colors = "YlOrRd"
@@ -87,7 +124,14 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
         levels = np.linspace(min_val, max_val, 21)
 
         try:
-            plot_map_cartopy(ds, outfile, title=title, cmap=colors, levels=levels)
+            plot_map_cartopy(
+                ds,
+                outfile,
+                title=title,
+                cmap=colors,
+                levels=levels,
+                units=ds.attrs["units"],
+            )
         except Exception as e:
             print("Error. Could not create figure", outfile, ":")
             print("    ", e)
@@ -99,12 +143,38 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
             if "time" in ref_ds.dims:
                 ref_ds = ref_ds.mean(dim="time")
 
-            ref_ds = ref_ds.interp(
+            # ref_ds = ref_ds.interp(
+            #     lat=ds.lat,
+            #     lon=ds.lon,
+            # )
+            # diff = ds - ref_ds
+
+            # Convert DataArray to xCDAT Dataset
+            ref_dataset = ref_ds.to_dataset(name="obs")
+
+            # Add missing coordinate bounds
+            ref_dataset = ref_dataset.bounds.add_missing_bounds(["X", "Y"])
+
+            # Create target grid from model coordinates
+            target = xc.create_grid(ds.lat, ds.lon)
+            target = target.bounds.add_missing_bounds(["X", "Y"])
+
+            # Conservatively regrid observations to model grid
+            ref_regridded = ref_dataset.regridder.horizontal(
+                "obs",
+                target,
+                tool="regrid2",
+            )["obs"]
+
+            # Apply model's valid-data mask
+            ref_regridded = ref_regridded.assign_coords(
                 lat=ds.lat,
                 lon=ds.lon,
             )
+            ref_regridded = ref_regridded.where(ds.notnull())
 
-            diff = ds - ref_ds
+            # Calculate difference
+            diff = ds - ref_regridded
 
             if "return_value" in run:
                 max_abs = vrange_dict[metric]["rv"]
@@ -115,9 +185,12 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
 
             diff_outfile = f"{outfile}_diff"
             diff_title = (
-                f"{model} {run} {season} {metric}\n"
-                f"Difference from reference {yrs_str}"
+                f"{model} {run} {season} {metric}\n" f"Difference from reference"
             )
+            if ds.attrs["units"] == ref_data["ANN"].attrs["units"]:
+                units = ds.attrs["units"].removesuffix("/day")
+            else:
+                units = ""
 
             plot_map_cartopy(
                 diff,
@@ -125,6 +198,7 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
                 title=diff_title,
                 cmap="RdBu_r",
                 levels=levels_diff,
+                units=units,
             )
 
             three_panel_outfile = f"{outfile}_3panel.png"
@@ -134,10 +208,12 @@ def plot_extremes(data, metric, model, run, yrs, output_template, ref_data=None)
                 obs_data=ref_ds,
                 diff=diff,
                 filename=three_panel_outfile,
-                title=f"{model} {run} {season} {metric} {yrs_str}",
+                title=f"{model} {run} {season} {metric}",
                 cmap=colors,
                 diff_max=max_abs,
                 extent=get_data_extent(ds),
+                mod_year_str=yrs_str,
+                obs_yrs_str=obs_yrs_str,
             )
     return
 
@@ -186,6 +262,7 @@ def plot_map_cartopy(
     center_lon_global=180,
     maskout=None,
     debug=False,
+    units="",
 ):
     # Taken from similar function in variability_mode.lib.plot_map
 
@@ -213,7 +290,7 @@ def plot_map_cartopy(
 
     if is_global or extent is None:
         projection = ccrs.Robinson(central_longitude=center_lon_global)
-        projection_name = "PlateCarree"
+        projection_name = "Robinson"
     else:
         projection = ccrs.PlateCarree()
         projection_name = "PlateCarree"
@@ -280,11 +357,17 @@ def plot_map_cartopy(
     plt.title(title, pad=15, fontsize=15)
 
     # Add colorbar
-    posn = ax.get_position()
-    cbar_ax = fig.add_axes([0, 0, 0.1, 0.1])
-    cbar_ax.set_position([posn.x0 + posn.width + 0.01, posn.y0, 0.01, posn.height])
-    cbar = plt.colorbar(im, cax=cbar_ax)
+    cbar = fig.colorbar(
+        im,
+        ax=ax,
+        orientation="vertical",
+        fraction=0.035,
+        pad=0.04,
+        shrink=0.85,
+    )
+
     cbar.ax.tick_params(labelsize=10)
+    cbar.set_label(units.removesuffix("/day"), fontsize=12, labelpad=10)
 
     if projection_name == "PlateCarree":
         ax.set_aspect("auto", adjustable=None)
@@ -306,9 +389,10 @@ def plot_three_panel(
     diff_cmap="RdBu_r",
     diff_max=None,
     extent=None,
+    mod_year_str=None,
+    obs_yrs_str=None,
 ):
     """Plot model, observations, and model-minus-observation."""
-
     projection = ccrs.PlateCarree()
 
     fig, axes = plt.subplots(
@@ -335,9 +419,16 @@ def plot_three_panel(
     diff_levels = np.linspace(-diff_max, diff_max, 21)
 
     fields = [model_data, obs_data, diff]
-    labels = ["Model", "Observations", "Model - Observations"]
+    labels = [
+        f"Model {mod_year_str}",
+        f"Observations {obs_yrs_str}",
+        "Model - Observations",
+    ]
+    units = None
 
     for i, (ax, field, label) in enumerate(zip(axes, fields, labels)):
+        if units is None:
+            units = field.attrs["units"].removesuffix("/day")
         if extent is not None:
             ax.set_extent(extent, crs=ccrs.PlateCarree())
         else:
@@ -368,13 +459,20 @@ def plot_three_panel(
             )
 
         ax.set_title(label, fontsize=13)
-        fig.colorbar(
+        cbar = fig.colorbar(
             im,
             ax=ax,
             orientation="vertical",
             shrink=0.85,
             pad=0.02,
         )
+
+        if i < 2:
+            cbar.set_label(
+                field.attrs["units"].removesuffix("/day"), fontsize=12, labelpad=10
+            )
+        else:
+            cbar.set_label(units, fontsize=12, labelpad=10)
 
     fig.suptitle(title, fontsize=16)
     fig.savefig(filename, dpi=150, bbox_inches="tight")
