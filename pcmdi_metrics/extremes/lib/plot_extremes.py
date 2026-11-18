@@ -297,6 +297,7 @@ def plot_map_cartopy(
 
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=projection)
+    fig.subplots_adjust(left=0.10, right=0.84, bottom=0.12, top=0.88)
 
     if is_global or extent is None:
         ax.set_global()
@@ -363,18 +364,18 @@ def plot_map_cartopy(
         orientation="vertical",
         fraction=0.035,
         pad=0.04,
-        shrink=0.85,
+        shrink=0.65,
     )
 
     cbar.ax.tick_params(labelsize=10)
     cbar.set_label(units.removesuffix("/day"), fontsize=12, labelpad=10)
 
-    if projection_name == "PlateCarree":
-        ax.set_aspect("auto", adjustable=None)
+    # if projection_name == "PlateCarree":
+    #     ax.set_aspect("auto", adjustable=None)
 
     # Done, save figure
-    fig.savefig(filename)
-    plt.close("all")
+    fig.savefig(filename, dpi=150)
+    plt.close(fig)
 
     return
 
@@ -402,6 +403,7 @@ def plot_three_panel(
         subplot_kw={"projection": projection},
         constrained_layout=True,
     )
+    fig.set_constrained_layout_pads(w_pad=0.15, h_pad=0.12)
 
     # Shared color scale for model and observations
     vmin = float(min(model_data.min(skipna=True), obs_data.min(skipna=True)))
@@ -475,7 +477,7 @@ def plot_three_panel(
             cbar.set_label(units, fontsize=12, labelpad=10)
 
     fig.suptitle(title, fontsize=16)
-    fig.savefig(filename, dpi=150, bbox_inches="tight")
+    fig.savefig(filename, dpi=150)
     plt.close(fig)
 
 
