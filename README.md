@@ -197,6 +197,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v4.2.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.2.2
 [v4.2.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.2.1
 [v4.2.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.2.0
 [v4.1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.1.0
