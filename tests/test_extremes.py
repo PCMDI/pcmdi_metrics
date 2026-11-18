@@ -13,6 +13,7 @@ def create_random_precip(years, max_val=None, min_val=None):
         calendar="noleap",
         use_cftime=True,
         name="time",
+        use_cftime=True,
     )
     latd = 2
     lond = 2
@@ -49,7 +50,8 @@ def create_random_precip(years, max_val=None, min_val=None):
 
     fake_ds["time"].encoding["calendar"] = "noleap"
     fake_ds["time"].encoding["units"] = "days since 0000-01-01"
-    fake_ds["lat"].attrs["units"] = "degrees_north"
+    fake_ds["lat"].encoding["units"] = "degrees_north"
+
     fake_ds = fake_ds.bounds.add_missing_bounds()
 
     if max_val is not None:
@@ -88,6 +90,7 @@ def create_seasonal_precip(season):
         calendar="noleap",
         use_cftime=True,
         name="time",
+        use_cftime=True,
     )
     latd = 2
     lond = 2

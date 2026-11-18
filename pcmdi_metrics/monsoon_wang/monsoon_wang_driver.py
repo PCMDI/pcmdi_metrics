@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import collections
+import glob
 import os
 import sys
 import warnings
@@ -66,6 +67,8 @@ def monsoon_wang_runner(args):
     else:
         mods = args.modnames
 
+    print("Models to be tested: ", mods)
+
     json_filename = args.outnamejson
 
     if json_filename == "CMIP_MME":
@@ -83,11 +86,7 @@ def monsoon_wang_runner(args):
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
     # ---------------------------------------------
     nout = outpathdata
-    if not os.path.exists(nout):
-        try:
-            os.makedirs(nout)
-        except BaseException:
-            pass
+    os.makedirs(nout, exist_ok=True)
 
     # SETUP WHERE TO OUTPUT RESULTS (json)
     jout = outpathdata
@@ -95,16 +94,14 @@ def monsoon_wang_runner(args):
     json_filename = get_unique_filename(jout, json_filename)
     print("\n updated json_filename  =  ", json_filename)
 
-    if not os.path.exists(jout):
-        try:
-            os.makedirs(jout)
-        except BaseException:
-            pass
+    os.makedirs(jout, exist_ok=True)
 
     gmods = []  # "Got" these MODS
 
     nth = args.nth
-    for i, mod in enumerate(mods[nth : nth + 4]):  # , start=n):
+    print(f"Starting from the {nth}th model")
+    for i, mod in enumerate(mods[nth : nth + 4]):
+        print("\n Checking model file for: ", mod)
         modpath.model = mod
         for k in modpath.keys():
             try:
@@ -116,7 +113,8 @@ def monsoon_wang_runner(args):
             else:
                 setattr(modpath, k, val[i])
         l1 = modpath()
-        if os.path.isfile(l1) is True:
+        print(" model file: ", l1)
+        if glob.glob(l1):
             gmods.append(mod)
 
     if len(gmods) == 0:
