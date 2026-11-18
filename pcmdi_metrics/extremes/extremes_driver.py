@@ -529,11 +529,18 @@ for model in model_loop_list:
                     drop_incomplete_djf,
                     annual_strict,
                 )
+                for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+                    Rx5day[season] = Rx5day[season] * 5
+                    units = Rx5day[season].attrs.get("units", "")
+                    if units.endswith("/day"):
+                        Rx5day[season].attrs["units"] = units.removesuffix("/day")
+
                 stats_dict = {
                     "Rx1day": Rx1day,
                     "Rx5day": Rx5day,
                     "Rx1day_monthly": Rx1day_monthly,
                 }
+
             else:
                 continue
 
