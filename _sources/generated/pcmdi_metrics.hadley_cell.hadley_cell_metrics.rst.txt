@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.hadley\_cell.hadley\_cell\_metrics
+=================================================
+
+.. currentmodule:: pcmdi_metrics.hadley_cell
+
+.. autofunction:: hadley_cell_metrics

@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.variability\_mode.NAO
+====================================
+
+.. currentmodule:: pcmdi_metrics.variability_mode
+
+.. autofunction:: NAO

@@ -1,0 +1,6 @@
+﻿pcmdi\_metrics.variability\_mode.PNA
+====================================
+
+.. currentmodule:: pcmdi_metrics.variability_mode
+
+.. autofunction:: PNA
