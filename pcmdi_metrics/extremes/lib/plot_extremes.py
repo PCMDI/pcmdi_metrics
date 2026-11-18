@@ -38,6 +38,7 @@ def make_maps(
     desc,
     meta,
     ref_data=None,
+    ref_name=None,
     obs_yrs=None,
 ):
     # Consolidating some plotting code here to streamline main function
@@ -52,6 +53,7 @@ def make_maps(
         yrs,
         output_template,
         ref_data=ref_data,
+        ref_name=ref_name,
         obs_yrs=obs_yrs,
     )
     meta.update_plots(
@@ -61,7 +63,15 @@ def make_maps(
 
 
 def plot_extremes(
-    data, metric, model, run, yrs, output_template, ref_data=None, obs_yrs=None
+    data,
+    metric,
+    model,
+    run,
+    yrs,
+    output_template,
+    ref_data=None,
+    ref_name=None,
+    obs_yrs=None,
 ):
     vrange_dict = {
         "Rx1day": {"raw": 69.48, "rv": 188.69},
@@ -185,7 +195,7 @@ def plot_extremes(
 
             diff_outfile = f"{outfile}_diff"
             diff_title = (
-                f"{model} {run} {season} {metric}\n" f"Difference from reference"
+                f"{model} {run} {season} {metric}\n" f"Difference from {ref_name}"
             )
             if ds.attrs["units"] == ref_data["ANN"].attrs["units"]:
                 units = ds.attrs["units"].removesuffix("/day")
@@ -205,6 +215,7 @@ def plot_extremes(
 
             plot_three_panel(
                 model_data=ds,
+                model=model,
                 obs_data=ref_ds,
                 diff=diff,
                 filename=three_panel_outfile,
@@ -214,6 +225,7 @@ def plot_extremes(
                 extent=get_data_extent(ds),
                 mod_year_str=yrs_str,
                 obs_yrs_str=obs_yrs_str,
+                ref_name=ref_name,
             )
     return
 
@@ -276,7 +288,8 @@ def plot_map_cartopy(
     if debug:
         print(min_lon, max_lon, min_lat, max_lat)
 
-    """ map types:
+    """
+    map types:
     https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
     """
 
@@ -297,7 +310,7 @@ def plot_map_cartopy(
 
     fig = plt.figure(figsize=(8, 6))
     ax = plt.axes(projection=projection)
-    fig.subplots_adjust(left=0.10, right=0.84, bottom=0.12, top=0.88)
+    fig.subplots_adjust(left=0.10, right=0.84, bottom=0.12, top=0.78)
 
     if is_global or extent is None:
         ax.set_global()
@@ -355,7 +368,14 @@ def plot_map_cartopy(
             gl.y_inline = False
 
     # Add title
-    plt.title(title, pad=15, fontsize=15)
+    fig.canvas.draw()
+    map_top = ax.get_position().y1
+
+    fig.suptitle(
+        title,
+        fontsize=13,
+        y=min(map_top + 0.08, 0.97),
+    )
 
     # Add colorbar
     cbar = fig.colorbar(
@@ -382,6 +402,7 @@ def plot_map_cartopy(
 
 def plot_three_panel(
     model_data,
+    model,  #
     obs_data,
     diff,
     filename,
@@ -392,6 +413,7 @@ def plot_three_panel(
     extent=None,
     mod_year_str=None,
     obs_yrs_str=None,
+    ref_name=None,
 ):
     """Plot model, observations, and model-minus-observation."""
     projection = ccrs.PlateCarree()
@@ -422,9 +444,9 @@ def plot_three_panel(
 
     fields = [model_data, obs_data, diff]
     labels = [
-        f"Model {mod_year_str}",
-        f"Observations {obs_yrs_str}",
-        "Model - Observations",
+        f"{model} {mod_year_str}",
+        f"{ref_name} {obs_yrs_str}",
+        f"{model} - {ref_name}",
     ]
     units = None
 

@@ -616,6 +616,7 @@ for model in model_loop_list:
                             f"Seasonal block extrema: {index}",
                             meta,
                             ref_data=ref,
+                            ref_name=reference_data_set,
                             obs_yrs=[osyear, oeyear],
                         )
 
@@ -834,6 +835,7 @@ if cov_file is None:
                         f"{return_period}-year return value for {stat}",
                         meta,
                         ref_data=refds,
+                        ref_name=reference_data_set,
                         obs_yrs=oyrange,
                     )
                 except Exception as exc:
