@@ -126,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v4.2.2]      | Technical update
 | [v4.2.1]      | Technical update
 | [v4.2.0]      | New capability (**Hadley Cell Metrics**) and technical update
 | [v4.1.0]      | New capabilities (**ENSO Metrics, Sea Ice IIEE Metric, and EOF Classification**) and technical update
