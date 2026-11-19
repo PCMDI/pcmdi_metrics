@@ -133,7 +133,7 @@ def get_model_path(model_path: Optional[str] = None) -> str:
         "Searched locations:\n" + "\n".join(f"  - {p}" for p in search_paths) + "\n\n"
         "Download the model:\n"
         "  1. Automatic: download_blocking_model.py\n"
-        "  2. Manual: https://pcmdiweb.llnl.gov/pss/pmpdata/blocking_models/falco_fulldata_oct11.h5\n"
+        "  2. Manual: https://pcmdi.llnl.gov/pss/pmpdata/blocking_pre-trained-model/falco_fulldata_oct11.h5\n"
         "\n"
         "Or specify path explicitly:\n"
         "  detect_blocking(ds, model_path='/path/to/model.h5')\n"

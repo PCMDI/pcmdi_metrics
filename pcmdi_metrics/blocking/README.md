@@ -34,7 +34,7 @@ download_blocking_model.py
 
 Or download manually from:
 ```
-https://pcmdiweb.llnl.gov/pss/pmpdata/blocking_models/falco_fulldata_oct11.h5
+https://pcmdi.llnl.gov/pss/pmpdata/blocking_pre-trained-model/falco_fulldata_oct11.h5
 ```
 
 Place in one of:

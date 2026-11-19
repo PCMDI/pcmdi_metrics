@@ -39,6 +39,7 @@ Homepage = "https://github.com/PCMDI/pcmdi_metrics"
 "std_of_dailymeans.py" = "pcmdi_metrics.diurnal.scripts.std_of_dailymeans:main"
 "std_of_hourlyvalues.py" = "pcmdi_metrics.diurnal.scripts.std_of_hourlyvalues:main"
 "std_of_meandiurnalcycle.py" = "pcmdi_metrics.diurnal.scripts.std_of_meandiurnalcycle:main"
+"download_blocking_model.py" = "pcmdi_metrics.misc.scripts.download_blocking_model:main"
 
 [tool.setuptools]
 # Plain script files to be installed (setup.py: scripts=[...])
@@ -60,6 +61,7 @@ script-files = [
   "pcmdi_metrics/sea_ice/sea_ice_driver.py",
   "pcmdi_metrics/drcdm/drcdm_driver.py",
   "pcmdi_metrics/qbo/qbo_mjo_driver.py",
+  "pcmdi_metrics/misc/scripts/download_blocking_model.py",
 ]
 
 [tool.setuptools.packages.find]
