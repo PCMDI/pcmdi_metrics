@@ -297,5 +297,106 @@ class TestBlockingMetrics:
         assert set(metrics_df["Region"]) == {"Test_Region"}
 
 
+class TestJSONOutput:
+    """Test JSON output formatting."""
+
+    @pytest.fixture
+    def sample_metrics_df(self):
+        """Create sample metrics DataFrame."""
+        data = {
+            "Year": [2000, 2000, 2001, 2001],
+            "Season": ["DJF", "DJF", "DJF", "DJF"],
+            "Region": ["NC", "NP", "NC", "NP"],
+            "Number": [10, 15, 12, 14],
+            "Size": [200.0, 250.0, 210.0, 240.0],
+        }
+        return pd.DataFrame(data)
+
+    def test_metrics_to_json_structure(self, sample_metrics_df, tmp_path):
+        """Test JSON output follows PCMDI format."""
+        from pcmdi_metrics.blocking.lib.blocking_metrics import metrics_to_json
+
+        output_file = tmp_path / "test_metrics.json"
+        metrics_to_json(
+            sample_metrics_df,
+            str(output_file),
+            model_name="TEST_MODEL",
+            reference_name="ERA5",
+        )
+
+        # Load and check structure
+        import json
+
+        with open(output_file) as f:
+            data = json.load(f)
+
+        # Check top-level keys
+        assert "DIMENSIONS" in data
+        assert "RESULTS" in data
+        assert "METADATA" in data
+        assert "PROVENANCE" in data
+
+        # Check DIMENSIONS structure
+        assert "json_structure" in data["DIMENSIONS"]
+        assert "season" in data["DIMENSIONS"]
+        assert "region" in data["DIMENSIONS"]
+        assert "statistic" in data["DIMENSIONS"]
+
+        # Check RESULTS structure
+        assert "TEST_MODEL" in data["RESULTS"]
+        assert "DJF" in data["RESULTS"]["TEST_MODEL"]
+        assert "NC" in data["RESULTS"]["TEST_MODEL"]["DJF"]
+        assert "number" in data["RESULTS"]["TEST_MODEL"]["DJF"]["NC"]
+
+    def test_metrics_to_json_values(self, sample_metrics_df, tmp_path):
+        """Test that JSON contains correct values."""
+        from pcmdi_metrics.blocking.lib.blocking_metrics import metrics_to_json
+
+        output_file = tmp_path / "test_metrics.json"
+        metrics_to_json(
+            sample_metrics_df,
+            str(output_file),
+            model_name="TEST_MODEL",
+        )
+
+        import json
+
+        with open(output_file) as f:
+            data = json.load(f)
+
+        # Check that values are present
+        nc_data = data["RESULTS"]["TEST_MODEL"]["DJF"]["NC"]
+        assert "values" in nc_data["number"]
+        assert "mean" in nc_data["number"]
+        assert "std" in nc_data["number"]
+
+        # Check mean calculation (2000: 10, 2001: 12 → mean = 11)
+        assert nc_data["number"]["mean"] == 11.0
+
+    def test_metrics_to_json_metadata(self, sample_metrics_df, tmp_path):
+        """Test METADATA section."""
+        from pcmdi_metrics.blocking.lib.blocking_metrics import metrics_to_json
+
+        output_file = tmp_path / "test_metrics.json"
+        metrics_to_json(
+            sample_metrics_df,
+            str(output_file),
+            model_name="TEST_MODEL",
+            realm="atmos",
+            frequency="day",
+        )
+
+        import json
+
+        with open(output_file) as f:
+            data = json.load(f)
+
+        metadata = data["METADATA"]
+        assert metadata["metric"] == "Atmospheric Blocking"
+        assert metadata["realm"] == "atmos"
+        assert metadata["frequency"] == "day"
+        assert "references" in metadata
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

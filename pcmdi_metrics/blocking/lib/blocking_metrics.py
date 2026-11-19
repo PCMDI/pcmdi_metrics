@@ -514,3 +514,199 @@ def spatial_means_to_npy(spatial_means: np.ndarray, output_file: str) -> None:
     >>> spatial_means_to_npy(spatial, 'blocking_spatial_means.npy')
     """
     np.save(output_file, spatial_means)
+
+
+def metrics_to_json(
+    metrics_df: pd.DataFrame,
+    output_file: str,
+    model_name: str,
+    realm: str = "atmos",
+    frequency: str = "day",
+    reference_name: Optional[str] = None,
+    provenance: Optional[Dict] = None,
+) -> None:
+    """
+    Save blocking metrics to PCMDI-standard JSON format.
+
+    Creates JSON with DIMENSIONS, RESULTS, and PROVENANCE sections following
+    PMP conventions for model evaluation metrics.
+
+    Parameters
+    ----------
+    metrics_df : pd.DataFrame
+        Metrics from compute_blocking_metrics() with columns:
+        Year, Season, Region, Number, Size
+    output_file : str
+        Output JSON file path.
+    model_name : str
+        Model identifier (e.g., 'CESM2', 'ACCESS-CM2').
+    realm : str, optional
+        Realm identifier. Default 'atmos'.
+    frequency : str, optional
+        Temporal frequency. Default 'day'.
+    reference_name : str, optional
+        Reference dataset name for comparison (e.g., 'ERA5').
+        If None, output is model-only.
+    provenance : dict, optional
+        Additional provenance information. If None, generates default.
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.blocking import compute_blocking_metrics, metrics_to_json
+    >>>
+    >>> metrics, spatial = compute_blocking_metrics(blocking)
+    >>> metrics_to_json(
+    ...     metrics,
+    ...     'CESM2_blocking_metrics.json',
+    ...     model_name='CESM2',
+    ...     reference_name='ERA5'
+    ... )
+
+    See Also
+    --------
+    compute_blocking_metrics : Generate metrics DataFrame
+    """
+    import json
+    from collections import OrderedDict
+
+    # Generate provenance if not provided
+    if provenance is None:
+        try:
+            from pcmdi_metrics.io.base import generateProvenance
+
+            provenance = generateProvenance()
+        except ImportError:
+            # Fallback provenance
+            from datetime import datetime
+
+            provenance = OrderedDict(
+                {
+                    "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "method": "U-Net neural network blocking detection",
+                }
+            )
+
+    # Create DIMENSIONS section
+    dimensions = OrderedDict()
+    dimensions["json_structure"] = [
+        "model",
+        "reference" if reference_name else None,
+        "season",
+        "region",
+        "statistic",
+    ]
+    dimensions["json_structure"] = [x for x in dimensions["json_structure"] if x]
+
+    dimensions["season"] = {
+        "DJF": "December-January-February",
+        "MAM": "March-April-May",
+        "JJA": "June-July-August",
+        "SON": "September-October-November",
+    }
+
+    regions = metrics_df["Region"].unique()
+    dimensions["region"] = {r: f"Blocking region {r}" for r in regions}
+
+    dimensions["statistic"] = {
+        "number": "Number of blocking events (connected components)",
+        "size": "Average blocking size (degree²)",
+        "mean_number": "Mean number of events per year",
+        "mean_size": "Mean blocking size per year (degree²)",
+    }
+
+    # Create RESULTS section
+    results = OrderedDict()
+    results[model_name] = OrderedDict()
+
+    # Group by season and region
+    for season in ["DJF", "MAM", "JJA", "SON"]:
+        season_data = metrics_df[metrics_df["Season"] == season]
+
+        if len(season_data) == 0:
+            continue
+
+        results[model_name][season] = OrderedDict()
+
+        for region in regions:
+            region_data = season_data[season_data["Region"] == region]
+
+            if len(region_data) == 0:
+                continue
+
+            results[model_name][season][region] = OrderedDict()
+
+            # Calculate statistics
+            number_values = region_data["Number"].values
+            size_values = region_data["Size"].values
+
+            # Remove NaN from size calculations
+            size_values_clean = size_values[~np.isnan(size_values)]
+
+            results[model_name][season][region]["number"] = OrderedDict(
+                {
+                    "values": number_values.tolist(),
+                    "mean": float(np.mean(number_values)),
+                    "std": float(np.std(number_values)),
+                    "years": region_data["Year"].values.tolist(),
+                }
+            )
+
+            results[model_name][season][region]["size"] = OrderedDict(
+                {
+                    "values": size_values.tolist(),
+                    "mean": (
+                        float(np.nanmean(size_values))
+                        if len(size_values_clean) > 0
+                        else None
+                    ),
+                    "std": (
+                        float(np.nanstd(size_values))
+                        if len(size_values_clean) > 0
+                        else None
+                    ),
+                    "years": region_data["Year"].values.tolist(),
+                }
+            )
+
+            # Overall mean statistics
+            results[model_name][season][region]["mean_number"] = float(
+                np.mean(number_values)
+            )
+            if len(size_values_clean) > 0:
+                results[model_name][season][region]["mean_size"] = float(
+                    np.nanmean(size_values)
+                )
+            else:
+                results[model_name][season][region]["mean_size"] = None
+
+    # Add reference data if provided
+    if reference_name:
+        # Placeholder for reference - would need actual reference metrics
+        results["REFERENCE"] = reference_name
+
+    # Create metadata section
+    metadata = OrderedDict()
+    metadata["metric"] = "Atmospheric Blocking"
+    metadata["method"] = "U-Net neural network with ResNet152 backbone"
+    metadata["realm"] = realm
+    metadata["frequency"] = frequency
+    metadata["regions"] = "Wiedenmann et al. (2002) 6-region definition"
+    metadata["threshold"] = 0.34
+    metadata["model_file"] = "falco_fulldata_oct11.h5"
+    metadata["references"] = [
+        "Valkonen, E., Lee, J., et al. (2023). U-Net based atmospheric blocking detection.",
+        "Wiedenmann, J. M., et al. (2002). The climatology of blocking anticyclones. J. Climate, 15(23), 3459-3473.",
+    ]
+
+    # Combine into final JSON structure
+    output_json = OrderedDict()
+    output_json["DIMENSIONS"] = dimensions
+    output_json["RESULTS"] = results
+    output_json["METADATA"] = metadata
+    output_json["PROVENANCE"] = provenance
+
+    # Write to file
+    with open(output_file, "w") as f:
+        json.dump(output_json, f, indent=2)
+
+    print(f"Metrics saved to: {output_file}")

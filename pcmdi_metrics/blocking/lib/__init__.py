@@ -5,6 +5,7 @@ from .blocking_metrics import (  # noqa: F401
     average_size,
     compute_blocking_metrics,
     metrics_to_csv,
+    metrics_to_json,
     number_of_features,
     spatial_means_to_npy,
     split_maps_by_month,
@@ -24,6 +25,7 @@ __all__ = [
     # Metrics
     "compute_blocking_metrics",
     "metrics_to_csv",
+    "metrics_to_json",
     "spatial_means_to_npy",
     "number_of_features",
     "average_size",

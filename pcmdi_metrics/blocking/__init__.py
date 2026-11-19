@@ -86,6 +86,7 @@ if _HAS_TENSORFLOW:
         from .lib.blocking_metrics import (
             compute_blocking_metrics,
             metrics_to_csv,
+            metrics_to_json,
             spatial_means_to_npy,
         )
         from .lib.blocking_utils import get_model_path, validate_tensorflow
@@ -94,6 +95,7 @@ if _HAS_TENSORFLOW:
             "detect_blocking",
             "compute_blocking_metrics",
             "metrics_to_csv",
+            "metrics_to_json",
             "spatial_means_to_npy",
             "get_model_path",
             "validate_tensorflow",
@@ -132,6 +134,7 @@ if not _HAS_TENSORFLOW:
     detect_blocking = _make_tensorflow_stub("detect_blocking")
     compute_blocking_metrics = _make_tensorflow_stub("compute_blocking_metrics")
     metrics_to_csv = _make_tensorflow_stub("metrics_to_csv")
+    metrics_to_json = _make_tensorflow_stub("metrics_to_json")
     spatial_means_to_npy = _make_tensorflow_stub("spatial_means_to_npy")
     get_model_path = _make_tensorflow_stub("get_model_path")
     validate_tensorflow = _make_tensorflow_stub("validate_tensorflow")
@@ -140,6 +143,7 @@ if not _HAS_TENSORFLOW:
         "detect_blocking",
         "compute_blocking_metrics",
         "metrics_to_csv",
+        "metrics_to_json",
         "spatial_means_to_npy",
         "get_model_path",
         "validate_tensorflow",
