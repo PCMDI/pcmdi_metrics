@@ -134,6 +134,12 @@ custom_regions = {
 metrics, spatial = compute_blocking_metrics(blocking, regions=custom_regions)
 ```
 
+## Examples
+
+### Basic Examples
+
+See "Quick Start" section above for essential usage patterns.
+
 ## Advanced Usage
 
 ### Save Diagnostics to File
