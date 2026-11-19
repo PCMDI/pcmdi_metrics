@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xcdat as xc
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
+from cartopy.util import add_cyclic_point
 
 from pcmdi_metrics.graphics import TaylorDiagram
 
@@ -317,10 +318,25 @@ def plot_map_cartopy(
     else:
         ax.set_extent(extent, crs=ccrs.PlateCarree())
 
+    # Add cyclic point when longitude spans the full globe
+    plot_data = data.values
+    plot_lons = data.lon.values
+
+    if len(lons) > 2 and np.isclose(
+        lons[-1] - lons[0] + (lons[1] - lons[0]),
+        360,
+        atol=1,
+    ):
+        plot_data, plot_lons = add_cyclic_point(
+            data.values,
+            coord=lons,
+            axis=data.get_axis_num("lon"),
+        )
+
     im = ax.contourf(
-        lons,
+        plot_lons,
         lats,
-        data,
+        plot_data,
         transform=ccrs.PlateCarree(),
         cmap=cmap,
         levels=levels,
@@ -461,11 +477,25 @@ def plot_three_panel(
         ax.coastlines(linewidth=0.7)
         ax.gridlines(alpha=0.3, linestyle="--")
 
+        plot_data = field.values
+        plot_lons = field.lon.values
+
+        # Only close the longitude seam for global grids
+        lon = field.lon.values
+        if len(lon) > 2 and np.isclose(
+            lon[-1] - lon[0] + (lon[1] - lon[0]), 360, atol=1
+        ):
+            plot_data, plot_lons = add_cyclic_point(
+                field.values,
+                coord=lon,
+                axis=field.get_axis_num("lon"),
+            )
+
         if i < 2:
             im = ax.contourf(
-                field.lon,
+                plot_lons,
                 field.lat,
-                field,
+                plot_data,
                 transform=ccrs.PlateCarree(),
                 cmap=cmap,
                 levels=levels,
@@ -473,9 +503,9 @@ def plot_three_panel(
             )
         else:
             im = ax.contourf(
-                field.lon,
+                plot_lons,
                 field.lat,
-                field,
+                plot_data,
                 transform=ccrs.PlateCarree(),
                 cmap=diff_cmap,
                 levels=diff_levels,
