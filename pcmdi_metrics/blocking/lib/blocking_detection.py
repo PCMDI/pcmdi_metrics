@@ -27,19 +27,15 @@ for climate model evaluation. In preparation.
 """
 
 import time
-import warnings
 from typing import Optional
 
 import numpy as np
 import xarray as xr
 import xcdat as xc
 
-from .blocking_utils import (
-    check_input_grid,
-    find_nearest,
-    get_model_path,
-    validate_blocking_input,
-)
+from pcmdi_metrics.utils import extract_level
+
+from .blocking_utils import check_input_grid, get_model_path, validate_blocking_input
 
 # TensorFlow imported on-demand to avoid forcing dependency
 _TENSORFLOW_AVAILABLE = None
@@ -204,7 +200,8 @@ def detect_blocking(
     if ds[var].ndim == 4:
         if verbose:
             print(f"Extracting {level} Pa level...")
-        ds[var] = extract_layer(ds, var, level)
+        # Use PMP's extract_level utility (expects hPa, handles Pa internally)
+        ds[var] = extract_level(ds[var], level / 100, lev_dim="plev")
 
     # Regrid if needed
     if check_input_grid(ds, expected_shape=(90, 180)):
@@ -530,80 +527,4 @@ def select_time_range(
     return ds
 
 
-def extract_layer(ds: xr.Dataset, var: str, level: float) -> xr.DataArray:
-    """
-    Extract specific pressure level from 4D data.
-
-    Sometimes vertical coordinate in model output is not stored exactly on desired level.
-    For example, plev might have 50000.00000001 for 500 hPa layer instead of 50000.
-    This function examines if the model layer is close enough to the requested level,
-    and if so, extracts the layer.
-
-    Parameters
-    ----------
-    ds : xr.Dataset
-        Dataset with vertical coordinate.
-    var : str
-        Variable name to extract.
-    level : float
-        Pressure level to extract in Pa.
-
-    Returns
-    -------
-    xr.DataArray
-        Extracted 3D array (time, lat, lon).
-
-    Raises
-    ------
-    ValueError
-        If vertical coordinate is missing or level difference is too large.
-
-    Examples
-    --------
-    >>> zg_500 = extract_layer(ds, var='zg', level=50000)
-    """
-    if level is None:
-        return ds[var]
-
-    # Ensure level is numeric
-    if not isinstance(level, (int, float)):
-        level = float(level)
-
-    # Check vertical coordinate
-    vertical_coords = {"plev", "lev", "level", "pressure"}
-    found_vertical = vertical_coords.intersection(set(ds.coords.keys()))
-
-    if not found_vertical:
-        raise ValueError(
-            f"Vertical coordinate not found in dataset.\n"
-            f"Expected one of: {vertical_coords}\n"
-            f"Found coordinates: {list(ds.coords.keys())}"
-        )
-
-    vert_coord = list(found_vertical)[0]
-
-    try:
-        # Try exact selection
-        ds_level = ds[var].sel({vert_coord: level})
-        return ds_level
-    except (KeyError, ValueError) as ex:
-        warnings.warn(f"Exact level selection failed: {ex}", UserWarning)
-
-        # Find nearest level
-        nearest_level = find_nearest(ds[vert_coord].values, level)
-
-        print(f"  Given level: {level}")
-        print(f"  Selected nearest level from dataset: {nearest_level}")
-
-        # Check if difference is acceptable (< 0.1%)
-        diff_percentage = abs(nearest_level - level) / level * 100
-        if diff_percentage < 0.1:
-            ds_level = ds[var].sel({vert_coord: level}, method="nearest")
-            print("  Difference is in acceptable range.")
-            return ds_level
-        else:
-            raise ValueError(
-                f"Difference between requested level ({level}) and "
-                f"nearest available level ({nearest_level}) is too large "
-                f"({diff_percentage:.2f}%)."
-            )
+# Removed: extract_layer() - now using pcmdi_metrics.utils.extract_level

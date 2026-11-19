@@ -571,20 +571,9 @@ def metrics_to_json(
 
     # Generate provenance if not provided
     if provenance is None:
-        try:
-            from pcmdi_metrics.io.base import generateProvenance
+        from pcmdi_metrics.io.base import generateProvenance
 
-            provenance = generateProvenance()
-        except ImportError:
-            # Fallback provenance
-            from datetime import datetime
-
-            provenance = OrderedDict(
-                {
-                    "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "method": "U-Net neural network blocking detection",
-                }
-            )
+        provenance = generateProvenance()
 
     # Create DIMENSIONS section
     dimensions = OrderedDict()

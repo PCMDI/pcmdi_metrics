@@ -267,29 +267,4 @@ def validate_blocking_input(
                 )
 
 
-def find_nearest(array: np.ndarray, value: float) -> int:
-    """
-    Find index of nearest value in array.
-
-    Parameters
-    ----------
-    array : np.ndarray
-        Array to search.
-    value : float
-        Target value to find.
-
-    Returns
-    -------
-    int
-        Index of nearest value.
-
-    Examples
-    --------
-    >>> levels = np.array([100000, 85000, 70000, 50000, 25000])
-    >>> idx = find_nearest(levels, 50000)
-    >>> print(idx)
-    3
-    """
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return idx
+# Removed: find_nearest() - functionality now in pcmdi_metrics.utils.extract_level

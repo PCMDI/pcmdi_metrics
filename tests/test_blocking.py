@@ -34,7 +34,6 @@ from pcmdi_metrics.blocking import (  # noqa: E402
 )
 from pcmdi_metrics.blocking.lib.blocking_utils import (  # noqa: E402
     check_input_grid,
-    find_nearest,
     validate_tensorflow,
 )
 
@@ -74,15 +73,6 @@ class TestUtilities:
             }
         )
         assert not check_input_grid(ds, expected_shape=(90, 180))
-
-    def test_find_nearest(self):
-        """Test finding nearest value in array."""
-        levels = np.array([100000, 85000, 70000, 50000, 25000])
-        idx = find_nearest(levels, 50000)
-        assert idx == 50000
-
-        idx = find_nearest(levels, 50001)
-        assert idx == 50000
 
 
 class TestBlockingDetection:

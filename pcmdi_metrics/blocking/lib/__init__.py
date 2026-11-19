@@ -13,7 +13,6 @@ from .blocking_metrics import (  # noqa: F401
 )
 from .blocking_utils import (  # noqa: F401
     check_input_grid,
-    find_nearest,
     get_model_path,
     validate_blocking_input,
     validate_tensorflow,
@@ -36,5 +35,4 @@ __all__ = [
     "get_model_path",
     "check_input_grid",
     "validate_blocking_input",
-    "find_nearest",
 ]
